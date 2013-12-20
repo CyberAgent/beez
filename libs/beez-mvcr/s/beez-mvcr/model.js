@@ -521,7 +521,11 @@
                         var beforeSend = options.beforeSend;
                         options.beforeSend = function (xhr, settings) {
                             if (options.emulateHTTP && (method === 'PUT' || method === 'DELETE' || method === 'PATCH')) {
-                                settings.headers['X-HTTP-Method-Override'] = method;
+                                if (!!settings.headers) {
+                                    settings.headers['X-HTTP-Method-Override'] = method;
+                                } else {
+                                    xhr.setRequestHeader('X-HTTP-Method-Override', method);
+                                }
                             }
                             if (beforeSend) {
                                 beforeSend.apply(null, arguments);
