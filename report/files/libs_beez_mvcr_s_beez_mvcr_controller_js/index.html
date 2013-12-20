@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>libs/beez-mvcr/s/beez-mvcr/controller.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">75.70</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">338</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">42.09</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">1.60</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/**
+ * @fileOverview Controller/ControllerManager
+ * @name controller.js&lt;beez-mvcr&gt;
+ * @author Kei Funagayama &lt;funagayama_kei@cyberagent.co.jp&gt;
+ */
+
+(function (global) {
+
+    define(function __Controller__(require, exports, module) {
+        &#039;use strict&#039;;
+
+        var beez = require(&#039;beez.core&#039;);
+        require(&#039;beez.mvcr&#039;);
+        require(&#039;beez.i18n&#039;);
+
+        var logger = beez.getLogger(&#039;beez.mvcr.controller&#039;);
+
+        var _ = beez.vendor._;
+
+        // -------------------
+        // ControllerManagerAsync
+
+        /**
+         * Controller management class, asynchronous
+         *
+         * @class
+         * @name ControllerManagerAsync
+         * @private
+         * @param {ControllerManager} manager
+         * @extends {Bucks}
+         */
+        var ControllerManagerAsync = beez.Bucks.extend(
+            &#039;beez.mvcr.ControllerManagerAsync&#039;,
+            {
+                /**
+                 * Constructor
+                 *
+                 * @memberof ControllerManagerAsync
+                 * @instance
+                 */
+                initialize: function initialize(manager) {
+                    this.manager = manager;
+                },
+
+                /**
+                 * Generation of the Controller
+                 *
+                 * @memberof ControllerManagerAsync
+                 * @instance
+                 * @param {String} prefix
+                 * @param {Controller|Array&lt;Controller&gt;} Controller Controller Object
+                 * @param {Object|Array&lt;Object&gt;} [options] Arguments to the Controller
+                 * @return {Controller}
+                 */
+                create: function create(name, Controller, options) {
+                    var self = this;
+                    return this.then(function createWrap(result, next) {
+
+                        if (!Controller || typeof Controller !== &#039;function&#039;) {
+                            throw new beez.Error(&#039;Controller does not exist / does not be funciton. Specified name: &#039; + name);
+                        }
+                        if (self.manager.controllers[name]) {
+                            throw new beez.Error(&#039;It is a singleton in the module. name:&#039; + name);
+                        }
+
+                        var controller = new Controller();
+                        self.manager.controllers[name] = controller;
+                        next(result, self.manager.controllers[name]);
+
+                    }).then(function (controller, next) {
+                        controller.loadCSS(function () { // initialize css load
+                            next(null, controller);
+                        });
+
+                    }).then(function (controller, next) {
+                        controller.loadI18n(function (err) { // initialize i18n load
+                            if (err) {
+                                logger.error(&#039;i18n load error. &#039;, err.message);
+                                logger.debug(err.stack);
+                            }
+                            next(err, controller);
+                        });
+                    });
+                },
+
+                /**
+                 * Disposes of the instance
+                 *
+                 * @memberof ControllerManagerAsync
+                 */
+                dispose: function dispose() {
+                    logger.trace(this.constructor.name, &#039;dispose&#039;);
+                    delete this.manager;
+                }
+            }
+        );
+
+        // -------------------
+        // ControllerManager
+
+        /**
+         * Controller management class.
+         *
+         * @class
+         * @name ControllerManager
+         */
+        var ControllerManager = beez.extend(
+            &#039;beez.mvcr.ControllerManager&#039;,
+            function constructor() {
+                return this.initialize();
+            },
+            {
+                /**
+                 * Constructor
+                 *
+                 * @memberof ControllerManager
+                 * @instance
+                 */
+                initialize: function initialize() {
+                    this.controllers = {};
+                },
+
+                /**
+                 * Generating ControllerManagerAsync
+                 *
+                 * @memberof ControllerManager
+                 * @instance
+                 * @return {ControllerAsync}
+                 */
+                async: function async() {
+                    return new ControllerManagerAsync(this);
+                },
+
+                /**
+                 * Remove controller
+                 *
+                 * @memberof ControllerManager
+                 * @instance
+                 * @param {String} name jsonPath name
+                 * @return {ControllerManager}
+                 */
+                remove: function remove(name) {
+                    var obj = this.get(name);
+                    if (!obj) {
+                        return this;
+                    }
+                    delete this.controllers[name];
+                    return this;
+                },
+
+                /**
+                 * From path, acquire Controller.
+                 *
+                 * @memberof ControllerManager
+                 * @instance
+                 * @param {String} name jsonPath name
+                 * @return {Controller}
+                 */
+                get: function get(name) {
+                    return this.controllers[name];
+                },
+
+                /**
+                 * Disposes of the instance
+                 *
+                 * @memberof ControllerManager
+                 * @instance
+                 */
+                dispose: function () {
+                    logger.trace(this.constructor.name, &#039;dispose&#039;);
+                    delete this.controllers;
+                }
+            });
+
+
+        // -------------------
+        // Controller
+
+        /**
+         * Controller class.
+         *
+         * @namespace beez.mvcr
+         * @class
+         * @name Controller
+         */
+        var Controller = beez.extend(
+            &#039;beez.mvcr.Controller&#039;,
+            function constructor() {
+                this.initialize.apply(this, arguments);
+            },
+            {
+
+                /**
+                 * Constructor
+                 *
+                 * @memberof Controller
+                 * @instance
+                 */
+                initialize: function initialize() {
+                },
+
+                /**
+                 * automatic loading of i18n data.
+                 * @memberof Controller
+                 * @param {function} callback
+                 */
+                i18n: function i18n() {},
+
+                /**
+                 * automatic loading of i18n.
+                 *
+                 * @memberof Controller
+                 * @param {function} callback Completion callback
+                 * @instance
+                 * @return {Controller}
+                 */
+                loadI18n: function loadI18n(callback) {
+                    if (!beez.i18n) {
+                        beez.createI18n();
+                    }
+
+                    var self = this;
+                    if (beez.utils.is(&#039;Object&#039;, this.i18n)) { // dynamic load
+
+                        var langs = [];
+                        var paths = [];
+                        _.each(this.i18n, function (path, lang) {
+                            langs.push(lang);
+                            paths.push(path);
+                        });
+
+                        require(paths, function () {
+                            var list = Array.prototype.slice.call(arguments);
+                            for (var i = 0; i &lt; list.length; i++) {
+                                var data = {};
+                                data[langs[i]] = list[i];
+                                beez.i18n.add(data);
+                                logger.debug(&#039;i18n file loaded. path:&#039;, paths[i]);
+                            }
+                            callback &amp;&amp; callback(null);
+                        }, function (err) {
+                            callback &amp;&amp; callback(err);
+                        });
+
+                    } else if (beez.utils.is(&#039;Function&#039;, this.i18n)) { // static load
+                        new beez.Bucks()
+                            .add(function (err, res, next) {
+                                if (0 &lt; self.i18n.length) {
+                                    self.i18n(function (err, res) {
+                                        next(err, res);
+                                    });
+                                } else {
+                                    next(null, self.i18n());
+                                }
+                            })
+                            .add(function (err, res) {
+                                if (res) {
+                                    beez.i18n.add(res);
+                                }
+                                callback &amp;&amp; callback(err, res);
+                            })
+                            .end();
+
+                    } else {
+                        callback &amp;&amp; callback(new Error(&#039;The Controller.i18n, please be defined in Function.&#039;));
+                    }
+                    return this;
+
+                },
+
+                /**
+                 * automatic loading of css.
+                 *
+                 * @memberof Controller
+                 * @param {function} callback Completion callback
+                 * @instance
+                 * @return {Controller}
+                 */
+                loadCSS: function loadCSS(callback) {
+                    var paths = this.css;
+                    if (!paths || paths.length &lt; 1) {
+                        return callback &amp;&amp; callback();
+                    }
+
+                    var self = this;
+                    var tasks = _.map(paths, function task(p) {
+                        return function t(err, res, next) {
+                            beez.manager.css.async()
+                                .load(p)
+                                .end(function (err1, res1) {
+                                    next(err, res1[0]);
+                                }, function (err2) {
+                                    next(err2);
+                                });
+                        };
+                    });
+
+                    var b = new beez.Bucks();
+                    b.parallel(tasks)
+                        .end(function (err, ress) {
+                            callback &amp;&amp; callback(err, ress);
+                        });
+
+                    return this;
+                },
+
+                /**
+                 * Disposes of the instance
+                 *
+                 * @memberof Controller
+                 */
+                dispose: function dispose() {
+                    logger.trace(this.constructor.name, &#039;dispose&#039;);
+                    delete this.constructor.prototype.css;
+                }
+            }
+        );
+
+
+        /**
+         * extend function
+         *
+         * @memberof Controller
+         * @function
+         * @param {String} [name] instance name
+         * @param {Object} childProto prototypes
+         * @borrows beez.extendThis as extend
+         * @example
+         * var MyController = Controller.extend(
+         *     &#039;myapp.MyController&#039;,
+         *     {
+         *         bar: function bar() {}
+         *     }
+         * );
+         */
+        Controller.extend = beez.extendThis;
+
+        return {
+            Controller: Controller,
+            ControllerManager: ControllerManager,
+            ControllerManagerAsync: ControllerManagerAsync
+        };
+    });
+})(this);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

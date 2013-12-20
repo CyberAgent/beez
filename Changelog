@@ -1,0 +1,261 @@
+Changelog
+
+Key
+[A] - Added, [C] - Changed, [F] - Fixed, [R] - Removed
+
+Wed Dec 18 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 1.0.8
+- [C] Updated Zepto version to v1.1.2.
+- [A] Added status information in routing.
+- [C] Changed `Model#ajax` communication default setting to added beez.config.ajax.
+- [F] Fixed test case error.
+- [A] Added Backbone patch file for the bug in Zepto.js v1.1.1.
+- [C] Changed to occure warning error multiple times when running the setup function.
+- [A] Added execution to the Controller via route.navigate to add asynchronous function.
+
+Wed Dec 11 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 1.0.7
+- [C] Updated zepto version to 1.1.1.
+- [C] Changed header registration method of X-HTTP-Method-Override.
+
+Tue Dec 10 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 1.0.6
+- [F] Fixed run remove function two times in `JSON.stringify` (ajax).
+- [F] Fixed generate file: index.html.hbs.
+- [A] `beez.Router` now can be extendable useing `extendThis`.
+- [C] Changed document about manual generation.
+
+Mon Nov 25 2013 Yuhei Aihara <aihara_yuhei@cyberagent.co.jp> - 1.0.5
+- [C] Changed format in `ModelManager#ajax`.
+
+Mon Nov 25 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 1.0.4
+- [F] Fixed a bug the View/Model Manager can't run when initialize.
+- [F] Fixed empty `beez.config.url.api`.
+- [A] Added default value in urlRoot.
+
+Tue Nov 19 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 1.0.3
+- [A] Beez commands supports both JSON & JavaScript format.
+- [C] Updated beez-ua.
+
+Thu Nov 18 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 1.0.2
+- [F] Changed log.level in ViewAsync#dispose.
+- [F] Changed project message.
+- [A] Set conf/local.json#operation for template project.
+- [C] Changed template project.(stylus, bootstrap)
+- [C] Updated handlebars versioin to 1.0.2.
+
+Thu Nov 14 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 1.0.1
+- [A] Added RouterManager/Router dispose function.
+- [A] Added GitHub project template.
+- [R] Removed message. debug->trace.
+- [C] Changed useing Grunt.js in template projects.
+.
+Thu Oct 30 2013 Yuhei Aihara <aihara_yuhei@cyberagent.co.jp> - 0.9.11
+- [C] Set `this.urlRoot` in `Model#constructor`.
+- [C] Changed test framework from should to chai.
+
+Thu Oct 28 2013 Yuhei Aihara <aihara_yuhei@cyberagent.co.jp> - 0.9.10
+- [F] Fixed release/require.*.js to vendor.require.*.js in beez-project.
+- [C] Updated backbone version to 1.1.0.
+- [C] Updated backbone.localStorage version to 1.1.7.
+- [C] Updated require.js version to 2.1.9.
+- [A] Added support to jquery and lo-dash.
+
+Thu Oct 24 2013 Yuhei Aihara <aihara_yuhei@cyberagent.co.jp> - 0.9.9
+- [A] Supported multi project for template.(todos and plan)
+- [C] Changed `beez.xxx.start` to `beez.xxx.setup`.
+- [C] Changed `beez.manager.start()` to `beez.manager.setup()`.
+- [C] Changed `beez.manager.r.start()` to `beez.manager.r.setup()`.
+- [C] Changed `beez.createI18n` to `beez`.i18n.setup.
+- [C] Changed template project.
+- [A] Added check for beez-project command-options.
+- [A] Added to beez-project: plain project.
+- [C] Changed `beez-hbs2hbsc`.
+
+Fri Oct 18 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.9.8
+- [C] Updated template todo project.
+- [C] Updated 3rd-party lib. (Underscore.js 1.5.2, backbone.localstrage.js 1.1.6).
+- [C] Updated 3rd-party minifed lib.
+- [C] Updated beez-ua.
+- [F] Fixed elem.crossOrigin in manager image.
+- [F] Fixed to be included 3rd-party library in beez-project.
+- [A] Added `beez`.config.defined.
+- [A] Added beez command: `beez-ignore`, `beez-deploy`.
+
+Sat Sep 28 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.9.7
+- [C] Updated bucks.js versioin to 0.8.2.
+- [A] Added test case in unify_function. This code is temporary.
+- [C] Improveed `manager.base.getChildrenAll()`.
+- [A] Added the setting of the "Pool" to the default option in "ImageManager".
+- [A] Added `model.base.manager` called when initialize.
+- [A] Added shortcut _.isXXX() (except isObject, isArray) in beez-utils.
+- [F] Fixed delete property in `model/collection/view.remove()`.
+- [F] Fixed no use `base.getChildrenAll()` when Model is belong to Backbone.collection.
+- [F] Fixed colection error, cause of require.js's arguments.
+- [R] remove calling `Base.__super__.dispose`.
+- [C] Changed model.constructor.
+- [F] Fixed `model.manager.remove`(collection) and `model`.manager.dispose.
+- [F] $ now ignore `getChildren()`.
+- [F] Fixed test case beez-mvcr.
+- [F] If the member variable of Object, you have set the Object manually, to ignore.
+- [F] Fixed to ignore the member variable of Object, you have to set the Object manually.
+
+*Wed Sep 18 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.9.6
+- [F] Fixed error in initialization order of "visible".
+
+*Wed Sep 18 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.9.5
+- [F] Fixed undelegate event when call `View`.hide().
+- [R] beez-smodinclude
+- [A] Added check object type functions. (Object|Array|Function|String|Boolean|Number|RegExp)
+
+*Tue Sep 17 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.9.4
+- [A] Added i18n dynamic/static load support.
+- [A] Added determine the type on `utils.is`.
+- [R] bin/beez-build.
+- [F] Fixed call `Model/View.dispose()` in.
+- [F] Fixed manager.model/view.dispose().
+- [F] Fixed author & version in changelog .
+
+*Tue Sep 10 2013 HIRAKI Satoru <hiraki_satoru@cyberagent.co.jp> - 0.9.3
+- [C] Merged branch 'v0.9'.
+- [C] Changed beez-ua master.
+- [C] Rebuild.
+- [C] Rebuild.
+- [C] Added Backbone.Router() in constructor unintended remove.
+- [C] Rebuilded beez-ua.
+- [C] Rebuilded beez-ua.
+- [C] Changed submodule of beez-ua.
+- [C] Updated release file.
+
+*Tue Sep 10 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.9.2
+- [F] Fixed point of source review.
+- [A] Added `initialize()` method.
+- [C] Changed `Router.constructor()` to empty.
+- [A] Added `Router.constructor` test.
+- [C] Changed `trace()` to `getChildrenAll()`.
+- [C] Refactored build script.
+- [C] Merge branch 'remotes/origin/v0.9'.
+
+*Mon Sep  9 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.8.14
+- [C] Rebuild.
+
+*Fri Sep  6 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.9.1
+- [F] Fixed `remove()` & `dispose()` in manager/model/view/collection.
+- [F] Fixed `dispose()` & `remove()` in model/view/collection/manager.
+- [C] Changed `View.remove()`.
+- [C] Changed `View.dispose()`.
+- [F] Removed console.log.
+- [C] Changed `Model.dispose()` and `Model.remove()`.
+- [F] Fixed `Base.dispose`.
+- [C] Changed `Collection.remove()` / `dispose()`.
+- [A] Added `Collection.removeAll()` test.
+- [F] Fixed `manager.base.remove()`.
+- [C] Changed `view.mangaer.dispose()` & `view.manager.remove()`.
+- [C] Changed `model.manager.dispose` to `model.manager.remove`.
+- [A] Added `model.manager.dispose`.
+- [A] Added bind check when remove models.
+- [C] Improveed test case for collection/model.
+- [R] Removed unnecessary part.
+- [A] Added jsdoc.
+
+*Tue Aug 13 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.8.13
+- [C] Updated require.js version to2.1.8 and bucks.js & suns.js version's are updated.
+
+*Thu Jul 18 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.8.12
+- [C] Updated undersocre.js version to 1.5.
+- [C] Updated handlebars.runtime version to 1.0.0 (_.bindAll bugfix).
+- [C] Updated zepto.js version to  v1.0-1-ga3cab6c.
+
+*Thu Jul 18 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.8.11
+- [A] Added the version number to release file name when load.
+- [F] Fixed `mvcr.Collection.fetch`.
+- [F] Fixed bug when remove the model from the collection.
+- [F] Fixed `remove` method cant' remove cid of `Backbone.Model` before call
+from Backbone.js
+- [A] Added timer callback arguments.
+- [A] Added dispose method in Model, Collection and View.
+
+*Wed Jun 26 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.8.10
+- [C] Updated beez-ua version to 0.4.8.
+- [C] Updated logcafe.js version to 0.6.6.
+
+*Tue Jun 25 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.8.9
+- [C] Updated bucks.js version to 0.6.10.
+- [A] Added `beez.onError(window.onerror, Bucks.onError, window.require.onError)`.
+
+*Sat May  4 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.8.8
+- [R] deps stylus.
+- [A] Added template addheader configure.
+- [A] Added `beezlib.css.stylus.write`.
+- [R] test
+- [A] Added beezlib
+- [C] Changed template project language from ja to en.
+- [A] Added submodule and bucks.js and logcafe.js and suns.js.
+- [A] Added beez-ua.
+- [C] Changed require.js dependencies.
+- [F] Fixed typo, 'orientation'.
+
+*Fri Apr 19 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.8.7
+- [A] Added beez-smodinclude command.
+- [C] Changed buildpf & deploypj -> build & deploy commands.
+- [F] Fixed release scripts.
+- [F] Fiexd sample todo project
+
+* Mon Apr 15 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.8.6
+- [C] Changed a format of replacement string to {{xxx}} -> {#xxx} in i18n.
+- [A] Added t/hbs files.
+
+* Mon Apr 15 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.8.5
+- [A] Added jsonminify support.
+- [A] Go public `mvcr.ManagerBase` and `mvcr.Base` api.
+- [A] Added plato report.
+- [A] Go public beez.utils.Timers api.
+- [A] Added to get browser language function.
+- [A] Added `utils.copyr` function.
+- [A] Added `beez.i18n`.
+- [C] Refactored `beez.utils.browser.getLanguage`.
+- [C] Added `beez.i18n` extend support.
+- [C] Changeed css & i18n timing to when beez generate controller.
+- [R] Remove `beez.manager.controller.create`.
+- [A] Added `beez.manager.controller.async ().create`
+- [C] Extended `beez.i18n`.
+- [F] Fixed i18n message.
+
+* Thu Mar 28 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.8.4
+- [F] Copied beez/vendor to project/vendor
+- [F] Fixed `path.resolve`'s' null error.
+
+* Thu Mar 28 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.8.3
+- [A] Remove from management Model/Collection of interest, also delete the Object object together.
+- [A] Added checker for object type.
+- [A] Deleted all of the underlying model and that's belong to collection.
+
+* Mon Mar 25 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.8.2
+- [A] Added todo app's skeleton in beez-project.
+- [C] Change authors email address to company address.
+
+* Mon Mar 25 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.8.1
+- [A] Added jsdoc comment.
+- [C] Removed the prefix Beez lyrics from the class name.
+- fixed: Fixed a bug in the test case.
+- fixed: Fixed jshint format.
+- fixed: Fixed css timeout when processing.
+- fixed: Fixed the test case for load a css.
+
+* Mon Mar 25 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.8.0
+- [C] `CSSRouter.navigate` and `i18n` are loaded automatically when initialize.
+- [C] `cssmanager.load` now takes a path for specified external domain.
+- [A] Expanded test cases more.
+
+* Sat Mar 23 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.6.5
+- [F] Checked a constractor argument of model / collection.
+- [A] Added some of the beez-mvcr and test case in beez-core/beez-utils.
+- [C] Changed the function name (xxxSync -> xxx).
+- [C] Changed the file name. (uniqueid.js -> uid.js)
+
+* Fri Mar 22 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.6.4
+- [C] Updated backbone.js version to 1.0.0
+- [A] `beez.manager` can be extendable now.
+- [F] Aligned naming rules for a class and function name.
+- [A] Expanded test cases more.
+- [F] Removed `console.log`
+
+* Mon Feb 25 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.6.0
+- Initial release.

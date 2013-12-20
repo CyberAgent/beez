@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>libs/beez-core/s/beez-core/suns.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">62.75</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">360</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">55.50</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">1.71</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/**
+ * @name suns.js
+ * @author Kazuma MISHIMAGI &lt;mishimagi_kazuma@cyberagent.co.jp&gt;
+ * copyright (c) Cyberagent Inc.
+ * @overview Object extending utilities for node and browser (amd support)
+ */
+
+(function (global) {
+    &#039;use strict&#039;;
+
+    // no-op function
+    var none = function none() {};
+
+
+    var arrayForEach = Array.prototype.forEach;
+    var breaker = {};
+
+    /**
+     * call iterator for each property of obj
+     * @function
+     * @private
+     * @param {Object} obj
+     * @param {Function} iterator
+     * @param {Object} context
+     */
+    var each = function each(obj, iterator, context) {
+
+        if (obj === undefined || obj === null) { return; }
+        if (arrayForEach &amp;&amp; obj.forEach === arrayForEach) {
+            obj.forEach(iterator, context);
+        } else if (obj.length === +obj.length) {
+            for (var i = 0, l = obj.length; i &lt; l; i++) {
+                if (iterator.call(context, obj[i], i, obj) === breaker) {
+                    return;
+                }
+            }
+        } else {
+            for (var key in obj) {
+                if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                    if (iterator.call(context, obj[key], key, obj) === breaker) {
+                        return;
+                    }
+                }
+            }
+        }
+    };
+
+    /**
+     * copy object&#039;s properties
+     * @function
+     * @private
+     * @param {Object} obj
+     */
+    var copyProps = function CopyProps(obj) {
+        each(Array.prototype.slice.call(arguments, 1), function (source) {
+            for (var prop in source) {
+                obj[prop] = source[prop];
+            }
+        });
+        return obj;
+    };
+
+    var superProp_reg = /__(super)+__/;
+
+    /**
+     * extend from parent with a childProto object.
+     * @param {String} [name]
+     * @param {Function} parent
+     * @param {Object} childProto
+     */
+    var _extendOne = function _extendOne(name, parent, childProto) {
+
+        // The constructor function for the new subclass is either defined by you
+        // (the &quot;constructor&quot; property in your `extend` definition), or defaulted
+        // by us to simply call the parent&#039;s constructor.
+
+        var child;
+
+        if (typeof childProto !== &#039;object&#039;) {
+            throw new Error(&#039;typeof childCtorOrProto invalid. it should be Object (prototype object).&#039;);
+        }
+
+        if (childProto &amp;&amp; Object.prototype.hasOwnProperty.call(childProto, &#039;constructor&#039;)) {
+            child = childProto.constructor;
+        } else {
+            child = new Function(&#039;parent&#039;, &#039;return function &#039; + name + &#039;(){ parent.apply(this, arguments); };&#039;)(parent);
+        }
+
+        // Add static properties
+        copyProps(child, parent);
+
+        var Surrogate = function () { this.constructor = child; };
+        Surrogate.prototype = parent.prototype;
+        child.prototype = new Surrogate;
+
+        if (childProto) {
+            copyProps(child.prototype, childProto);
+        }
+
+        for (var prop in parent) {
+            if (superProp_reg.test(prop)) {
+                var superProp = prop.replace(&#039;super&#039;, &#039;supersuper&#039;);
+                child[superProp] = parent[prop];
+            }
+        }
+        child.__super__ = parent.prototype;
+        child.__superCtor__ = parent;
+
+        return child;
+    };
+
+    /**
+     * extend multiple children
+     * @param {String} name
+     * @param {Function} parent
+     * @param {Array&lt;Object&gt;} children
+     */
+    var _extend = function _extend(name, parent, children) {
+
+        if (children.length &lt; 1) {
+            // end of recursion
+            return parent;
+        }
+
+        // get first childProto
+        var childProto = children.shift();
+        var child = _extendOne(name, parent, childProto);
+
+        // extend recursively
+        return _extend(name, child, children);
+    };
+
+    /**
+     * define prototype chain properly and
+     * create new object that extends parent object.
+     * @function
+     * @memberof suns
+     * @param {String} [name=&#039;&#039;] (optional) class name for easy-debug.
+     * @param {Function} parent function as a parent
+     * @param {Object} childProto prototype object as a child
+     * @param {Object} [childProto] (optional) multiple children can be specified.
+     * @return {Object}
+     * @example
+     * var Parent = function Parent() {};
+     * var Child = extend(
+     *     &#039;Child&#039;,
+     *     Parent,
+     *     {
+     *         initialize: function initialize()
+     *     }
+     * );
+     */
+    var extend = function extend(/** name, */ parent, childProto /** childProto... */) {
+
+        var name = &#039;&#039;;
+        var args = Array.prototype.slice.apply(arguments);
+        if (typeof args[0] === &#039;string&#039;) {
+            name = args.shift();
+            //&#039;.&#039;が含まれているとメソッド名としてダメなので
+            //&#039;_&#039;に置換
+            name = name.replace(/\./g, &#039;_&#039;);
+        }
+        parent = args.shift();
+
+        return _extend(name, parent, args);
+    };
+
+    /**
+     * `Object.extend = suns.extendThis`
+     * makes Object extendable.
+     * @function
+     * @memberof suns
+     * @param {String} [name=&#039;&#039;] (optional) class name for easy-debug.
+     * @param {Object} childProto prototype object as a child
+     * @param {Object} [childProto] (optional) multiple children can be specified.
+     * @return {Object}
+     * @example
+     * var FooClass = function FooClass() {
+     * };
+     * FooClass.prototype = {
+     *     func1: function func1() {}
+     * };
+     * FooClass.extend = suns.extendThis;
+     *
+     * // OK
+     * var Child = FooClass.extend({
+     *     childFunc: function childFunc() {}
+     * });
+     * // same as
+     * Child = suns.extend(FooClass, {
+     *     childFunc: function childFunc() {}
+     * });
+     */
+    var extendThis = function extendThis(/** name, */ childProto /**, childProto */) {
+        var parent = this;
+
+        var args = Array.prototype.slice.apply(arguments);
+        var newArgs = [];
+        if (typeof args[0] === &#039;string&#039;) {
+            newArgs.push(args.shift()); // name
+        }
+        newArgs.push(parent);
+        newArgs = newArgs.concat(args);
+        return extend.apply(this, newArgs);
+    };
+
+    /**
+     * mixin from parent with a child&#039;s prototype object or constructor
+     * @param {String} [name]
+     * @param {Function} parent
+     * @param {Object} childProto
+     */
+    var _mixOne = function _mixOne(name, parent, childCtorOrProto) {
+
+        // The constructor function for the new subclass is either defined by you
+        // (the &quot;constructor&quot; property in your `extend` definition), or defaulted
+        // by us to simply call the parent&#039;s constructor.
+
+        var child, childProto;
+
+        var typeOfChild = typeof childCtorOrProto;
+        if (typeOfChild === &#039;function&#039;) {
+            childProto = childCtorOrProto.prototype;
+        } else if (typeOfChild === &#039;object&#039;) {
+            childProto = childCtorOrProto;
+        } else {
+            throw new Error(&#039;typeof childCtorOrProto invalid. it should be Function or Object.&#039;);
+        }
+
+        if (typeOfChild === &#039;function&#039;) {
+            // if child is constructor function,
+            // wrap child constructor to call
+            // both parent&#039;s constructor and child constructor.
+            child = new Function(&#039;parent, childCtor&#039;, &#039;return function &#039; + name + &#039;(){ parent.apply(this, arguments); childCtor.apply(this, arguments)};&#039;)(parent, childCtorOrProto);
+        } else if (childProto &amp;&amp; Object.prototype.hasOwnProperty.call(childProto, &#039;constructor&#039;)) {
+            child = childProto.constructor;
+        } else {
+            child = new Function(&#039;parent&#039;, &#039;return function &#039; + name + &#039;(){ parent.apply(this, arguments); };&#039;)(parent);
+        }
+
+        // Add static properties
+        copyProps(child, parent);
+
+        var Surrogate = function () { this.constructor = child; };
+        Surrogate.prototype = parent.prototype;
+        child.prototype = new Surrogate;
+
+        if (childProto) {
+            copyProps(child.prototype, childProto);
+        }
+
+        for (var prop in parent) {
+            if (superProp_reg.test(prop)) {
+                var superProp = prop.replace(&#039;super&#039;, &#039;supersuper&#039;);
+                child[superProp] = parent[prop];
+            }
+        }
+        child.__super__ = parent.prototype;
+        child.__superCtor__ = parent;
+
+        return child;
+    };
+
+
+    /**
+     * mix multiple children.
+     * @param {String} name
+     * @param {Function} parent
+     * @param {Array&lt;Object&gt;} children
+     */
+    var _mixin = function _mixin(name, parent, children) {
+
+        if (children.length &lt; 1) {
+            // end of recursion
+            return parent;
+        }
+
+        // get first childProto
+        var childProto = children.shift();
+        var child = _mixOne(name, parent, childProto);
+
+        // extend recursively
+        return _mixin(name, child, children);
+    };
+
+
+    /**
+     * define prototype chain properly and
+     * create new object that extends parent object.
+     * if constructor function specified as a child,
+     * parent&#039;s constructor is called automatically
+     * before child&#039;s constructor called.
+     * @function
+     * @memberof suns
+     * @param {String} [name=&#039;&#039;] (optional) class name for easy-debug.
+     * @param {Function} parent function as a parent
+     * @param {Object|Function} child prototype object or constructor as a child
+     * @param {Object|Function} [child] (optional) multiple children can be specified.
+     * @return {Object}
+     * @example
+     * var Parent = function Parent() {};
+     * var Child = extend(
+     *     &#039;Child&#039;,
+     *     Parent,
+     *     {
+     *         constructor: function Child() {
+     *             Child.__super__.constructor.apply(this, arguments);
+     *         }
+     *     }
+     * );
+     */
+    var mixin = function mixin(/** name, */ parent, child /** child... */) {
+
+        var name = &#039;&#039;;
+        var args = Array.prototype.slice.apply(arguments);
+        if (typeof args[0] === &#039;string&#039;) {
+            name = args.shift();
+            //&#039;.&#039;が含まれているとメソッド名としてダメなので
+            //&#039;_&#039;に置換
+            name = name.replace(/\./g, &#039;_&#039;);
+        }
+        parent = args.shift();
+
+        return _mixin(name, parent, args);
+    };
+
+    /**
+     * suns object
+     * @namespace suns
+     */
+    var suns = {
+        /**
+         * @borrows extend as extend
+         */
+        extend: extend,
+
+        /**
+         * @borrows extendThis as extendThis
+         */
+        extendThis: extendThis,
+
+        /**
+         * @borrows mixin as mixin
+         */
+        mixin: mixin,
+
+        /**
+         * version
+         * @static
+         */
+        VERSION: &#039;0.4.6&#039;
+    };
+
+    if (typeof define === &#039;function&#039; &amp;&amp; define.amd) {
+        // requirejs
+        define(function (require, exports, module) {
+            return suns;
+        });
+    } else if (typeof module !== &#039;undefined&#039; &amp;&amp; module.exports) {
+        // node
+        module.exports = suns;
+    } else {
+        // others, export global
+        global.suns = suns;
+    }
+
+})(this);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

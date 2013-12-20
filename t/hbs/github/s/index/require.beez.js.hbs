@@ -1,0 +1,22 @@
+// beez generate.
+requirejs.config({{ config }});
+
+/**
+ * Entry-point the process
+ */
+require(['beez'], function (beez, Controller) {
+    beez.manager.setup();
+    beez.i18n.setup();
+
+    require(['{{entrypoint}}'], function (Controller) {
+
+        beez.manager.c.async().create('index', Controller).then(function (controller) {
+            controller.setup(function () {
+                var mr = beez.manager.r.setup();
+                beez.history.start();
+
+                controller.index(); // start!!!
+            });
+        }).end();
+    });
+});

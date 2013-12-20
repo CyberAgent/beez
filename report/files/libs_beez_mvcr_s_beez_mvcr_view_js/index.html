@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>libs/beez-mvcr/s/beez-mvcr/view.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">70.99</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">959</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">71.69</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">4.40</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/**
+ * @fileOverview View
+ * @name view.js&lt;beez-mvcr&gt;
+ * @author Kei Funagayama &lt;funagayama_kei@cyberagent.co.jp&gt;
+ */
+
+(function (global) {
+    define(function __View__(require, exports, module) {
+        &#039;use strict&#039;;
+
+        var beez = require(&#039;beez.core&#039;);
+
+        var _ = beez.vendor._;
+        var Backbone = require(&#039;backbone&#039;);
+
+        var base = require(&#039;beez-mvcr/base&#039;);
+        var Base = base.Base;
+        var ManagerBase = base.ManagerBase;
+
+        var logger = beez.getLogger(&#039;beez.mvcr.view&#039;);
+
+
+        /**
+         * View management class, asynchronous
+         *
+         * @class
+         * @name Creator
+         * @extends {Bucks}
+         */
+        var ViewManagerAsync = beez.Bucks.extend(
+            &#039;beez.mvcr.ViewManagerAsync&#039;,
+            {
+                initialize: function initialize(manager) {
+                    this.manager = manager;
+                },
+
+                /**
+                 * set root
+                 *
+                 * @memberof ViewManagerAsync
+                 * @instance
+                 * @param {View} root vidx is &#039;@&#039; must
+                 * @return {ViewManagerAsync}
+                 */
+                root: function root(root) {
+                    var self = this;
+                    return this.then(function () {
+                        return self.manager.root(root);
+                    });
+                },
+
+                /**
+                 * Generate View.
+                 *
+                 * @memberof ViewManagerAsync
+                 * @instance
+                 * @param {String} prefix parent prefix
+                 * @param {View|Array&lt;View&gt;} View Generate View object(s).
+                 * @param {Object} [options] Argument of the View object.
+                 * @return {ViewManagerAsync}
+                 */
+                create: function create(prefix, View, options) {
+                    var self = this;
+                    return this.then(function () {
+                        var v =  self.manager.create(prefix, View, options);
+                        var current = _.isArray(v) ? v[0] : v;
+                        return current;
+                    });
+                },
+
+                /**
+                 * View is generated as a child of the View object generated before the chain.
+                 *
+                 * @memberof ViewManagerAsync
+                 * @instance
+                 * @param {View|Array&lt;View&gt;} View Generate View object.
+                 * @param {Object} [options] Argument of the View object.
+                 * @return {ViewManagerAsync}
+                 */
+                child: function child(View, options) {
+                    var self = this;
+                    return this.then(function (current) {
+                        var prefix = self.manager.pathOf(current);
+                        var v = self.manager.create(prefix, View, options);
+                        current = _.isArray(v) ? v[0] : v;
+                        return current;
+                    });
+                },
+
+                /**
+                 * Get the parent View.
+                 *
+                 * @memberof ViewManagerAsync
+                 * @instance
+                 * @return {ViewManagerAsync}
+                 */
+                parent: function parent() {
+                    var self = this;
+                    return this.then(function (current) {
+                        var parent = self.manager.getParent(current);
+                        if (parent) {
+                            throw new beez.Error(&#039;get parent failed. current: &#039; + current);
+                        }
+                        current = parent;
+                        return current;
+                    });
+                },
+
+                /**
+                 * The child and its brother of the parents of View.
+                 *
+                 * @memberof ViewManagerAsync
+                 * @instance
+                 * @param {object} [options] Argument of the View object.
+                 * @return {Creator}
+                 */
+                bro: function bro(brother, options) {
+                    return this.parent().child(brother, options);
+                },
+
+                /**
+                 * Disposes of the instance
+                 *
+                 * @memberof ViewManagerAsync
+                 * @override called when this chain ended
+                 */
+                dispose: function dispose() {
+                    logger.trace(this.constructor.name, &#039;dispose&#039;);
+                    delete this.manager;
+                    delete this.current;
+                    delete this.root;
+                }
+            }
+        );
+
+        /**
+         * ViewManager Class
+         *
+         * @class
+         * @name ViewManager
+         */
+        var ViewManager = beez.extend(
+            &#039;beez.mvcr.ViewManager&#039;,
+            ManagerBase,
+            {
+
+                /**
+                 * Constructor
+                 *
+                 * @memberof ViewManager
+                 * @instance
+                 */
+                initialize: function initialize() {
+                    ViewManager.__super__.initialize.apply(this, arguments);
+                },
+
+                /**
+                 * Generating ViewManagerAsync
+                 *
+                 * @memberof ViewManager
+                 * @instance
+                 * @return {ViewManagerAsync}
+                 */
+                async: function async() {
+                    return new ViewManagerAsync(this);
+                },
+
+                /**
+                 * Set the Root View
+                 *
+                 * @memberof ViewManager
+                 * @instance
+                 * @param {View} RootView vidx is &#039;@&#039; must
+                 * @return {View}
+                 */
+                root: function root(RootView) {
+                    this.add(&#039;/&#039;, new function DummyRootView() { this.vidx = &#039;@&#039;; });
+                    var rootView = new RootView(this);
+                    var rootChildren = this.getChildren(this.get(&quot;/@&quot;)); // save
+                    this.remove(&#039;/@&#039;);
+
+                    var root = this.get(&#039;/@&#039;);
+                    if (root) {
+                        throw new beez.Error(&#039;root already exists!&#039;);
+                    }
+
+                    if (rootView.vidx !== &#039;@&#039;) {
+                        throw new beez.Error(&#039;roots vidx must be &quot;@&quot;&#039;);
+                    }
+
+                    this.add(&#039;/&#039;, rootView);
+
+                    // re-save
+                    for (var i = 0; i &lt; rootChildren.length; i++) {
+                        this.add(&#039;/@&#039;, rootChildren[i]);
+                    }
+
+                    return rootView;
+                },
+
+
+                /**
+                 * Generate View.
+                 *
+                 * @memberof ViewManager
+                 * @instance
+                 * @param {String} prefix parent prefix
+                 * @param {View|Array&lt;View&gt;} View Generate View object(s).
+                 * @param {Object} [options] Argument of the View object.
+                 * @return {Array}
+                 */
+                create: function create(prefix, View, options) {
+                    if (!View || (!_.isArray(View) &amp;&amp; typeof View !== &#039;function&#039;)) {
+                        throw new beez.Error(&#039;View does not exist / does not be funciton. Specified prefix: &#039; + prefix);
+                    }
+
+                    if (!prefix) {
+                        throw new beez.Error(&#039;No prefix specified. Creating:&#039; + View.name);
+                    }
+
+                    if (prefix.indexOf(&#039;/@&#039;) &lt; 0) {
+                        throw new beez.Error(&#039;prefix must started by &quot;/@&quot;. Creating:&#039; + View.name);
+                    }
+
+                    if (!this.get(prefix)) { // no parent
+                        throw new beez.Error(&#039;no parent exists. prefix: &#039; + prefix + &#039; ,  Please consider constructing view in Controller, or in #beforeOnce and so on.&#039;);
+                    }
+
+
+                    if (_.isArray(View)) {
+                        return this._createArray(prefix, View, options);
+                    }
+
+                    return this._createObj(prefix, View, options);
+                },
+
+                /**
+                 * Generate View(Object).
+                 *
+                 * @memberof ViewManager
+                 * @instance
+                 * @private
+                 */
+                _createObj: function _createObj(prefix, View, options) {
+                    var v = new View(this, options);
+                    if (!this.isAddable(v)) {
+                        throw new beez.Error(&#039;index does not exists in the View. :&#039; + v);
+                    }
+                    this.add(prefix, v);
+                    return v;
+                },
+
+
+                /**
+                 * Generate View(Array).
+                 *
+                 * @memberof ViewManager
+                 * @instance
+                 * @private
+                 */
+                _createArray: function _createArray(prefix, Views, options) {
+                    var self = this;
+                    // forced array
+                    if (options &amp;&amp; !_.isArray(options)) {
+                        options = [options];
+                    }
+
+                    var instances = [];
+                    _.each(Views, function (C, idx) {  // new
+                        var params = options ? options[idx] : undefined;
+                        var v = new C(self, params);
+                        instances.push(v);
+                    });
+
+                    _.each(instances, function (view) { // check
+                        if (!this.isAddable(view)) {
+                            throw new beez.Error(&#039;index does not exists in the View. :&#039; + view);
+                        }
+                    }, this);
+
+                    this.add(prefix, instances);
+                    return instances;
+                },
+
+                /**
+                 * remove
+                 *
+                 * @name remove
+                 * @memberof ViewManager
+                 * @instance
+                 * @param {String} path
+                 */
+                remove: function remove(path) {
+                    ViewManager.__super__.remove.apply(this, arguments);
+                },
+
+                /**
+                 * Dispose view and self from management.
+                 *
+                 * @memberof ViewManager
+                 * @instance
+                 */
+                dispose: function dispose() {
+                    logger.trace(this.constructor.name, &#039;dispose&#039;);
+
+                    var managedChildren = this.getChildrenAll(this.objs);
+
+                    _.each(managedChildren, function (key) {
+                        key.dispose();
+                    });
+
+                    ViewManager.__super__.dispose.apply(this, arguments);
+                }
+            }
+        );
+
+        // -------------------
+        // View
+
+        /**
+         * View class Asynchronous
+         *
+         * @class
+         * @name ViewAsync
+         * @extends {Bucks}
+         * @private
+         */
+        var ViewAsync = beez.Bucks.extend(
+            &#039;beez.mvcr.ViewAsync&#039;,
+            {
+
+                /**
+                 * @memberof ViewAsync
+                 * @param {View} root Root View
+                 */
+                initialize: function initialize(root) {
+                    this._root = root;
+                },
+
+                /**
+                 * Processing is performed by the flow of [beforeOnce -&gt; before -&gt; render -&gt; after -&gt; afterOnce].
+                 *
+                 * @memberof Renderer
+                 * @instance
+                 * @param {BeezView} view
+                 * @param {boolen} [renderChildren=true]
+                 */
+                _render: function _render(view) {
+
+                    // start with view
+                    this.then(function () {
+                        return view;
+                    });
+
+                    if (!view.state.isBeforeOnce) { // check flag
+                        // call beforeOnce
+                        this.then(function beforeOnce(view, next) {
+                            if (!view.visible) {
+                                logger.debug(&#039;view&#039;, view.vidx, &#039;is not visible. skip `beforeOnce`.&#039;);
+                                next(null, view); // skip
+                                return;
+                            }
+
+                            // if `beforeOnce` have `done` as a param
+                            if (view.beforeOnce.length) {
+                                view.beforeOnce(function wrappedDone() {
+                                    view.state.isBeforeOnce = true;
+                                    next(null, view);
+                                });
+                                return;
+                            }
+
+                            // else exec as sync
+                            view.beforeOnce();
+                            view.state.isBeforeOnce = true;
+                            next(null, view);
+                        });
+                    }
+
+
+                    // call before
+                    this.then(function before(view, next) {
+                        if (!view.visible) {
+                            logger.debug(&#039;view&#039;, view.vidx, &#039;is not visible. skip `before`.&#039;);
+                            next(null, view); // skip
+                            return;
+                        }
+
+                        // if `before` have `done` as a param
+                        if (view.before.length) {
+                            view.before(function wrappedDone() {
+                                next(null, view);
+                            });
+                            return;
+                        }
+                        // else exec as sync
+                        view.before();
+                        next(null, view);
+
+                    });
+
+
+                    // call render
+                    this.then(function render(view, next) {
+                        if (!view.visible) {
+                            logger.debug(&#039;view&#039;, view.vidx, &#039;is not visible. skip `render`.&#039;);
+                            next(null, view); // skil
+                            return;
+                        }
+
+                        // if `render` have `done` as a param
+                        if (view.render.length) {
+                            view.render(function wrappedDone() {
+                                next(null, view);
+                            });
+                            return;
+                        }
+
+                        // else exec as sync
+                        view.render();
+                        next(null, view);
+                        return;
+                    });
+
+                    // call after
+                    this.then(function after(view, next) {
+                        if (!view.visible) {
+                            logger.debug(&#039;view&#039;, view.vidx, &#039;is not visible. skip `after`.&#039;);
+                            next(null, view); // skip
+                            return;
+                        }
+
+                        // if `afterOnce` have `done` as a param
+                        if (view.after.length) {
+                            view.after(function wrappedDone() {
+                                next(null, view);
+                            });
+                            return;
+                        }
+
+                        // else exec as sync
+                        view.after();
+                        next(null, view);
+                        return;
+                    });
+
+                    if (!view.state.isAfterOnce) { // check flag
+
+                        // call afterOnce
+                        this.then(function afterOnce(view, next) {
+                            if (!view.visible) {
+                                logger.debug(&#039;view&#039;, view.vidx, &#039;is not visible. skip `afterOnce`.&#039;);
+                                next(null, view); // skip
+                                return;
+                            }
+
+                            // if `afterOnce` have `done` as a param
+                            if (view.afterOnce.length) {
+                                view.afterOnce(function wrappedDone() {
+                                    view.state.isAfterOnce = true;
+                                    next(null, view);
+                                });
+
+                                return;
+                            }
+
+                            // else exec as sync
+                            view.afterOnce();
+                            view.state.isAfterOnce = true;
+                            next(null, view);
+                            return;
+                        });
+                    }
+
+                    return this;
+                },
+
+
+                /**
+                 * Delete the View.
+                 *
+                 * @memberof ViewAsync
+                 * @instance
+                 * @param {View} view
+                 * @return {View}
+                 */
+                _remove: function _remove(view) {
+
+                    return this.then(function () {
+                        view.remove();
+                        return view;
+                    });
+                },
+
+
+                /**
+                 * Handles the rendering of the View.
+                 * Child elements are rendered.
+                 *
+                 * visible=false : Skip the rendering, including the child elements.
+                 * showChildren=false : Only the specified view is rendered, child elements are not rendered.
+                 *
+                 * @memberof ViewAsync
+                 * @instance
+                 * @public
+                 * @param {boolean} [showChildren=false] if not show children, set false
+                 * @return {ViewAsync}
+                 * @throws {beez.Error} render root is not set
+                 */
+                show: function show(showChildren) {
+                    if (!this._root) {
+                        throw new beez.Error(&#039;render root is not set. initialize renderer with root view parameter.&#039;);
+                    }
+                    return this._show(this._root, showChildren);
+                },
+
+
+                /**
+                 * Handles the rendering of the View.
+                 * Child elements are rendered.
+                 *
+                 * visible=false : Skip the rendering, including the child elements.
+                 * showChildren=false : Only the specified view is rendered, child elements are not rendered.
+                 *
+                 *
+                 * @memberof ViewAsync
+                 * @instance
+                 * @private
+                 * @param {View} view view to show
+                 * @param {boolean} [showChildren=false] if not show children, set false
+                 * @return {ViewAsync}
+                 */
+                _show: function _show(view, showChildren) {
+
+                    if (showChildren === undefined) {
+                        showChildren = true;
+                    }
+
+                    var self = this;
+                    if (!_.isArray(view)) {
+                        logger.debug(&#039;showing&#039;, view.vidx);
+                        this._render(view, showChildren); // case of single view
+                    } else {
+                        if (_.isEmpty(view)) { return this; }
+
+                        // sort order property
+                        view.sort(function (a, b) {
+                            if (a.order &lt; b.order) {
+                                return -1;
+                            }
+                            if (a.order &gt; b.order) {
+                                return 1;
+                            }
+
+                            return 0;
+                        });
+
+                        // create render tasks
+                        var tasks = _.map(
+                            view,
+                            function makeTask(v) {
+                                return function task(err, res, next) {
+                                    if (err) { throw err; }
+                                    new ViewAsync()
+                                        ._show(v, showChildren)
+                                        .end(function (e, r) {
+                                            next(e, undefined);
+                                        });
+                                };
+                            }
+                        );
+                        this.waterfall(tasks);
+
+                    }
+
+                    if (showChildren) {
+                        this.then(function renderC(view, next) {
+                            if (!view) { return next(null, view); }
+
+                            var children = view.getChildren();
+                            if (_.isEmpty(children)) {
+                                return next(null, view);
+                            } else {
+                                return new ViewAsync()
+                                    ._show(children, showChildren)
+                                    .end(next);
+                            }
+                        });
+                    }
+
+                    return this;
+                },
+
+
+                /**
+                 * Handles the rendering of the View.
+                 * Child elements are rendered.
+                 *
+                 * want to hide the View. And hide also to the child element
+                 * hideChildren=false: Child element is not hidden.
+                 *
+                 * @memberof ViewAsync
+                 * @instance
+                 * @private
+                 * @param {View} view view to hide
+                 * @param {boolean} [hideChildren=true] if set false, children not be removed
+                 * @return {ViewAsync}
+                 */
+                hide: function hide(hideChildren) {
+                    if (!this._root) {
+                        throw new beez.Error(&#039;render root is not set. initialize renderer with root view parameter.&#039;);
+                    }
+                    return this._hide(this._root, hideChildren);
+                },
+
+
+                /**
+                 * Handles the rendering of the View.
+                 * Child elements are rendered.
+                 *
+                 * want to hide the View. And hide also to the child element
+                 * hideChildren=false: Child element is not hidden.
+                 *
+                 * @memberof ViewAsync
+                 * @instance
+                 * @private
+                 * @param {View} view view to hide
+                 * @param {boolean} [hideChildren=true] if set false, children not be removed
+                 * @return {ViewAsync}
+                 */
+                _hide: function _hide(view, hideChildren) {
+
+                    if (hideChildren === undefined) {
+                        hideChildren = true;
+                    }
+
+                    var self = this;
+                    if (!_.isArray(view)) { // case of single view
+                        logger.debug(&#039;hiding&#039;, view.vidx);
+                        this._remove(view);
+
+                    } else { // create render tasks
+                        var tasks = _.map(
+                            view,
+                            function makeTask(v) {
+                                return function task(err, res, next) {
+                                    if (err) { throw err; }
+                                    new ViewAsync()
+                                        ._hide(v, hideChildren)
+                                        .end(function (err, ress) {
+                                            next(err, undefined);
+                                        });
+                                };
+                            }
+                        );
+                        this.waterfall(tasks);
+                    }
+
+                    if (hideChildren) {
+                        this.then(function hideC(view, next) {
+                            if (!view) { return next(null, view); }
+                            var children = view.getChildren();
+                            if (_.isEmpty(children)) {
+                                return next(null, view);
+                            } else {
+                                return new ViewAsync()
+                                    ._hide(children, hideChildren)
+                                    .end(next);
+                            }
+                        });
+                    }
+
+                    return this;
+                },
+
+                /**
+                 * Disposes of the instance
+                 *
+                 * @memberof ViewAsync
+                 * @instance
+                 */
+                dispose: function dispopse() {
+                    logger.trace(this.constructor.name, &#039;dispose&#039;);
+                    delete this._root;
+                }
+
+            }
+        );
+
+        /**
+         * View class
+         *
+         * @namespace beez.mvcr
+         * @class
+         * @name View
+         * @extends {Backbone.View}
+         * @see Backbone.View
+         */
+        var View = beez.extend(
+            &#039;beez.mvcr.View&#039;,
+            Base,
+            Backbone.View.prototype,
+            {
+
+                /**
+                 * Constructor
+                 *
+                 * @memberof View
+                 */
+                constructor: function constructor() {
+                    if (arguments.length &lt; 1) {
+                        throw new beez.Error(&#039;In order to create a View, requires one arguments.&#039;);
+                    }
+                    this.manager = arguments[0];
+
+                    /**
+                     * Management flag
+                     * @memberof View
+                     */
+                    this.state = {
+                        isBeforeOnce: false,
+                        isAfterOnce: false
+                    };
+
+                    /**
+                     * Skip rendering flag
+                     *
+                     * @memberof View
+                     * @instance
+                     * @property visible
+                     * @type {boolean}
+                     */
+                    this.visible = true;
+
+                    View.__super__.constructor.apply(this, Array.prototype.slice.call(arguments, 1));
+                },
+
+                /**
+                 * call initialize method
+                 *
+                 * @memberof View
+                 * @name initialize
+                 * @override Backbone.View.initialize()
+                 */
+                initialize: function initialize() {
+                    // call Backbone.View.initialize()
+                    View.__super__.initialize.apply(this, arguments);
+                },
+                /**
+                 * Index for View management.
+                 *
+                 * @memberof View
+                 * @instance
+                 * @property vidx
+                 */
+                vidx: undefined, // View Index key
+
+                /**
+                 * HTMLElement
+                 * @see Backbone#View
+                 *
+                 * @memberof View
+                 * @instance
+                 * @property el
+                 */
+                el: undefined,
+
+                /**
+                 * The order from the parent View
+                 *
+                 * @memberof View
+                 * @instance
+                 * @property order
+                 */
+                order: 0,
+
+                /**
+                 * The function performed before render is performed when a show function is performed. (only once)
+                 * Until next runs to waiting after that function, to define a next as an argument, to delay the process.
+                 *
+                 * @memberof View
+                 * @instance
+                 * @function
+                 * @param {Function} [next]
+                 * @example
+                 * beforeOnce: function beforeOnce(next) {
+                 *     somethingAsync(function() {
+                 *         next();
+                 *     });
+                 * }
+                 *
+                 */
+                beforeOnce: beez.none,
+
+
+                /**
+                 * The function performed before render is performed when a show function is performed.
+                 * Until next runs to waiting after that function, to define a next as an argument, to delay the process.
+                 *
+                 * @memberof View
+                 * @instance
+                 * @function
+                 * @param {Function} [next]
+                 * @example
+                 * before: function before(next) {
+                 *     somethingAsync(function() {
+                 *         next();
+                 *     });
+                 * }
+                 */
+                before: beez.none,
+
+
+                /**
+                 * Execute after this view have been rendered.
+                 * You can delay processes to give `next` in arugument, then processes made to be delayed untill for call `next`.
+                 *
+                 * @memberof View
+                 * @instance
+                 * @function
+                 * @param {Function} [next]
+                 * @example
+                 * after: function after(next) {
+                 *     somethingAsync(function() {
+                 *         next();
+                 *     });
+                 * }
+                 */
+                after: beez.none,
+
+
+                /**
+                 * Execute once after this view have been rendered.
+                 * You can delay processes to give `next` in arugument, then processes made to be delayed untill for call `next`.
+                 *
+                 * @memberof View
+                 * @instance
+                 * @function
+                 * @param {Function} [next]
+                 * @example
+                 * afterOnce: function afterOnce(next) {
+                 *     somethingAsync(function() {
+                 *         next();
+                 *     });
+                 * }
+                 */
+                afterOnce: beez.none,
+
+                /**
+                 * Generate async class
+                 *
+                 * @memberof View
+                 * @instance
+                 * @return {ViewAsync}
+                 */
+                async: function async() {
+                    return new ViewAsync(this);
+                },
+
+                /**
+                 * Return existence of HTMLElement on DOM tree in this view.
+                 *
+                 * @memberof View
+                 * @instance
+                 * @function
+                 * @return {boolean}
+                 */
+                isRendered: function isRendered() {
+                    return !!this.el &amp;&amp; !!this.el.parentElement;
+                },
+
+                /**
+                 * set visible
+                 *
+                 * @memberof View
+                 *
+                 * @param {boolean} visible
+                 * @throw {Error} typeof visible invalid. should be boolean
+                 * @return {View} this
+                 */
+                setVisible: function setVisible(visible) {
+                    if (typeof visible !== &#039;boolean&#039;) {
+                        throw beez.Error(&#039;typeof visible invalid. should be boolean.&#039;);
+                    }
+                    this.visible = visible;
+                    return this;
+                },
+
+
+                /**
+                 * Disposes of the instance and remove HTMLElement
+                 * and undelegate event on all view.
+                 *
+                 * @memberof View
+                 * @instance
+                 * @override Backbone.View.undelegateEvents
+                 * @return
+                 */
+                dispose: function dispose() {
+                    logger.trace(this.constructor.name, &#039;dispose&#039;);
+
+                    this.remove();
+
+                    // call Backbone.undelegateEvents method
+                    View.__super__.undelegateEvents.apply(this, arguments);
+
+                    delete this.manager;
+                    delete this.state;
+                    delete this.visible;
+                    delete this.cid;
+                    delete this.options;
+                    delete this.$el;
+                    delete this.model;
+                    delete this.collection;
+                    delete this.el;
+                    // delete this.id;
+                    delete this.attributes;
+                    delete this.className;
+                    delete this.tagName;
+                    // delete this.events;
+
+                    // call Base.dispose()
+                    // View.__super__.dispose.call(this);
+                },
+                /**
+                 * Remove HTMLElement.
+                 *
+                 * @memberof View
+                 * @function
+                 * @override Backbone.View.remove
+                 * @return
+                 */
+                remove: function remove() {
+                    // call Backbone.remove
+                    View.__super__.remove.apply(this, arguments);
+                }
+            }
+        );
+
+
+        /**
+         * @memberof View
+         * @function
+         * @param {String} [name]
+         * @param {Object} childProto
+         * @borrows beez.extendThis as extend
+         * @example
+         * var MyView = View.extend(
+         *     &#039;myapp.MyView&#039;,
+         *     {
+         *         vidx: &#039;foo&#039;,
+         *         bar: function bar() {}
+         *     }
+         * );
+         */
+        View.extend = beez.extendThis;
+
+        return {
+            View: View,
+            ViewAsync: ViewAsync,
+            ViewManager: ViewManager,
+            ViewManagerAsync: ViewManagerAsync
+        };
+    });
+})(this);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

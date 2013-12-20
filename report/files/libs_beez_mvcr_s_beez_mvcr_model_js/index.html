@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>libs/beez-mvcr/s/beez-mvcr/model.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">70.13</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">1224</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">104.09</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">7.33</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/**
+ * @fileOverview Model
+ * @name model.js&lt;beez-mvcr&gt;
+ * @author Kazuma Mishimagi &lt;mishimagi_kazuma@cyberagent.co.jp&gt;
+ * @overview Model management functions
+ */
+
+(function (global) {
+
+    /**
+     * Model module
+     * @exports beez-mvcr/model
+     */
+    define(function (require, exports, module) {
+        &#039;use strict&#039;;
+
+        var beez = require(&#039;beez.core&#039;);
+        var _ = beez.vendor._;
+        var Backbone = require(&#039;backbone&#039;);
+        var $ = beez.vendor.$;
+
+        var base = require(&#039;beez-mvcr/base&#039;);
+        var Base = base.Base;
+        var ManagerBase = base.ManagerBase;
+
+        var logger = beez.getLogger(&#039;beez.mvcr.model&#039;);
+
+        // -------------------
+        // ModelManagerAsync
+
+        /**
+         * Model management class. asynchronous
+         *
+         * @class
+         * @name ModelManagerAsync
+         * @extends {Bucks}
+         */
+        var ModelManagerAsync = beez.Bucks.extend(
+            &#039;beez.mvcr.ModelManagerAsync&#039;,
+            {
+                initialize: function initialize(manager) {
+                    this.manager = manager;
+                    this.current = undefined;
+                    this.root = undefined;
+                },
+
+                /**
+                 * set root
+                 *
+                 * @memberof ModelManagerAsync
+                 * @instance
+                 * @return {ModelManagerAsync}
+                 */
+                //root: function root(RootView) {
+                //var self = this;
+                //    return this.then(function () {
+                //        return self.manager.root(RootView);
+                //    });
+                //},
+
+                /**
+                 * Generate Model.
+                 *
+                 * @memberof ModelManagerAsync
+                 * @instance
+                 * @param {String} prefix
+                 * @param {Model|Array&lt;Model&gt;} Model Generate model object.
+                 * @param {Object|Array&lt;Object&gt;} [attributes] Model to generate a attributes
+                 * @param {Object|Array&lt;Object&gt;} [options] Model to generate a options
+                 * @return {ModelManagerAsync}
+                 */
+                create: function create(prefix, Model, attributes, options) {
+                    var self = this;
+                    return this.then(function () {
+                        var v = self.manager.create(prefix, Model, attributes, options);
+                        self.root = self.current = v;
+                        self.create = function create_twice() {
+                            throw new beez.Error(&#039;create called more than once!&#039;);
+                        };
+                        return v;
+                    });
+                },
+
+                /**
+                 * Generate collection.
+                 *
+                 * @memberof ModelManagerAsync
+                 * @instance
+                 * @param {String} prefix
+                 * @param {Collection|Array&lt;Model&gt;} Collection Generate collection object.
+                 * @param {Array&lt;Object&gt;} models Model(s)
+                 * @param {Object|Array&lt;Object&gt;} options Collection to generate a options
+                 * @return {ModelManagerAsync}
+                 */
+                createCollection: function createCollection(prefix, Collection, models, options) {
+                    var self = this;
+                    return this.then(function () {
+                        var c = self.manager.createCollection(prefix, Collection, models, options);
+                        self.root = self.current = c;
+                        self.createCollection = function createCollection_twice() {
+                            throw new beez.Error(&#039;create called more than once!&#039;);
+                        };
+                        return c;
+                    });
+                },
+
+                /**
+                 * Get the child Model
+                 *
+                 * @memberof ModelManagerAsync
+                 * @instance
+                 * @param {Model|Array&lt;Model&gt;} Model Generate model object.
+                 * @param {Object|Array&lt;Object&gt;} [attributes] Model to generate a attributes
+                 * @param {Object|Array&lt;Object&gt;} [options] Model to generate a options
+                 * @return {ModelManagerAsync}
+                 */
+                child: function child(Model, attributes, options) {
+                    var self = this;
+                    return this.then(function () {
+                        if (!self.root) {
+                            throw new beez.Error(&#039;No chain root exists. `create` first.&#039;);
+                        }
+                        var prefix = self.manager.pathOf(self.current);
+                        var v = self.manager.create(prefix, Model, attributes, options);
+                        self.current = _.isArray(v) ? v[0] : v;
+                    });
+                },
+
+                /**
+                 * I acquire a parent of Model.
+                 *
+                 * @memberof ModelManagerAsync
+                 * @instance
+                 * @return {ModelManagerAsync}
+                 */
+                parent: function parent() {
+                    var self = this;
+                    return this.then(function () {
+                        self.current = self.manager.getParent(self.current);
+                        if (!self.current) {
+                            throw new beez.Error(&#039;get parent failed&#039;);
+                        }
+                    });
+                },
+
+
+                /**
+                 * The child and its brother of the parents of Model.
+                 *
+                 * @memberof ModelManagerAsync
+                 * @instance
+                 * @param {Model|Array&lt;Model&gt;} brother object.
+                 * @param {Object|Array&lt;Object&gt;} [attributes] constructor a attributes
+                 * @param {Object|Array&lt;Object&gt;} [options] constructor a options
+                 * @return {ModelManagerAsync}
+                 */
+                bro: function bro(brother, attributes, options) {
+                    return this.parent().child(brother, attributes, options);
+                },
+
+
+                /**
+                 * Disposes of the instance
+                 *
+                 * @override
+                 * @memberof ModelManagerAsync
+                 */
+                dispose: function dispose() {
+                    logger.trace(this.constructor.name, &#039;dispose&#039;);
+                    delete this.manager;
+                    delete this.current;
+                    if (this.root &amp;&amp; this.root.dispose) {
+                        this.root.dispose();
+                    }
+                    delete this.root;
+                }
+            }
+        );
+
+
+        // -------------------
+        // ModelManager
+
+        /**
+         * ModelManager Class
+         *
+         * @class
+         * @name ModelManager
+         */
+        var ModelManager = beez.extend(
+            &#039;beez.mvcr.ModelManager&#039;,
+            ManagerBase,
+            {
+                /**
+                 * Constructor
+                 *
+                 * @memberof ModelManager
+                 */
+                initialize: function initialize() {
+                    var self = this;
+
+                    ModelManager.__super__.initialize.apply(this, arguments);
+
+                    // Set the default implementation of `Backbone.ajax` to proxy through to `$`.
+                    // Override this if you&#039;d like to use a different library.
+                    //beez.vendor.Backbone.ajax = this.ajax;
+
+                    this._sync = beez.vendor.Backbone.sync;
+                    beez.vendor.Backbone.sync = function sync(method, model, options) {
+                        var configAjax = beez.config.ajax || {};
+                        _.defaults(options || (options = {}), configAjax, {
+                            dataType: &#039;json&#039;,
+                            contentType: &#039;application/json&#039;,
+                            emulateHTTP: false,
+                            emulateJSON: false
+                        });
+                        self._sync.apply(this, arguments);
+                    };
+                },
+
+                /**
+                 * Generating ModelManagerAsync
+                 *
+                 * @memberof ModelManager
+                 * @instance
+                 * @return {ModelManagerAsync}
+                 */
+                async: function async() {
+                    return new ModelManagerAsync(this);
+                },
+
+                /**
+                 * Set the Root Model
+                 *
+                 * @memberof ModelManager
+                 * @param {Model} RootModel
+                 * @return {Model}
+                 */
+                root: function root(RootModel) {
+                    var rootModel = new RootModel(this);
+                    var root = this.get(&#039;/@&#039;);
+                    if (root) {
+                        throw new beez.Error(&#039;root already exists!&#039;);
+                    }
+
+                    if (rootModel.midx !== &#039;@&#039;) {
+                        throw new beez.Error(&#039;roots midx must be &quot;@&quot;&#039;);
+                    }
+                    this.add(&#039;/&#039;, rootModel);
+
+                    return rootModel;
+                },
+
+                /**
+                 * Generate Model. Add a managed object
+                 *
+                 * @memberof ModelManager
+                 * @instance
+                 * @param {String} prefix parent prefix.
+                 * @param {Model|Array&lt;Model&gt;} Model Generate model object(s).
+                 * @param {Object|Array&lt;Object&gt;} [attributes] Model to generate a attributes
+                 * @param {Object|Array&lt;Object&gt;} [options] Model to generate a options
+                 * @return {Model}
+                 */
+                create: function create(prefix, Model, attributes, options) {
+
+                    if (!Model || (!_.isArray(Model) &amp;&amp; typeof Model !== &#039;function&#039;)) {
+                        var msg = &#039;Model does not exist / does not be funciton. &#039; + &#039;Specified prefix: &#039; + prefix;
+                        throw new beez.Error(msg);
+                    }
+
+                    if (Model instanceof Collection) {
+                        throw new beez.Error(&#039;Collection specified.  Use #createCollection instead.&#039;);
+                    }
+
+                    if (!prefix) { // prefix check
+                        throw new beez.Error(&#039;No prefix specified. Creating:&#039; + Model.name);
+                    } else if (prefix.indexOf(&#039;/@&#039;) &lt; 0) {
+                        throw new beez.Error(&#039;prefix must started by &quot;/@&quot;. Creating:&#039; + Model.name);
+                    }
+
+                    if (!this.get(prefix)) { // no parent
+                        throw new beez.Error(&#039;no parent exists. prefix: &#039; + prefix + &#039; ,  Please consider constructing in Controller and so on.&#039;);
+                    }
+
+                    if (_.isArray(Model)) {
+                        return this._createArray(prefix, Model, attributes, options);
+                    }
+
+                    return this._createObj(prefix, Model, attributes, options);
+                },
+
+                _createObj: function _createObj(prefix, Model, attribute, option) {
+                    var m = new Model(attribute, option, this);
+
+                    if (!this.isAddable(m)) {
+                        throw new beez.Error(&#039;index does not exists in the Model. :&#039; + m);
+                    }
+                    this.add(prefix, m);
+
+                    return m;
+                },
+
+                _createArray: function _createArray(prefix, Models, attributes, options) {
+                    // make to array when params aren&#039;t array
+                    if (attributes &amp;&amp; !_.isArray(attributes)) {
+                        attributes = [attributes];
+                    }
+
+                    if (options &amp;&amp; !_.isArray(options)) {
+                        options = [options];
+                    }
+                    var self = this;
+                    var instances = [];
+                    _.each(Models, function (C, idx) {
+                        var attr = attributes ? attributes[idx] : undefined;
+                        var opt = options ? options[idx] : undefined;
+                        instances.push(new C(attr, opt, self));
+                    });
+
+                    _.each(instances, function (model) {
+                        if (!this.isAddable(model)) {
+                            throw new beez.Error(&#039;index does not exist in the Model. :&#039; + model);
+                        }
+                    }, this);
+
+                    this.add(prefix, instances);
+
+                    return instances;
+                },
+
+                /**
+                 * Generate collection.
+                 *
+                 * @memberof ModelManager
+                 *
+                 * @instance
+                 * @param {String} prefix parent prefix
+                 * @param {Collection} Collection Generate collection object.
+                 * @param {Object} [attributes] Collection to generate a attributes
+                 * @param {Object} [options] Collection to generate a options
+                 * @return {Model}
+                 */
+                createCollection: function createCollection(prefix, Collection, models, options) {
+                    if (!Collection || typeof Collection !== &#039;function&#039;) {
+                        var msg = &#039;Collection does not exist / does not be funciton. &#039; +
+                                &#039;Specified prefix: &#039; + prefix;
+                        throw new beez.Error(msg);
+                    }
+
+                    if (!prefix) { // prefix check
+                        throw new beez.Error(&#039;No prefix specified. Creating:&#039; + Collection.name);
+                    }
+                    if (prefix.indexOf(&#039;/@&#039;) &lt; 0) {
+                        throw new beez.Error(&#039;prefix must started by &quot;/@&quot;. Creating:&#039; + Collection.name);
+                    }
+
+                    var c = new Collection(models, options, this);
+
+                    this.add(prefix, c);
+
+                    return c;
+                },
+
+                _newAll: function _newAll(ctor, attributes, options) {
+
+                    if (!ctor) {
+                        throw new beez.Error(&#039;ctor does not exist.&#039;);
+                    }
+
+                    if (!_.isArray(ctor)) {
+                        ctor = [ctor];
+                    }
+
+                    if (attributes &amp;&amp; !_.isArray(attributes)) {
+                        attributes = [attributes];
+                    }
+
+                    if (options &amp;&amp; !_.isArray(options)) {
+                        options = [options];
+                    }
+
+
+                    var instances = [];
+                    _.each(ctor, function (C, idx) {
+                        var attrs = attributes ? attributes[idx] : undefined;
+                        var opts = options ? options[idx] : undefined;
+                        instances.push(new C(attrs, opts));
+                    });
+
+                    return instances;
+                },
+
+                /**
+                 * _decideBindedModel
+                 *
+                 * @memberof ModelManager
+                 * @instance
+                 * @private
+                 * @param {Object} obj
+                 * @param {Boolean} isCollection
+                 * @return object
+                 */
+                _decideBindedModel: function _decideBindedModel(obj, isCollection) {
+                    var model;
+                    var returnedModel;
+                    var children;
+
+                    if (!isCollection) {
+                        model = obj;
+                        children = [];
+
+                        _.each(model, function (v) {
+                            var c = this.getChildrenAll(v);
+                            children = children.concat(c);
+                        }, this);
+
+                        var candidates = children.concat(model);
+
+                        // remove still binded models
+                        var deletes = _.reject(candidates, function (d) {
+                            return d.isBinded();
+                        });
+
+                        // models in diff still have some bindings
+                        var diff = _.difference(candidates, deletes);
+                        _.each(diff, function (model) {
+                            throw new beez.Error(&#039;a disposing model have some bindings. models cid: &#039; + model.cid);
+                        });
+
+                        returnedModel = deletes;
+                    } else {
+                        returnedModel = obj;
+                    }
+
+                    return returnedModel;
+                },
+                /**
+                 * model or collection specified by path is canceled and it removes from management. delete the descendants.
+                 * If the binding is not removed. If the reference may be state without properly.
+                 *
+                 * @memberof ModelManager
+                 * @instance
+                 * @param {String} path
+                 * @param {Object} options @see backbone.js#Collection.remove()
+                 */
+                remove: function remove(path, options) {
+                    var objs = this.get(path);
+                    if (!objs) {
+                        logger.debug(&#039;Path of unmanaged become subject to deletion, I was skipped. path:&#039;, path);
+                        return this;
+                    }
+
+                    logger.debug(this.constructor.name, &#039;remove. path:&#039;, path);
+
+                    if (objs.isCollection()) {
+                        this._decideBindedModel(objs, true).removeAll &amp;&amp;
+                        this._decideBindedModel(objs, true).removeAll(options);
+
+                        this.deleteFromParent(objs);
+
+                        return this;
+                    }
+
+                    if (objs &amp;&amp; !_.isArray(objs)) {
+                        objs = [objs];
+                    }
+                    // remove refference
+                    _.each(this._decideBindedModel(objs), function (d) {
+                        this.deleteFromParent(d);
+                    }, this);
+
+                    // dispose
+                    _.each(this._decideBindedModel(objs), function (d) {
+                        d.dispose &amp;&amp; d.dispose();
+                    });
+
+                    return this;
+                },
+
+                /**
+                 * Supports asynchronous communication.
+                 *
+                 * @memberof ModelManager
+                 * @instance
+                 * @param {Object} options
+                 */
+                ajax: function ajax(options) {
+                    var method = options.type;
+                    var configAjax = beez.config.ajax || {};
+                    var urlRoot = beez.config.url &amp;&amp; beez.config.url.api;
+                    _.defaults(options || (options = {}), configAjax, {
+                        dataType: &#039;json&#039;,
+                        contentType: &#039;application/json&#039;,
+                        emulateHTTP: false,
+                        emulateJSON: false,
+                        urlRoot: urlRoot || &#039;&#039;
+                    });
+
+                    if (!/^(http|https):\/\//.test(options.url)) {
+                        options.url = options.urlRoot + options.url;
+                    }
+
+                    if (options.data &amp;&amp; options.contentType &amp;&amp;  options.contentType.indexOf(&#039;application/json&#039;) === 0 &amp;&amp; _.isObject(options.data)) {
+                        options.data = JSON.stringify(options.data);
+                    }
+
+                    if (options.emulateJSON) {
+                        options.contentType = &#039;application/x-www-form-urlencoded&#039;;
+                    }
+
+                    if (options.type !== &#039;GET&#039; &amp;&amp; !options.emulateJSON) {
+                        options.processData = false;
+                    }
+
+                    if (options.emulateHTTP &amp;&amp; (method === &#039;PUT&#039; || method === &#039;DELETE&#039; || method === &#039;PATCH&#039;)) {
+                        options.type = &#039;POST&#039;;
+                        if (options.emulateJSON) {
+                            options.data._method = method;
+                        }
+                        var beforeSend = options.beforeSend;
+                        options.beforeSend = function (xhr, settings) {
+                            if (options.emulateHTTP &amp;&amp; (method === &#039;PUT&#039; || method === &#039;DELETE&#039; || method === &#039;PATCH&#039;)) {
+                                settings.headers[&#039;X-HTTP-Method-Override&#039;] = method;
+                            }
+                            if (beforeSend) {
+                                beforeSend.apply(null, arguments);
+                            }
+                        };
+                    }
+
+                    return $.ajax.call(null, options);
+                },
+
+                /**
+                 * Supports asynchronous communication.
+                 * http method: GET
+                 *
+                 * @memberof ModelManager
+                 * @instance
+                 * @param {Object} options
+                 */
+                $get: function (options) {
+                    _.extend(options || (options = {}), { type: &#039;GET&#039; });
+                    return this.ajax(options);
+                },
+
+                /**
+                 * Supports asynchronous communication.
+                 * http method: POST
+                 *
+                 * @memberof ModelManager
+                 * @instance
+                 * @param {Object} options
+                 */
+                $post: function (options) {
+                    _.extend(options || (options = {}), { type: &#039;POST&#039; });
+                    return this.ajax(options);
+                },
+
+                /**
+                 * Supports asynchronous communication.
+                 * http method: PUT
+                 *
+                 * @memberof ModelManager
+                 * @instance
+                 * @param {Object} options
+                 */
+                $put: function (options) {
+                    _.extend(options || (options = {}), { type: &#039;PUT&#039; });
+                    return this.ajax(options);
+                },
+
+                /**
+                 * Supports asynchronous communication.
+                 * http method: DELETE
+                 *
+                 * @memberof ModelManager
+                 * @instance
+                 * @param {Object} options
+                 */
+                $delete: function (options) {
+                    _.extend(options || (options = {}), { type: &#039;DELETE&#039; });
+                    return this.ajax(options);
+                },
+
+                /**
+                 * Supports asynchronous communication.
+                 * http method: PATCH
+                 *
+                 * @memberof ModelManager
+                 * @instance
+                 * @param {Object} options
+                 */
+                $patch: function (options) {
+                    _.extend(options || (options = {}), { type: &#039;PATCH&#039; });
+                    return this.ajax(options);
+                },
+
+                /**
+                 * Dispose self instance and models belong to.
+                 *
+                 * @name dispose
+                 * @memberof ModelManager
+                 * @instance
+                 */
+                dispose: function dispose() {
+                    logger.trace(this.constructor.name, &#039;dispose&#039;);
+
+                    var managedChildren = this.getChildrenAll(this.objs);
+
+                    _.each(managedChildren, function (key) {
+                        key.dispose();
+                    });
+
+                    delete this.urlRoot;
+                    delete this._sync; // Backbone.sync
+
+                    ModelManager.__super__.dispose.apply(this, arguments);
+                }
+            }
+        );
+
+        /**
+         * Model Class. asynchronous
+         * @class
+         * @name ModelAsync
+         */
+        var ModelAsync = beez.Bucks.extend(
+            &#039;beez.mvcr.ModelAsync&#039;,
+            {
+
+                initialize: function initialize(model) {
+                    this.model = model;
+                },
+
+                /**
+                 * From the data source and retrieve data.
+                 *
+                 * @memberof ModelAsync
+                 * @instance
+                 * @see Backbone.Model#fetch
+                 */
+                fetch: function fetch(options) {
+
+                    var model = this.model;
+                    return this.then(function waitCb(res, next) {
+                        options = options ? _.clone(options) : {};
+
+                        options.success = function (model, res) {
+                            next(null, {model: model, res: res});
+                        };
+                        options.error = function (model, res) {
+                            next(new Error(JSON.stringify({model: model, res: res, options: options})));
+                        };
+                        model.fetch(options);
+                    });
+                },
+
+                /**
+                 * Update the data in the data source.
+                 *
+                 * @memberof ModelAsync
+                 * @instance
+                 * @see Backbone.Model#save
+                 */
+                save: function save(key, val, options) {
+                    /* jshint eqeqeq: false, eqnull: true */
+                    var attrs;
+
+                    // Handle both `&quot;key&quot;, value` and `{key: value}` -style arguments.
+                    if (key == null || _.isObject(key)) {
+                        attrs = key;
+                        options = val;
+                    } else if (key != null) {
+                        (attrs = {})[key] = val;
+                    }
+
+                    var model = this.model;
+                    return this.then(function waitCb(res, next) {
+
+                        options = options ? _.clone(options) : {};
+
+                        options.success = function success(model, res) {
+                            next(null, {model: model, res: res});
+                        };
+
+                        options.error = function error(model, res) {
+                            next(new Error(JSON.stringify({model: model, res: res, options: options})));
+                        };
+
+                        model.save(attrs, options);
+                    });
+                },
+
+                /**
+                 * Delete the data in the data source.
+                 *
+                 * @memberof ModelAsync
+                 * @instance
+                 * @see Backbone.Model#destroy
+                 */
+                destroy: function destroy(options) {
+
+                    var model = this.model;
+                    return this.then(function waitCb(res, next) {
+                        options = options ? _.clone(options) : {};
+
+                        options.success = function success(model, res) {
+                            next(null, {model: model, res: res});
+                        };
+
+                        options.error = function error(model, res) {
+                            next(new Error(JSON.stringify({model: model, res: res, options: options})));
+                        };
+
+                        model.destroy(options);
+                    });
+                },
+
+                /**
+                 * dispose this chain
+                 * @memberof ModelAsync
+                 * @instance
+                 * @private
+                 * @override
+                 */
+                dispose: function dispose() {
+                    logger.trace(this.constructor.name, &#039;dispose&#039;);
+                    delete this.model;
+                }
+            }
+        );
+
+
+        // -------------------
+        // Model
+
+        /**
+         * Model class.
+         *
+         * @constructor
+         * @name Model
+         * @extends {Backbone.Model}
+         * @see Backbone.Model
+         */
+        var Model = beez.extend(
+            &#039;beez.mvcr.Model&#039;,
+            Base,
+            Backbone.Model.prototype,
+            /**
+             * @lends module:beez-mvcr/model~Model.prototype
+             */
+            {
+                /**
+                 * @memberof Model
+                 */
+                constructor: function constructor(attribute, options, manager) {
+                    var args = Array.prototype.slice.call(arguments);
+
+                    options = options || {};
+                    // data source access root url.
+                    var _urlRoot = &#039;&#039;;
+                    if (options.urlRoot) {
+                        _urlRoot = options.urlRoot;
+                    } else if (beez.config &amp;&amp; beez.config.url) {
+                        _urlRoot = beez.config.url.api || &#039;&#039;;
+                    }
+                    options.urlRoot = _urlRoot;
+
+                    _.extend(this, _.pick(options, [&#039;urlRoot&#039;]));
+
+                    // Model&#039;s constructor.
+                    if ((args.length === 1 &amp;&amp; args[0].objs) ||
+                        (args.length === 2 &amp;&amp; args[1].objs) ||
+                        (args.length === 3 &amp;&amp; args[2].objs)) {
+                        this.manager = args[args.length - 1];
+                    }
+
+                    if (!this.manager) {
+                        logger.debug(&quot;Manager can&#039;t be managed this model.&quot;);
+                    }
+                    // call Backbone.constructor
+                    //
+                    // Warning: `Model.__supersuper__.constructor` can&#039;t use in here.
+                    // Because `Backbone.Model.constructor` call `Backbone.Medel.
+                    // initialize`, so call `Backbone.Model.constructor` directory.
+                    Model.__super__.constructor.call(this, attribute, options);
+                },
+
+                /**
+                 * call initialize method
+                 *
+                 * @memberof Model
+                 * @name initialize
+                 * @override Backbone.Model.initialize()
+                 */
+                initialize: function initialize() {
+                    // call Backbone.Model.initialize
+                    Model.__super__.initialize.apply(this, arguments);
+                },
+                /**
+                 * Index for Model management.
+                 *
+                 * @memberof Model
+                 * @instance
+                 * @property midx
+                 * @type {String}
+                 */
+                midx: undefined,
+
+                /**
+                 * Generating ModelAsync
+                 *
+                 * @memberof Model
+                 * @instance
+                 * @return {ModelAsync}
+                 */
+                async: function async() {
+                    return new ModelAsync(this);
+                },
+
+                /**
+                 * Collection Object?
+                 * @memberof Collection
+                 * @instance
+                 * @return {boolean}
+                 */
+                isCollection: function isCollection() {
+                    return false;
+                },
+
+                /**
+                 * Model Object?
+                 * @memberof Collection
+                 * @instance
+                 * @return {boolean}
+                 */
+                isModel: function isModel() {
+                    return true;
+                },
+
+                /**
+                 * Binding exists
+                 *
+                 * @memberof Model
+                 * @instance
+                 * @return {boolean}
+                 */
+                isBinded: function isBinded() {
+                    if (this._events) {
+                        var i, l, name, names, list, events;
+                        names = _.keys(this._events);
+                        for (i = 0, l = names.length; i &lt; l; i++) {
+                            name = names[i];
+                            list = this._events[name];
+                            if (list &amp;&amp; list.length &gt; 0) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                },
+
+                /**
+                 * Disposes of the instance
+                 *
+                 * @memberof Model
+                 * @instance
+                 */
+                dispose: function dispose() {
+                    logger.trace(this.constructor.name, &#039;dispose&#039;);
+
+                    delete this.manager;
+                    delete this.cid;
+                    delete this.attributes;
+                    // delete this.url;
+                    // delete this.urlRoot;
+                    delete this.collection;
+
+                    // Model.__super__.dispose.apply(this, arguments);
+                },
+                /**
+                 * Do nothing but throw error.
+                 *
+                 * @name remove
+                 * @function
+                 * @memberof Model
+                 * @instance
+                 * @return Error
+                 */
+                remove: function remove() {
+                    throw new beez.Error(&#039;Use Backbone.model.destroy() or Model.dipose() instead of this&#039;);
+                }
+            }
+        );
+
+        /**
+         * @memberof Model
+         * @function
+         * @param {String} [name]
+         * @param {Object} childProto
+         * @borrows beez.extendThis as extend
+         * @see {beez}
+         * @example
+         * var MyModel = Model.extend(
+         *     &#039;myapp.MyModel&#039;
+         *     {
+         *         midx: &#039;foo&#039;,
+         *         bar: function bar() {}
+         *     }
+         * );
+         */
+        Model.extend = beez.extendThis;
+
+
+        // -------------------
+        // CollectionAsync
+
+        /**
+         * Collection class. asynchronous
+         *
+         * @class
+         * @name ModelAsync
+         * @extends {Bucks}
+         */
+        var CollectionAsync = beez.Bucks.extend(
+            &#039;beez.mvcr.CollectionAsync&#039;,
+            {
+                initialize: function initialize(collection) {
+                    this.collection = collection;
+                    //_.each(Collection.__superCtor__.prototype, function(obj, idx) {});
+                },
+                /**
+                 * New collection
+                 *
+                 * @memberof CollectionAsync
+                 * @instance
+                 * @return {Collection}
+                 */
+                create: function create(model, options) {
+                    var self = this;
+                    return this.then(function () {
+                        return self.collection.create(model, options);
+                    });
+                },
+                /**
+                 * Remove collection
+v                 *
+                 * @memberof CollectionAsync
+                 * @instance
+                 * @return {Collection}
+                 */
+                remove: function remove(models, options) {
+                    var self = this;
+                    return this.then(function () {
+                        return self.collection.remove(models, options);
+                    });
+                },
+                /**
+                 * @override Backbone.Collection#_reset
+                 * @see Backbone.Collection#_reset
+                 * @memberof CollectionAsync
+                 * @instance
+                 */
+                _reset: function () {
+                    var self = this;
+                    return this.then(function () {
+                        return self.collection._reset();
+                    });
+                },
+
+                /**
+                 * Disposes of the instance
+                 *
+                 * @override
+                 * @memberof CollectionAsync
+                 */
+                dispose: function dispose() {
+                    logger.trace(this.constructor.name, &#039;dispose&#039;);
+                    delete this.collection;
+                }
+            }
+        );
+
+
+        // -------------------
+        // Collection
+
+        /**
+         * Collection class.
+         *
+         * @constructor
+         * @name Collection
+         * @extends {Backbone.Collection}
+         * @see Backbone.Collection
+         */
+        var Collection = beez.extend(
+            Base,
+            Backbone.Collection.prototype,
+            {
+                /**
+                 * @memberof Collection
+                 */
+                constructor: function constructor(models, options, manager) {
+                    /**
+                     * default model
+                     * @memberof Collection
+                     * @type {Model}
+                     */
+                    if (!this.model) { this.model = Model; }
+
+                    /**
+                     * @override
+                     * @memberof Collection
+                     * @instance
+                     */
+                    this.urlRoot = (function urlRoot() {
+                        var _urlRoot = &#039;&#039;;
+                        if (beez.config &amp;&amp; beez.config.url) {
+                            _urlRoot = beez.config.url.api || &#039;&#039;;
+                        }
+                        return _urlRoot;
+                    }());
+                    // Collection&#039;s constructor.
+                    this.manager = manager;
+                    var newArgs = arguments;
+                    if (3 &lt;= arguments.length) {
+                        newArgs = Array.prototype.slice.call(arguments, 0, arguments.length - 1);
+                    }
+                    Collection.__super__.constructor.apply(this, newArgs);
+                },
+
+                /**
+                 * call initialize method
+                 *
+                 * @memberof Collection
+                 * @name initialize
+                 * @override Backbone.Collection.initialize()
+                 */
+                initialize: function initialize() {
+                    // call Backbone.Collection.initialize()
+                    Collection.__super__.initialize.apply(this, arguments);
+                },
+                /**
+                 * Index for Model management.
+                 *
+                 * @memberof Collection
+                 * @instance
+                 * @property midx
+                 * @type {String}
+                 */
+                midx: undefined,
+
+                /**
+                 * Generating Collection.
+                 *
+                 * @memberof Collection
+                 * @instance
+                 * @return {Collection}
+                 */
+                async: function async() {
+                    return new CollectionAsync(this);
+                },
+
+                /**
+                 * Collection Object?
+                 * @memberof Collection
+                 * @instance
+                 * @return {boolean}
+                 */
+                isCollection: function isCollection() {
+                    return true;
+                },
+
+                /**
+                 * Model Object?
+                 * @memberof Collection
+                 * @instance
+                 * @return {boolean}
+                 */
+                isModel: function isModel() {
+                    return false;
+                },
+
+                /**
+                 *
+                 * @memberof Collection
+                 * @override
+                create: function create(model, options) {
+                    options = options ? _.clone(options) : {};
+                    if (!(model = this._prepareModel(model, options))) { return false; }
+                    if (!options.wait) { this.add(model, options); }
+                    var collection = this;
+                    var success = options.success;
+                    options.success = function (model, resp, options) {
+                        if (options.wait) { collection.add(model, options); }
+                        if (success) { success(model, resp, options); }
+                    };
+                    model.save(null, options);
+                    return model;
+
+                },
+                 */
+
+                /**
+                 * Remove collection.
+                 *
+                 * @override
+                 * @memberof Collection
+                 * @param {Array|Object} models A Model list to delete
+                 * @param {Object} options @see backbone.js#Collection.remove()
+                 * @instance
+                 */
+                remove: function remove(models, options) {
+                    // call Backbone.remove()
+                    Collection.__super__.remove.apply(this, arguments);
+
+                    models = _.isArray(models) ? models.slice() : [models];
+
+                    _.each(models, function (m) {
+                        m.dispose &amp;&amp; m.dispose();
+                    });
+
+                    return this;
+                },
+
+                /**
+                 * All the Model(s) are deleted.
+                 *
+                 * @memberof Collection
+                 * @param {Array|Object} models A Model list to delete
+                 * @param {Object} options @see backbone.js#Collection.remove()
+                 * @instance
+                 */
+                removeAll: function removeAll(options) {
+                    return this.remove(this.models, options);
+                },
+
+                /**
+                 * @override
+                 * @memberof Collection
+                 * @instance
+                 */
+                _reset: function () {
+                    this.length = 0;
+                    _.each(this.models, function (m) {
+                        m.dispose &amp;&amp; m.dispose();
+                    });
+                    this.models = [];
+                    this._byId  = {};
+                },
+
+                /**
+                 * Binding exists
+                 *
+                 * @memberof Collection
+                 * @instance
+                 * @return {boolean}
+                 */
+                isBinded: function isBinded() {
+                    if (this._events) {
+                        var i, l, name, names, list, events;
+                        names = _.keys(this._events);
+                        for (i = 0, l = names.length; i &lt; l; i++) {
+                            name = names[i];
+                            list = this._events[name];
+                            if (list &amp;&amp; list.length &gt; 0) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                },
+
+                /**
+                 * Disposes of the instance
+                 * Please use remove() to perform dispose.
+                 *
+                 * @memberof Collection
+                 * @instance
+                 */
+                dispose: function dispose() {
+                    logger.trace(this.constructor.name, &#039;dispose&#039;);
+
+                    _.each(this.models, function (m) {
+                        m.dispose &amp;&amp; m.dispose();
+                    });
+
+                    // delete this.urlRoot;
+                    delete this.manager;
+                    // delete this.url;
+                    delete this.comparator;
+                    delete this.length;
+                    delete this.models;
+                    delete this._byId;
+
+                    // call Base.dispose()
+                    // Collection.__super__.dispose.apply(this, arguments);
+                }
+            }
+        );
+
+        /**
+         * @memberof Collection
+         * @function
+         * @param {String} [name]
+         * @param {Object} childProto
+         * @borrows beez.extendThis as extend
+         * @see {beez}
+         * @example
+         * var MyCollection = Collection.extend(
+         *     &#039;myapp.MyCollection&#039;
+         *     {
+         *         midx: &#039;foo&#039;,
+         *         bar: function bar() {}
+         *     }
+         * );
+         */
+        Collection.extend = beez.extendThis;
+
+        return {
+            Model: Model,
+            Collection: Collection,
+            ModelManager: ModelManager,
+            ModelManagerAsync: ModelManagerAsync
+            //manager: modelManager
+        };
+
+    });
+})(this);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

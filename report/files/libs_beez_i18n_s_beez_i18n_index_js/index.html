@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>libs/beez-i18n/s/beez-i18n/index.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">68.30</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">337</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">44.05</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">1.46</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/**
+ * @name index.js&lt;beez-i18n&gt;
+ * @author Kei Funagayama &lt;funagayama_kei@cyberagent.co.jp&gt;
+ * @overview Beez i18n class(define)
+ */
+
+(function (global) {
+
+    /**
+     * beez.i18n namespace
+     * @namespace I18n
+     */
+    define(function (require, exports, module) {
+        &#039;use strict&#039;;
+
+        var beez = require(&#039;beez.core&#039;);
+        require(&#039;beez.utils&#039;);
+
+        var logger = beez.getLogger(&#039;beez.i18n&#039;);
+        var _ = beez.vendor._;
+
+        if (beez.i18n) {
+            logger.warn(&#039;beez.i18n is already loaded.&#039;);
+            return beez.i18n;
+        }
+
+        var __I18n__ = {
+
+            setup: function setup() {
+                logger.warn(&#039;Setup has already been. beez.i18n&#039;);
+                return this;
+            },
+
+            /**
+             * Constructor
+             * WARN: run only once from beez.i18n.setup
+             *
+             * @memberof I18n
+             * @param {Object} options
+             * @see beez.i18n.setup
+             */
+            initialize: function initialize(options) {
+                /**
+                 * @name lang
+                 * @memberof I18n
+                 * @type {Object}
+                 */
+                this.lang = {
+                    base: &#039;en&#039;, // default lang
+                    use: undefined // use lang
+                };
+
+                /**
+                 * @name message
+                 * @memberof I18n
+                 * @type {Object}
+                 */
+                this.message = {};
+
+                /**
+                 * Regular expression extract string substitution.
+                 *
+                 * @name parseReg
+                 * @memberof I18n
+                 * @type {RegExp}
+                 */
+                //this.parseReg = new RegExp(/\{\{[(0-9a-zA-Z)]*\}\}/);
+                this.parseReg = new RegExp(/\{#{1}[(0-9a-zA-Z)]*\}/);
+
+
+                this.lang.use = beez.utils.browser.getLanguage();
+
+                // override options
+                options = options || {};
+                options.lang = options.lang || {};
+
+                if (options.lang.base) {
+                    this.lang.base = options.lang.base;
+                }
+                if (options.lang.use) {
+                    this.lang.use = options.lang.use;
+                }
+
+                //
+                if (!this.lang.use) {
+                    this.lang.use = this.lang.base;
+                }
+
+                if (options.message) {
+                    this.message = options.message;
+                }
+            },
+
+            /**
+             * Name of the current language
+             *
+             * @memberof I18n
+             * @instance
+             * @public
+             * @return {String}
+             */
+            getCurrentLang: function getCurrentLang() {
+                return this.lang.use || this.lang.base;
+            },
+
+            /**
+             * Replacement character string extraction.
+             *
+             * @memberof I18n
+             * @instance
+             * @public
+             * @param {String} message
+             * @param {Array} vars
+             * @return {String}
+             */
+            parse: function (message, vars) {
+                //var list = message.split(/\{\{[(0-9a-zA-Z)]*\}\}/);
+                var list = message.split(this.parseReg);
+                if (list.length === 1 &amp;&amp; list[0] === &#039;&#039;) {
+                    return message;
+                }
+
+                var res = &#039;&#039;;
+                _.each(list, function (val, idx) {
+                    res += val + (vars[idx] || &#039;&#039;);
+                });
+                return res;
+            },
+
+            /**
+             * Alias: I18n.getMessage()
+             *
+             * @memberof I18n
+             * @instance
+             * @public
+             * @return {String}
+             */
+            __: function __(key) {
+                return this.getMessage(key);
+            },
+
+            /**
+             * I get the message corresponding to the current language
+             *
+             * @memberof I18n
+             * @instance
+             * @public
+             * @return {String}
+             */
+            getMessage: function getMessage(key) {
+                var lang = this.getCurrentLang();
+                if (!this.message[lang]) {
+                    lang = this.lang.base; // set default lang
+                }
+                if (!this.message[lang]) {
+                    return &#039;&#039;; // not set!!
+                }
+
+                var message = this.message[lang][key] || &#039;&#039;;
+                if (!message &amp;&amp; this.message[this.lang.base]) {
+                    message = this.message[this.lang.base][key] || &#039;&#039;;
+                }
+                var vars = Array.prototype.slice.call(arguments, 1);
+                return this.parse(message, vars);
+            },
+
+            /**
+             * Add data to a different message for the current language
+             *
+             * @memberof I18n
+             * @instance
+             * @public
+             * @param {Object} obj
+             * @return {Object}
+             * @example
+             * var res = beez.i18n.add({ja: {&quot;taro&quot;: &quot;太郎&quot;}})
+             * console.log(res)
+             * &gt;&gt; {ja: {&quot;taro&quot;: &quot;太郎&quot;}}
+             */
+            add: function add(obj) {
+                return beez.utils.copyr(this.message, obj);
+            },
+
+            /**
+             * Rewrite the message of one language
+             *
+             * @memberof I18n
+             * @instance
+             * @public
+             * @param {String} lang example) &#039;en&#039;
+             * @param {Object} obj
+             * @return {Object}
+             * @example
+             * var res = beez.i18n.addMessage(ja, {&quot;taro&quot;: &quot;太郎&quot;});
+             * console.log(res)
+             * &gt;&gt; {&quot;taro&quot;: &quot;太郎&quot;}
+             */
+            addMessage: function addMessage(lang, obj) {
+                this.message[lang] = this.message[lang] || {};
+                return beez.utils.copyr(this.message[lang], obj);
+            },
+
+            /**
+             * Delete the message in another language
+             *
+             * @memberof I18n
+             * @instance
+             * @public
+             * @param {String} lang example) &#039;en&#039;
+             * @param {String} key
+             */
+            remove: function remove(lang, key) {
+                var obj = this.message[lang];
+                if (obj &amp;&amp; obj[key]) {
+                    this.message[lang][key] = null;
+
+                } else if (obj) {
+                    this.message[lang] = null;
+
+                } else {
+                    this.message = {};
+                }
+            },
+
+            /**
+             * remove i18n data
+             *
+             * @memberof I18n
+             * @instance
+             * @public
+             */
+            dispose: function dispose() {
+                delete this.lang;
+                delete this.message;
+                delete this.parseReg;
+            }
+        };
+
+        var I18n = beez.extend(
+            &#039;beez.i18n&#039;,
+            function constructor() {
+                return this.initialize.apply(this, arguments);
+            }, __I18n__);
+
+        /**
+         * beez.extendThis
+         *
+         * @memberof I18n
+         * @instance
+         * @public
+         */
+        I18n.extend = beez.extendThis;
+
+        /**
+         * @see I18n
+         * @memberof beez
+         * @instance
+         * @public
+         */
+        beez.I18n = I18n;
+
+        beez.i18n = {
+
+            /**
+             * i18n initialize
+             *
+             * @memberof I18n
+             * @instance
+             * @name setup
+             * @param {I18n} I18n Class
+             * @param {Object} options constructor/initialize arguments
+             * @public
+             * @example
+             * beez.i18n.setup(null, {lang: {base: &#039;ja&#039;, use: &#039;ja&#039;}});
+             *
+             */
+            setup: function (options, Obj) {
+                if (beez.i18n.initialize) {
+                    logger.warn(&#039;Setup has already been. beez.i18n&#039;);
+                    return beez.i18n;
+                }
+
+                // clear
+                delete beez.i18n.setup;
+                delete beez.i18n;
+
+                if (!Obj) {
+                    Obj = I18n;
+                }
+
+                /**
+                 * i18n instance
+                 * @memberof beez
+                 * @instance
+                 * @name i18n
+                 * @public
+                 */
+                beez.i18n = new Obj(options);
+
+                return beez.i18n;
+
+            }
+        };
+
+        // ---
+        // Add Handlebars Register Helper
+        var Handlebars = require(&#039;handlebars&#039;);
+
+        /**
+         * i18n Handlebars Register Helper (escape OFF)
+         *
+         * @memberof beez.vendor.Handlebars.Helper
+         * @instance
+         * @name __
+         * @public
+         */
+        Handlebars.registerHelper(&#039;__&#039;, function __(key) {
+            if (beez.i18n) {
+                var vars = Array.prototype.slice.call(arguments, 0, arguments.length - 1);
+                return new Handlebars.SafeString(beez.i18n.getMessage.apply(beez.i18n, vars));
+            }
+            return &#039;&#039;;
+        });
+
+        /**
+         * i18n Handlebars Register Helper (escape ON)
+         *
+         * @memberof beez.vendor.Handlebars.Helper
+         * @instance
+         * @name __
+         * @public
+         */
+        Handlebars.registerHelper(&#039;__e&#039;, function __e(key) {
+            if (beez.i18n) {
+                var vars = Array.prototype.slice.call(arguments, 0, arguments.length - 1);
+                return beez.i18n.getMessage.apply(beez.i18n, vars);
+            }
+            return &#039;&#039;;
+        });
+
+        return beez.I18n;
+    });
+})(this);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

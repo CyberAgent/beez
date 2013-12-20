@@ -1,0 +1,88 @@
+{
+    "app": { // Beez Foundation Server configure
+        "stat": { // Static Server configure
+            "compress": true, // gzip
+            "port": 1109, // listen port
+            "header": { // Add response header
+                "Access-Control-Allow-Origin" : "*",
+                "Access-Control-Allow-Methods": "GET, OPTIONS",
+                "Access-Control-Allow-Headers": "*"
+            },
+            "include": { // Setting in the configuration file of a different environment
+                "path": "./local",
+                "from": null
+            }
+        },
+        "mock": { // Mock Server configure
+            "use": true, // use mock?
+            "compress": true, // gzip
+            "port": 1121, // listen port
+            "header": { // Add response header
+                "Access-Control-Allow-Origin" : "*",
+                "Access-Control-Allow-Methods": "GET, OPTIONS",
+                "Access-Control-Allow-Headers": "*"
+            },
+            "include": { // Mock data folder setting
+                "path": "./mockdata",
+                "from": null
+            }
+        },
+        "operation": [
+            { "target": "build", "comment": "grunt build" },
+            { "target": "deploy", "comment": "grunt deploy" },
+            { "target": "default", "comment": "grunt default" },
+            { "target": "jshint", "comment": "grunt jshint" },
+            { "target": "clean", "comment": "grunt clean" },
+            { "target": "docs", "comment": "grunt docs" }
+        ]
+    },
+    "stats": { // Set to refer to the local folder
+        "tmp": { // Reference /tmp directory
+            "path": "/tmp",
+            "from": null
+        }
+    },
+    "bootstrap": {
+        "html": [ "*/index/index.html.hbs" ], // "[env][key].html" files match the pattern
+        "datamain": [ "*/index/require.beez.js.hbs", "*/tutorial/require.beez.js.hbs" ] // "beez.require.[env][key].js" files match the pattern
+    },
+    "stylus": {
+        "options": { // @see http://learnboost.github.io/stylus/docs/executable.html
+            "encode": "utf-8",
+            "compress": true,
+            "firebug": false,
+            "linenos": false,
+            "nib": true, // stylus nib on/of
+            "url": {}, // @see http://learnboost.github.io/stylus/docs/functions.url.html
+            "fn": {} // variable that can be used with stylus file
+        }
+    },
+    "image": {
+        "options": {
+            "baseRatio": 2, // 元の画像のratio
+            "ratios": [ 1, 1.5, 2, 3 ], // resizeするratio
+            "extnames": [ ".png" ], // 対象拡張子
+            "include": [], // resizeをするファイルorディレクトリ
+            "exclude": [], // resizeしないファイルorディレクトリ
+            "separator": "-" // resize後ファイル名に用いる元ファイル名とratioの接続文字
+        }
+    },
+    "sprite": {
+        "options": {
+            "ratios": [ 1, 1.3, 1.5, 2 ], // 生成するsprite sheetのratio
+            "extnames": [ ".png", ".jpg" ], // sprite sheetのpartsとなる画像の対象拡張子
+            "heads": [ "sprite", "_sprite" ], // sprite sheetのpartsとなる画像のファイル名の先頭
+            "separator": "-" // ファイル名のheadやratioの接続文字
+        }
+    },
+    "deploy": {
+        "optipng": true,
+        "jpegoptim": true,
+        "include": [ "dist/*/index.js", "dist/index/require.beez.*.js", "*.html", "*.css", "*.png", "*.jpg", "*.gif", "*.ttf", "*.eot", "*.woff" ], // deployするファイル
+        "exclude": [ "_*.css", "_*.png", "_*.jpg", "_*.gif", "_*.ttf", "_*.eot", "_*.woff" ] // deployしないファイル
+    },
+    "ignore": {
+        "include": [], // release物から除外するファイル
+        "exclude": [] // release物から除外しないファイル
+    }
+}

@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>libs/beez-mvcr/s/beez-mvcr/index.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">57.83</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">418</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">25.50</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">1.45</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/**
+ * @fileOverview beez.mvcr class
+ * @name index.js&lt;beez-mvcr&gt;
+ * @author Kei Funagayama &lt;funagayama_kei@cyberagent.co.jp&gt;
+ */
+
+(function (global) {
+
+    /**
+     * mvcr namespace
+     * @namespace beez.mvcr
+     */
+    define(function __MVCR__(require, exports, module) {
+        &#039;use strict&#039;;
+
+        var beez = require(&#039;beez.core&#039;);
+        var logger = beez.getLogger(&#039;beez.mvcr&#039;);
+
+        if (beez.mvcr) {
+            logger.debug(&#039;beez.mvcr already defined.&#039;);
+            return beez.mvcr;
+        }
+
+        var Handlebars = require(&#039;handlebars&#039;);
+
+        /**
+         * Shortcut function
+         *   Handlebars.templates[]
+         * @memberof beez
+         * @function
+         * @name getTemplate
+         * @param {String} name
+         * @returns {Function} handlebars template function
+         */
+        beez.getTemplate = function getTemplate(name) {
+            return Handlebars.templates[name];
+        };
+
+        var __MVCR__ = {
+            initialize: function () {
+
+                var model = require(&#039;beez-mvcr/model&#039;);
+                var modic = require(&#039;beez-mvcr/modic&#039;);
+                var view = require(&#039;beez-mvcr/view&#039;);
+                var controller = require(&#039;beez-mvcr/controller&#039;);
+                var router = require(&#039;beez-mvcr/router&#039;);
+                var css = require(&#039;beez-mvcr/cssmanager&#039;);
+                var image = require(&#039;beez-mvcr/imagemanager&#039;);
+                var base = require(&#039;beez-mvcr/base&#039;);
+
+
+                /**
+                 * @name Model
+                 * @memberof beez.mvcr
+                 * @borrows Model
+                 * @type {Model}
+                 */
+                this.Model = model.Model;
+
+                /**
+                 * @name ModelManager
+                 * @memberof beez.mvcr
+                 * @borrows ModelManager
+                 * @type {ModelManager}
+                 */
+                this.ModelManager = model.ModelManager; // if you want to extend
+
+                /**
+                 * @name ModelManagerAsync
+                 * @memberof beez.mvcr
+                 * @borrows ModelManagerAsync
+                 * @type {ModelManagerAsync}
+                 */
+                this.ModelManagerAsync = model.ModelManagerAsync; // if you want to extend
+
+                /**
+                 * @name Collection
+                 * @memberof beez.mvcr
+                 * @borrows Collection
+                 * @type {Collection}
+                 */
+                this.Collection = model.Collection;
+
+                /**
+                 * @name Modic
+                 * @memberof beez.mvcr
+                 * @borrows Modic
+                 * @type {Modic}
+                 */
+                this.Modic = modic.Modic;
+
+                /**
+                 * @name View
+                 * @memberof beez.mvcr
+                 * @borrows View
+                 * @type {View}
+                 */
+                this.View = view.View;
+
+                /**
+                 * @name View
+                 * @memberof beez.mvcr
+                 * @borrows ViewAsync
+                 * @type {ViewAsync}
+                 */
+                this.ViewAsync = view.ViewAsync;
+
+                /**
+                 * @name View
+                 * @memberof beez.mvcr
+                 * @borrows ViewManager
+                 * @type {View}
+                 */
+                this.ViewManager = view.ViewManager; // if you want to extend
+
+                /**
+                 * @name View
+                 * @memberof beez.mvcr
+                 * @borrows ViewManagerAsync
+                 * @type {ViewManagerAsync}
+                 */
+                this.ViewManagerAsync = view.ViewManagerAsync; // if you want to extend
+
+
+                /**
+                 * @name Controller
+                 * @memberof beez.mvcr
+                 * @borrows Controller
+                 * @type {Controller}
+                 */
+                this.Controller = controller.Controller;
+
+                /**
+                 * @name Controller
+                 * @memberof beez.mvcr
+                 * @borrows ControllerManager
+                 * @type {Controller}
+                 */
+                this.ControllerManager = controller.ControllerManager; // if you want to extend
+
+                /**
+                 * @name Controller
+                 * @memberof beez.mvcr
+                 * @borrows ControllerManagerAsync
+                 * @type {ControllerAsync}
+                 */
+                this.ControllerManagerAsync = controller.ControllerManagerAsync; // if you want to extend
+
+                /**
+                 * @name Router
+                 * @memberof beez.mvcr
+                 * @borrows Router
+                 * @type {Router}
+                 */
+                this.Router = router.Router;
+
+                /**
+                 * @name RouterManager
+                 * @memberof beez.mvcr
+                 * @borrows RouterManager
+                 * @type {RouterManager}
+                 */
+                this.RouterManager = router.RouterManager; // if you want to extend
+
+                /**
+                 * @name CSSManager
+                 * @memberof beez.mvcr
+                 * @borrows CSSManager
+                 * @type {CSSManager}
+                 */
+                this.CSSManager = css.CSSManager;     // if you want to extend
+                /**
+                 * @name CSSManagerAsync
+                 * @memberof beez.mvcr
+                 * @borrows CSSManagerAsync
+                 * @type {CSSManagerAsync}
+                 */
+                this.CSSManagerAsync = css.CSSManagerAsync;     // if you want to extend
+                /**
+                 * @name ImageManager
+                 * @memberof beez.mvcr
+                 * @borrows ImageManager
+                 * @type {ImageManager}
+                 */
+                this.ImageManager = image.ImageManager; // if you want to extend
+                /**
+                 * @name ImageManagerAsync
+                 * @memberof beez.mvcr
+                 * @borrows ImageManagerAsync
+                 * @type {ImageManagerAsync}
+                 */
+                this.ImageManagerAsync = image.ImageManagerAsync; // if you want to extend
+                /**
+                 * @name ManagerBase
+                 * @memberof beez.mvcr
+                 * @borrows ManagerBase
+                 * @type {ManagerBase}
+                 */
+                this.ManagerBase = base.ManagerBase;
+                /**
+                 * @name Base
+                 * @memberof beez.mvcr
+                 * @borrows Base
+                 * @type {Base}
+                 */
+                this.Base = base.Base;
+
+            }
+        };
+
+        var MVCR = beez.extend(
+            &#039;beez.MVCR&#039;,
+            function constructor() {
+                return this.initialize();
+            }, __MVCR__);
+
+        var mvcr = new MVCR();
+
+
+        // Add to beez object.
+        beez.mvcr = mvcr;
+
+        beez.Model = mvcr.Model;
+        beez.Collection = mvcr.Collection;
+        beez.Modic = mvcr.Modic;
+        beez.View = mvcr.View;
+        beez.Controller = mvcr.Controller;
+        beez.Router = mvcr.Router;
+
+        // Backbone shortcut
+        var Backbone = require(&#039;backbone&#039;);
+        /**
+         * Backbone.history short cut.
+         * @name history
+         * @memberof beez
+         */
+        beez.history = Backbone.history;
+
+        //
+        // ----
+        // Managers
+        //
+
+        var mconfig = beez.config.manager || {};
+
+        var __Manager__ = {
+            initialize: function () {
+                /**
+                 * setuped flag
+                 * @memberof beez.manager
+                 * @name setuped
+                 * @type {Boolean}
+                 */
+                this.setuped = false;
+
+                /**
+                 * ModelManager instance
+                 * @memberof beez.manager
+                 * @name model
+                 * @alias m
+                 * @type {ModelManager}
+                 */
+                this.model = undefined;
+
+                /**
+                 * shortcut for model
+                 * @memberof beez.manager
+                 * @name m
+                 * @type {ModelManager}
+                 */
+                this.m = undefined;
+
+                /**
+                 * ViewManager instance
+                 * @memberof beez.manager
+                 * @name view
+                 * @type {ViewManager}
+                 */
+                this.view = undefined;
+
+                /**
+                 * shortcut for view
+                 * @memberof beez.manager
+                 * @name v
+                 * @type {ViewManager}
+                 */
+                this.v = undefined;
+
+                /**
+                 * ControllerManager instance
+                 * @memberof beez.manager
+                 * @name controller
+                 * @type {ControllerManager}
+                 */
+                this.controller = undefined;
+
+                /**
+                 * shortcut for controller
+                 * @memberof beez.manager
+                 * @name c
+                 * @type {ControllerManager}
+                 */
+                this.c = undefined;
+
+                /**
+                 * RouterManager instance
+                 * @memberof beez.manager
+                 * @name router
+                 * @type {RouterManager}
+                 */
+                this.router = undefined;
+
+                /**
+                 * shortcut for router
+                 * @memberof beez.manager
+                 * @name r
+                 * @type {RouterManager}
+                 */
+                this.r = undefined;
+
+                /**
+                 * CSSManager instance
+                 * @memberof beez.manager
+                 * @name css
+                 * @type {CSSManager}
+                 */
+                this.css = undefined;
+
+                /**
+                 * ImageManager instance
+                 * @memberof beez.manager
+                 * @name image
+                 * @type {ImageManager}
+                 */
+                this.image = undefined;
+            },
+
+            /**
+             * Beez MVCR Manager Setup
+             *
+             * @memberof MVCR
+             * @instance
+             * @public
+             * @param {Object} objs It sets up to overwrite a management class.
+             * @return {MVCR}
+             */
+            setup: function setup(objs) {
+                if (this.setuped) {
+                    return this;
+                }
+
+                objs = objs || {};
+                this.setuped = true;
+
+                // Initialize ModelManager
+                if (objs.model) {
+                    this.model = objs.model;
+                } else {
+                    var model = require(&#039;beez-mvcr/model&#039;);
+                    this.model = new model.ModelManager(&#039;midx&#039;);
+                }
+                this.m = this.model; // shortcut
+
+
+                // Initialize ViewManager
+                if (objs.view) {
+                    this.view = objs.view;
+                } else {
+                    var view = require(&#039;beez-mvcr/view&#039;);
+                    this.view = new view.ViewManager(&#039;vidx&#039;);
+                }
+                this.v = this.view; // shortcut
+
+                // Initialize ControllerManager
+                if (objs.controller) {
+                    this.controller = objs.controller;
+                } else {
+                    var controller = require(&#039;beez-mvcr/controller&#039;);
+                    this.controller = new controller.ControllerManager();
+                }
+                this.c = this.controller; // shortcut
+
+
+                // Initialize RouterManager
+                if (objs.router) {
+                    this.router = objs.router;
+                } else {
+                    var router = require(&#039;beez-mvcr/router&#039;);
+                    this.router = new router.RouterManager();
+                }
+                this.r = this.router; // shortcut
+
+                // Initialize CSSManager
+                if (objs.css) {
+                    this.css = objs.css;
+                } else {
+                    var css = require(&#039;beez-mvcr/cssmanager&#039;);
+                    this.css = new css.CSSManager();
+                }
+
+                // Initialize ImageManager
+                if (objs.image) {
+                    this.image = objs.image;
+                } else {
+                    var image = require(&#039;beez-mvcr/imagemanager&#039;);
+                    this.image = new image.ImageManager(mconfig.image);
+                }
+                return this;
+            }
+        };
+
+        var Manager = beez.extend(
+            &#039;beez.Manager&#039;,
+            function constructor() {
+                return this.initialize();
+            }, __Manager__);
+
+        var manager = new Manager();
+        mvcr.manager = manager;
+        beez.manager = mvcr.manager; // shortcut
+
+        return beez.mvcr;
+    });
+})(this);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

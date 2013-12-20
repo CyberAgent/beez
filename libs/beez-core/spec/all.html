@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="../node_modules/mocha/mocha.css"/>
+  <script type="text/javascript" src="all.js"></script>
+  <style type="text/css">
+    #nav { font-size: 12px; }
+    #__temp__ { font-size: 12px; }
+  </style>
+  <script type="text/javascript">
+    function fire() {
+        var w = function (message, url, line) {
+            console.log(message, url, line);
+            return true;
+        };
+        beez.onError(w);
+        throw new beez.Error('fire!!')
+    }
+  </script>
+</head>
+
+<body>
+  <div id="spec"></div>
+  <div id="nav">
+    <ul>
+      <li><a data-name="index" onclick="spec.run('index')" href="#">beez-core/index.js</a></li>
+    </ul>
+  </div>
+  <div id="mocha"></div>
+  <hr>
+
+  <div id="__temp__">
+    <input type="button" value="Fire!! window.onerror test" onClick="fire();">
+  </div>
+</body>
+</html>

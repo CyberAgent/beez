@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+
+var fs = require('fs');
+
+var list = [
+    './package.json',
+    'libs/beez-core/package.json',
+    'libs/beez-mvcr/package.json',
+//    'libs/beez-ua/package.json',
+    'libs/beez-utils/package.json',
+    'libs/beez-i18n/package.json'
+];
+
+var VERSION = require('./s/beez/index').VERSION;
+
+for (var i = 0; i < list.length; i++) {
+    var file = list[i];
+    var data = JSON.parse(fs.readFileSync(file, 'utf-8'));
+    data.version = VERSION;
+    data = JSON.stringify(data, null, '    ');
+    fs.writeFileSync(file, data, 'utf-8');
+    console.log('set version:', VERSION, 'file:',file);
+}

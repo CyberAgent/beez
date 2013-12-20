@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>libs/beez-core/s/beez-core/logcafe.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">64.69</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">263</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">46.67</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">1.75</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/**
+ * @name logcafe.js
+ * @author Kei Funagayama &lt;funagayama_kei@cyberagent.co.jp&gt;
+ * copyright (c) Cyberagent Inc.
+ * @overview browser logging.
+ */
+
+(function (global) {
+    &#039;use strict&#039;;
+
+    /**
+     * Empty function
+     * @function
+     * @private
+     */
+    var none = function none() {};
+
+    /**
+     * Logger class
+     * @class
+     * @name Logger
+     */
+    var Logger = function Logger(category, config) {
+        this.initialize(category, config);
+    };
+
+    Logger.prototype = {
+        /**
+         * Logger constructor
+         * @param {String} category
+         * @param {JSON} config config data
+         * @memberof Logger
+         * @instance
+         */
+        initialize: function initialize(category, config) {
+            this.category = category;
+            this.config = config;
+            this.level = this.config.level;
+
+            if (this.config.separator) {
+                this.separator = this.config.separator || &#039; &#039;;
+            }
+
+            if (this.level === this.LEVELS.TRACE) {
+                // pass
+            } else if (this.level === this.LEVELS.DEBUG) {
+                this.trace = none;
+            } else if (this.level === this.LEVELS.INFO) {
+                this.trace = this.debug = none;
+            } else if (this.level === this.LEVELS.WARN) {
+                this.trace = this.debug = this.info = none;
+            } else if (this.level === this.LEVELS.ERROR) {
+                this.trace = this.debug = this.info = this.warn = none;
+            } else {
+                // pass
+            }
+        },
+
+        /**
+         * Log level
+         * @const {string} LEVELS
+         * @memberOf Logger
+         */
+        LEVELS: {
+            &#039;OFF&#039;: &#039;OFF&#039;,
+            &#039;TRACE&#039;: &#039;TRACE&#039;,
+            &#039;DEBUG&#039;: &#039;DEBUG&#039;,
+            &#039;INFO&#039;: &#039;INFO&#039;,
+            &#039;WARN&#039;: &#039;WARN&#039;,
+            &#039;ERROR&#039;: &#039;ERROR&#039;
+        },
+
+        /**
+         * Exclude category forward match
+         * @memberOf Logger
+         * @instance
+         * @function
+         * @private
+         */
+        _exclude: function _exclude() {
+            if (this.config.excludes &amp;&amp; 0 &lt; this.config.excludes.length) {
+                for (var i = 0; i &lt; this.config.excludes.length; i++) {
+                    var reg = new RegExp(&#039;^&#039; + this.config.excludes[i]);
+                    if (this.category.match(reg)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        },
+
+
+        /**
+         * trace method
+         * @memberOf Logger
+         * @instance
+         * @function
+         */
+        trace: function trace() {
+            !this._exclude() &amp;&amp; console.debug(this.output(&#039;trace&#039;, arguments));
+        },
+
+        /**
+         * debug output method
+         * @memberOf Logger
+         * @instance
+         * @function
+         */
+        debug: function debug() {
+            !this._exclude() &amp;&amp; console.debug(this.output(&#039;debug&#039;, arguments));
+        },
+
+        /**
+         * info output method
+         * @memberOf Logger
+         * @instance
+         * @function
+         */
+        info : function info() {
+            !this._exclude() &amp;&amp; console.info(this.output(&#039;info&#039;, arguments));
+        },
+
+        /**
+         * warn output method
+         * @instance
+         * @memberOf Logger
+         * @function
+         */
+        warn : function warn() {
+            !this._exclude() &amp;&amp; console.warn(this.output(&#039;warn&#039;, arguments));
+        },
+
+        /**
+         * error output method
+         * @instance
+         * @memberOf Logger
+         * @function
+         */
+        error: function error() {
+            !this._exclude() &amp;&amp; console.error(this.output(&#039;error&#039;, arguments));
+        },
+
+        /**
+         * Generates a log record.
+         * @memberof Logger
+         * @instance
+         * @function
+         * @param {String} level log level
+         * @param {Array} _arguments log datas
+         * @return {String}
+         */
+        output: function output(level, _arguments) {
+            var args = Array.prototype.slice.call(_arguments);
+
+            for (var i = 0; i &lt; args.length; i++) {
+                if (args[i] === undefined) {
+                    args[i] = &#039;&quot;undefined&quot;&#039;;
+                } else if (args[i] === null) {
+                    args[i] = &#039;&quot;null&quot;&#039;;
+                } else if ((args[i] instanceof Error) || (args[i].constructor.name === &#039;Error&#039;)) {
+                    var err = args[i];
+                    err.stack ? args[i] = err.stack : args[i] = err.message;
+                } else if (typeof args[i] === &#039;object&#039;) {
+                    args[i] = args[i].constructor.name + &#039;:&#039; + JSON.stringify(args[i]);
+                }
+            }
+
+            var suffix = &#039;&#039;;
+            var stack = new Error().stack;
+            var lines, line, idx;
+            if (stack) {
+                lines = stack.split(&#039;\n&#039;);
+                if (lines[3]) {
+                    line = lines[3];
+                    idx = line.indexOf(&#039;(&#039;);
+                    if (idx &gt;= 0) {
+                        suffix = line.substring(idx);
+                        if (suffix.charAt(suffix.length - 1) !== &#039;)&#039;) {
+                            suffix = &#039;(&#039; + suffix + &#039;)&#039;;
+                        }
+                    } else {
+                        suffix = &#039;(&#039; + line.replace(/[ ]*at /, &#039;&#039;) + &#039;)&#039;;
+                    }
+                } else if (lines[2]) {
+                    line = lines[2];
+                    idx = line.indexOf(&#039;@&#039;);
+                    if (idx &gt;= 0) {
+                        suffix = line.substring(idx + 1);
+                        suffix = &#039; (&#039; + suffix + &#039;)&#039;;
+                    }
+
+                }
+            }
+
+            return &#039;[&#039; + level + &#039;][&#039; + this.category + &#039;] &#039; + args.join(this.separator) + &#039; &#039; + suffix;
+        }
+    };
+
+
+    /**
+     * Logging model
+     * @class
+     * @name LogCafe
+     */
+    var LogCafe = function LogCafe(config) {
+        this.initialize(config);
+    };
+    LogCafe.prototype = {
+        /**
+         * Logging model
+         * @memberof LogCafe
+         * @instance
+         */
+        initialize: function initialize(config) {
+            this.config = config;
+            this.loggers = {};
+        },
+
+        /**
+         * Setting up a configuration file.
+         * @memberof LogCafe
+         * @instance
+         * @function
+         * @public
+         * @param {JSON} config config data
+         */
+        setConfigure: function setConfigure(config) {
+            this.config = config;
+            return this;
+        },
+
+        /**
+         * Get Logger
+         * @memberof LogCafe
+         * @instance
+         * @function
+         * @public
+         * @param {String} category
+         * @return {Logger}
+         */
+        getLogger: function getLogger(category) {
+            if (this.loggers[category]) {
+                return this.loggers[category];
+            }
+            this.loggers[category] = new Logger(category, this.config);
+            return this.loggers[category];
+
+        }
+    };
+
+        /**
+         * Version
+         * @memberof LogCafe
+         * @public
+         */
+    LogCafe.VERSION = &#039;0.6.7&#039;;
+
+    if (typeof define === &#039;function&#039; &amp;&amp; define.amd) {
+        // requirejs
+        define(function (require, exports, module) {
+            return LogCafe;
+        });
+    } else if (typeof module !== &#039;undefined&#039; &amp;&amp; module.exports) {
+        // node
+        module.exports = LogCafe;
+    } else {
+        // others, export global
+        global.LogCafe = LogCafe;
+    }
+})(this);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

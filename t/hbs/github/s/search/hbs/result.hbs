@@ -1,0 +1,57 @@
+<hr>
+{{#if author}}
+<p>Github Seach result</p>
+
+<p>Total : {{total}}</p>
+{{/if}}
+{{#each result}}
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <a href="https://github.com/{{full_name}}" target="_blank">{{full_name}}</a>
+    </div>
+    <div class="panel-body">
+      <p>{{description}}</p>
+    </div>
+
+    <table class="table">
+      <tbody>
+        <tr><td>name</td><td>{{name}}</td></tr>
+        <tr><td>clone_url</td><td>{{clone_url}}</td></tr>
+        <tr><td>created_at</td><td>{{created_at}}</td></tr>
+        <tr><td>default_branch</td><td>{{default_branch}}</td></tr>
+        <tr><td>fork</td><td>{{fork}}</td></tr>
+        <tr><td>forks</td><td>{{forks}}</td></tr>
+        <tr><td>forks_count</td><td>{{forks_count}}</td></tr>
+        <tr><td>git_url</td><td>{{git_url}}</td></tr>
+        <tr><td>has_downloads</td><td>{{has_downloads}}</td></tr>
+        <tr><td>has_issues</td><td>{{has_issues}}</td></tr>
+        <tr><td>has_wiki</td><td>{{has_wiki}}</td></tr>
+        <tr><td>homepage</td><td>{{homepage}}</td></tr>
+        <tr><td>html_url</td><td><a href="{{html_url}}">{{html_url}}</a></td></tr>
+        <tr><td>id</td><td>{{id}}</td></tr>
+        <tr><td>language</td><td>{{language}}</td></tr>
+        <tr><td>master_branch</td><td>{{master_branch}}</td></tr>
+        <tr><td>mirror_url</td><td>{{mirror_url}}</td></tr>
+        <tr><td>open_issues</td><td>{{open_issues}}</td></tr>
+        <tr><td>open_issues_count</td><td>{{open_issues_count}}</td></tr>
+        <tr><td>owner avatar_url</td><td><img width="100px" height="100px" src="{{owner.avatar_url}}"></td></tr>
+        <tr><td>owner gravatar_id</td><td>{{owner.gravatar_id}}</td></tr>
+        <tr><td>owner html_url</td><td><a href="{{owner.html_url}}">{{owner.html_url}}</a></td></tr>
+        <tr><td>owner id</td><td>{{owner.id}}</td></tr>
+        <tr><td>owner login</td><td>{{owner.login}}</td></tr>
+        <tr><td>owner site_admin</td><td>{{owner.site_admin}}</td></tr>
+        <tr><td>owner type</td><td>{{owner.type}}</td></tr>
+        <tr><td>private</td><td>{{private}}</td></tr>
+        <tr><td>pushed_at</td><td>{{pushed_at}}</td></tr>
+        <tr><td>score</td><td>{{score}}</td></tr>
+        <tr><td>size</td><td>{{size}}</td></tr>
+        <tr><td>ssh_url</td><td>{{ssh_url}}</td></tr>
+        <tr><td>svn_url</td><td>{{svn_url}}</td></tr>
+        <tr><td>updated_at</td><td>{{updated_at}}</td></tr>
+        <tr><td>watchers</td><td>{{watchers}}</td></tr>
+        <tr><td>watchers_count</td><td>{{watchers_count}}</td></tr>
+      </tbody>
+    </table>
+  </div>
+{{/each}}

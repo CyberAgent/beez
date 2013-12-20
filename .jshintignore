@@ -1,0 +1,10 @@
+app.build.js
+doc.sh
+jsdoc3.json
+jshintignore
+jshintrc
+test
+tools
+templates/jsdoc3
+libs/beez-vendor
+docs

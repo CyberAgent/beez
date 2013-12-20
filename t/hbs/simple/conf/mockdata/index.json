@@ -1,0 +1,32 @@
+// $ telnet localhost 1121
+// Trying ::1...
+// telnet: connect to address ::1: Connection refused
+// Trying 127.0.0.1...
+// Connected to localhost.
+// Escape character is '^]'.
+// GET / HTTP/1.1
+//
+// HTTP/1.1 200 OK
+// X-Powered-By: Express
+// Access-Control-Allow-Origin: *
+// Access-Control-Allow-Headers: Content-Type
+// Access-Control-Allow-Methods: POST, PUT, DELETE, OPTIONS
+// Vary: Accept-Encoding
+// Content-Type: application/json; charset=utf-8
+// Content-Length: 56
+// Date: Fri, 03 May 2013 10:54:20 GMT
+// Connection: keep-alive
+//
+// {
+//   "title": "/ url access",
+//   "data": "1367578460828"
+// }
+
+{
+    "/": {
+        "get": {
+            "title": "/ url access",
+            "data": "<%= Date.now() %>"
+        }
+    }
+}

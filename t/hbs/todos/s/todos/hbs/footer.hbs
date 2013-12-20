@@ -1,0 +1,16 @@
+<span id="todo-count"><strong>{{remaining}}</strong> {{__ "remaining.todo"}}</span>
+<ul id="filters">
+  <li>
+    <a class="selected" href="#todos">{{__ "all"}}</a>
+  </li>
+  <li>
+    <a href="#todos/active">{{__ "active"}}</a>
+  </li>
+  <li>
+    <a href="#todos/completed">{{__ "completed"}}</a>
+  </li>
+</ul>
+
+{{#if completed }}
+<button id="clear-completed">{{__ "clear.completed"}} ({{completed}})</button>
+{{/if}}

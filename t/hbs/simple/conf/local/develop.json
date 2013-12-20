@@ -1,0 +1,81 @@
+{
+    "develop": { // enviroment name
+        "entrypoint": "index/index", // setting of "data-main"
+        "extend": { // Override Setting of requirejs
+            "condition": {
+                "ua": ["android","ios"] // The override criteria by UserAgent
+            },
+            // overwrite data
+            "content": {
+                "config": {
+                    "beez.core": {
+                        "url": {
+                            // OSX 10.8 internet share mode
+                            //"app":"http://192.168.2.1:1109/m/{{name}}", // application server url
+                            "api":"http://192.168.2.1:1109/p", // api server url
+                            "base":"http://192.168.2.1:1109/m/{{name}}/s", // require.js#data-main url
+                            //"stat":"http://192.168.2.1:1109/m/{{name}}/s", // static file server url (css|image|...)
+                            "vendor":"http://192.168.2.1:1109/m/{{name}}/vendor" // require.js or library url
+                        }
+                    }
+                }
+            }
+        },
+        // Setting require.js
+        "requirejs": {
+            "baseUrl": "/m/{{name}}/s",
+            "paths": {
+                "underscore": "/m/{{name}}/vendor/underscore",
+                "zepto"     : "/m/{{name}}/vendor/zepto",
+                "backbone"  : "/m/{{name}}/vendor/backbone",
+                "handlebars": "/m/{{name}}/vendor/handlebars.runtime",
+                "beez"      : "/m/{{name}}/vendor/beez"
+            },
+            "shim": {
+                "backbone": {
+                    "deps": ["underscore", "zepto"],
+                    "exports": "Backbone"
+                },
+                "zepto": {
+                    "exports": "$"
+                },
+                "underscore": {
+                    "exports": "_"
+                },
+                "handlebars": {
+                    "exports": "Handlebars"
+                }
+            },
+            "config": {
+                // configuration information used by beez
+                "beez.core": {
+                    "url": {
+                        //"app":"http://0.0.0.0:1109/m/{{name}}", // application server url
+                        "api":"http://0.0.0.0:1109/p", // api server url
+                        "base":"http://0.0.0.0:1109/m/{{name}}/s", // require.js#data-main url
+                        //"stat":"http://0.0.0.0:1109/m/{{name}}/s",// static file server url (css|image|...)
+                        "vendor":"http://0.0.0.0:1109/m/{{name}}/vendor" // require.js or library url
+                    },
+                    "defines": { // beez in the definition.
+                        "globals": { // set the global scope.
+                            "DEBUG": true
+                        }
+                    },
+                    "logging": {
+                        "level": "DEBUG",
+                        "separator": " "
+                    },
+                    // backbone#router
+                    "router": {
+                        "*default": {
+                            "route": "*default",
+                            "name": "index",
+                            "require": "index/index",
+                            "xpath": "/@/index"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

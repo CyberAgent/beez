@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>libs/beez-utils/s/beez-utils/timer.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">67.19</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">194</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">39.72</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">1.06</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/**
+ * @name timer.js&lt;utils&gt;
+ * @author Kazuma MISHIMAGI &lt;mishimagi_kazuma@cyberagent.co.jp&gt;
+ * @overview timers
+ */
+
+(function (global) {
+    define(function (require, exports, module) {
+        &#039;use strict&#039;;
+
+        var beez = require(&#039;beez.core&#039;);
+        var _ = beez.vendor._;
+        var logger = beez.getLogger(&#039;timer&#039;);
+
+        var UID = require(&#039;beez-utils/uid&#039;);
+        var uid = new UID();
+
+        var BEEZ_TIMER_ID_PROP = &#039;beez_utils_timer_id&#039;;
+
+        /**
+         * setIntervalひとつに複数のtimerを設定できる仕組みです。
+         * 現在は誤差100msとなっています
+         */
+        var Timers = function () {
+            this.running = false;
+            this._callbacks = {};
+            this._timerId = 0;
+        };
+
+        Timers.prototype = {
+
+            /**
+             * timeoutを追加する。
+             * @param {Function} callback
+             * @param {int} ms millisecond to timeout
+             * @param {Object} context
+             * @return {string} timerId
+             */
+            addTimeout: function addTimeout(callback, ms, context) {
+                var id = uid.create();
+                callback[BEEZ_TIMER_ID_PROP] = id;
+                var callbackInfo = {
+
+                    timer_id: id,
+                    callback: callback,
+                    interval: ms,
+                    time: Date.now() + ms,
+                    context: context,
+                    type: &#039;timeout&#039;,
+                    canceller: function canceller() {
+                        this.type = &#039;canceled&#039;;
+                    }
+                };
+
+                //_.bindAll(callbackInfo);
+                _.bindAll.apply(this, [callbackInfo].concat(_.methods(callbackInfo)));
+
+                this._callbacks[id] = callbackInfo;
+                this.start();
+
+                return id;
+            },
+
+            /**
+             * intervalを追加する。
+             * @param {Function} callback
+             * @param {Object} context
+             * @return {String} timerId
+             */
+            addInterval: function addInterval(callback, ms, context) {
+                var id = uid.create();
+                callback[BEEZ_TIMER_ID_PROP] = id;
+                var callbackInfo = {
+                    timer_id: id,
+                    callback: callback,
+                    interval: ms,
+                    time: Date.now() + ms,
+                    context: context,
+                    type: &#039;interval&#039;,
+                    canceller: function canceller() {
+                        this.type = &#039;canceled&#039;;
+                    }
+                };
+
+                //_.bindAll(callbackInfo);
+                _.bindAll.apply(this, [callbackInfo].concat(_.methods(callbackInfo)));
+
+                this._callbacks[id] = callbackInfo;
+                this.start();
+
+                return id;
+            },
+
+            /**
+             * intervalを解除します
+             * @param {Function|String} fnOrId addIntervalしたfunction, もしくは
+             * その際に返ったtimer_id
+             */
+            clearInterval: function clearInterval(fnOrId) {
+                var id;
+                if (typeof fnOrId === &#039;function&#039; &amp;&amp; fnOrId[BEEZ_TIMER_ID_PROP]) {
+                    id = fnOrId[BEEZ_TIMER_ID_PROP];
+                } else {
+                    id = fnOrId;
+                }
+
+                var callbackInfo = this._callbacks[id];
+                if (!callbackInfo) {
+                    throw new Error(&#039;no callback to clear&#039;);
+                }
+                callbackInfo.canceller();
+            },
+
+            /**
+             * timeoutを解除します。clearIntervalと違うのは
+             * すでにtimeoutしているなどしてclearしようとしたタイマーが
+             * 存在しなかった場合も静かに無視します。
+             * @param {Function|String} fnOrId addTimerしたfunction, もしくは
+             * その際に返ったtimer_id
+             */
+            clearTimeout: function clearInterval(fnOrId) {
+                var id;
+                if (typeof fnOrId === &#039;function&#039; &amp;&amp; fnOrId[BEEZ_TIMER_ID_PROP]) {
+                    id = fnOrId[BEEZ_TIMER_ID_PROP];
+                } else {
+                    id = fnOrId;
+                }
+
+                var callbackInfo = this._callbacks[id];
+                if (!callbackInfo) {
+                    return;
+                }
+                callbackInfo.canceller();
+
+            },
+
+            _tick: function _tick() {
+
+                var now = Date.now();
+
+                var self = this;
+                _.each(this._callbacks, function (info) {
+                    if (info.time &lt; now) { // fire
+                        if (info.type !== &#039;canceled&#039;) {
+                            if (info.context) {
+                                info.callback.call(null, info.context);
+                            } else {
+                                info.callback.call();
+                            }
+                        }
+                        if (info.type !== &#039;interval&#039;) {
+                            delete self._callbacks[info.timer_id];
+                        }
+
+                        info.time = now + info.interval;
+                    }
+
+                    return true;
+                });
+
+                if (!_.keys(this._callbacks).length) {
+                    this.stop();
+                }
+            },
+
+            /**
+             * timerをstartします。通常はaddTimeout/addIntervalした際に
+             * 自動的に実行されるので直接実行する必要はありません
+             */
+            start: function start() {
+                if (this.running) {
+                    return;
+                }
+
+                this.running = true;
+                var self = this;
+
+                var tickWrapper = function tickWrapper() {
+                    if (self.running) {
+                        self._tick();
+                        self._timerId = setTimeout(tickWrapper, 100); // @TODO
+                    }
+                };
+                tickWrapper();
+            },
+
+            /**
+             * timerをstopします。またtimeoutが実行され終わったり
+             * clearTimeout/clearIntervalによって実行待ちのコールバックが
+             * ひとつも無くなった場合は自動的にstopが実行されます
+             */
+            stop: function stop() {
+                this.running = false;
+                clearTimeout(this._timerId);
+            }
+        };
+
+        return Timers;
+    });
+})(this);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

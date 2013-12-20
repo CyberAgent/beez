@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>libs/beez-utils/s/beez-utils/index.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">72.18</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">128</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">21.78</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">0.61</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/**
+ * @name index.js&lt;beez-utils&gt;
+ * @author Kazuma MISHIMAGI &lt;mishimagi_kazuma@cyberagent.co.jp&gt;
+ * @overview Beez Utils class(define)
+ */
+
+(function (global) {
+    /**
+     * Beez utils
+     * @namespace beez.utils
+     */
+    define(function (require, module, exports) {
+        &#039;use strict&#039;;
+
+        var beez = require(&#039;beez.core&#039;);
+        var _ = beez.vendor._;
+
+        var logger = beez.getLogger(&#039;beez.utils&#039;);
+
+        // double load check
+        if (beez.utils) {
+            logger.warn(&#039;beez.utils already defined.&#039;);
+            return beez.utils;
+        }
+
+        var __Utils__ = {
+            initialize: function initialize(opts) {
+                var Browser = require(&#039;beez-utils/browser&#039;);
+                var Timers = require(&#039;beez-utils/timer&#039;);
+
+                /**
+                 * instance of Browser
+                 * @name browser
+                 * @memberof beez.utils
+                 * @type {Browser}
+                 */
+                this.browser = new Browser();
+
+                /**
+                 * class of Timers
+                 * @name Timers
+                 * @memberof beez.utils
+                 * @type {Timers}
+                 */
+                this.Timers = Timers;
+
+                this.none = beez.none;
+
+                /**
+                 * pixel ratio
+                 *
+                 * @name pixelRatio
+                 * @memberof beez.utils
+                 * @type {Timers}
+                 */
+                this.pixelRatio = global.devicePixelRatio || 1;
+                //this.htmlRatio = this.pixelRatio;
+            },
+            /**
+             * recursively copy the properties of src to dst
+             * dst properties = object : merge
+             * other properties (array, string, number .. ) : override
+             *
+             * @name copyr
+             * @memberof beez.utils
+             * @param {Object} dst
+             * @param {Object} src
+             * @return Object
+             */
+            copyr: function copyr(dst, src) {
+
+                // for each props in src
+                for (var k in src) {
+                    var dstProp = dst[k];
+                    var srcProp = src[k];
+                    if (_.isObject(dstProp) &amp;&amp; !_.isArray(srcProp)) {
+                        copyr(dst[k], src[k]); // cp recursively
+                    } else {
+                        dst[k] = src[k]; // override/add property &#039;k&#039;
+                    }
+                }
+                return dst;
+            },
+            /**
+             * To determine the type.
+             *
+             * @name is
+             * @memberof beez.utils
+             * @param {String} type
+             * @param {Object} obj
+             * @return boolean
+             * @example
+             * &gt; beez.utils.is(&#039;Null&#039;null) =&gt; true
+             * &gt; beez.utils.is(&#039;Array&#039;, []) =&gt; true
+             * &gt; beez.utils.is(&#039;Function&#039;, function () {}) =&gt; true
+             * &gt; beez.utils.is(&#039;String&#039;, &quot;&quot;) =&gt; true
+             * &gt; beez.utils.is(&#039;Number&#039;, 1) =&gt; true
+             * &gt; beez.utils.is(&#039;Boolean&#039;, true) =&gt; true
+             * &gt; beez.utils.is(&#039;Number&#039;, Date.now()) =&gt; true
+             * &gt; beez.utils.is(&#039;RegExp&#039;, /^$/) =&gt; true
+             * &gt; beez.utils.is(&#039;Null&#039;, null) =&gt; true
+             * &gt; beez.utils.is(&#039;Undefined&#039;, undefined) =&gt; true
+             *
+             */
+            is: function is(type, obj) {
+                var clas = Object.prototype.toString.call(obj).slice(8, -1);
+                return obj !== undefined &amp;&amp; obj !== null &amp;&amp; clas === type;
+            }
+        };
+
+
+        var Utils = beez.extend(
+            &#039;beez.Utils&#039;,
+            function constructor() {
+                return this.initialize();
+            }, __Utils__);
+
+        // shortcut funciton os &#039;underscore.js#isXXX&#039; function
+        _.each([&#039;Equal&#039;, &#039;Empty&#039;, &#039;Element&#039;, &#039;Arguments&#039;, &#039;Function&#039;, &#039;String&#039;, &#039;Number&#039;, &#039;Finite&#039;, &#039;Boolean&#039;, &#039;Date&#039;, &#039;RegExp&#039;, &#039;NaN&#039;, &#039;Null&#039;, &#039;Undefined&#039;], function (type) {
+            Utils.prototype[&#039;is&#039; + type] = _[&#039;is&#039; + type];
+        });
+
+        // shortcut function of &#039;is()&#039; function
+        _.each([&#039;Object&#039;, &#039;Array&#039;], function (type) {
+            Utils.prototype[&#039;is&#039; + type] = function (obj) {
+                return this.is.apply(this, [type, obj]);
+            };
+        });
+
+        beez.utils = new Utils();
+
+        return beez.utils;
+    });
+})(this);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

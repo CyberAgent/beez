@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>libs/beez-mvcr/s/beez-mvcr/imagemanager.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">72.24</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">513</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">55.89</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">2.03</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/**
+ * @fileOverview CSSManager
+ * @name imagemanager.js&lt;beez-mvcr&gt;
+ * @author Kei Funagayama &lt;funagayama_kei@cyberagent.co.jp&gt;
+ * @overview image management functions
+ */
+
+(function (global) {
+
+    define(function (require, exports, module) {
+        &#039;use strict&#039;;
+
+        var beez = require(&#039;beez.core&#039;);
+        var utils = require(&#039;beez.utils&#039;);
+        var _ = beez.vendor._;
+        var $ = beez.vendor.$;
+
+        var logger = beez.getLogger(&#039;beez.mvcr.imagemanager&#039;);
+
+        /**
+         * transparent-1px image data
+         * @type {String}
+         */
+        var transparentImageDataURI = &#039;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAMAAAAoyzS7AAAABlBMVEX///8AAABVwtN+AAAAAXRSTlMAQObYZgAAAA1JREFUeNoBAgD9/wAAAAIAAVMrnDAAAAAASUVORK5CYII=&#039;;
+
+        var _uid = 0;
+        var uid = function uid() {
+            return &#039;__beez_manager_image_uid_&#039; + _uid++;
+        };
+
+        /**
+         * Class that manages multiple Image Object. re-use function of &lt;img&gt;.
+         *
+         * @class
+         * @name ImangePool
+         * @private
+         * @param {int} size Pool size. Throw Error when exceeds the specified size. Setting &quot;0&quot;, unlimited.
+         * @throw {Error}
+         */
+        var ImangePool = beez.extend(
+            &#039;beez.mvcr.ImagePool&#039;,
+            function constructor(size, options) {
+                return this.initialize(size, options);
+            },
+            {
+                /**
+                 * Constructor
+                 *
+                 * @memberof ImangePool
+                 * @instance
+                 * @param {int} size Pool size. Throw Error when exceeds the specified size. Setting &quot;0&quot;, unlimited.
+                 * @param {Object} options for creating image
+                 */
+                initialize: function initialize(size, options) {
+                    /**
+                     * for creating image
+                     *
+                     * @memberof ImangePool
+                     * @instance
+                     * @property {Object} options
+                     */
+                    this.options = options || {};
+
+                    /**
+                     * pool limit
+                     *
+                     * @memberof ImangePool
+                     * @instance
+                     * @property {int} limit
+                     */
+                    this.limit = size;
+
+                    /**
+                     * The total number of generated HTMLImageElement
+                     *
+                     * @memberof ImangePool
+                     * @instance
+                     * @private
+                     */
+                    this._total = 0;
+
+                    /**
+                     * HTMLImageElement total number in use.
+                     *
+                     * @memberof ImangePool
+                     * @instance
+                     * @private
+                     */
+                    this._num_used = 0;
+
+                    /**
+                     * HTMLImageElement hash in use.
+                     *
+                     * @memberof ImangePool
+                     * @instance
+                     * @private
+                     */
+                    this._using = {};
+
+                    /**
+                     * Waiting for reuse HTMLImageElement
+                     *
+                     * @memberof ImangePool
+                     * @instance
+                     * @private
+                     * @return {Array}
+                     */
+                    this._unused = [];
+                },
+
+
+                /**
+                 * Generate HTMLImageElement.
+                 *
+                 * It is returned when there is recyclable HTMLImageElement.
+                 * release() is given to HTMLImageElement.
+                 * Please call release () to always While destroying HTMLImageElement.
+                 *
+                 * @memberof ImangePool
+                 * @instance
+                 * @param {Object} options for creating image
+                 * @return {HTMLImageElement}
+                 */
+                create: function create(options) {
+                    var elem;
+                    //options = options || this.options || {}; // default) not &quot;Anonymous&quot;
+                    options = options || {}; // default) not &quot;Anonymous&quot;
+
+                    if (this._unused.length &gt; 0) {
+                        elem = this._unused.pop();
+                    } else {
+                        if (this.limit &gt; 0 &amp;&amp; this._total &gt;= this.limit) {
+                            throw new beez.Error(&#039;image pool limit exceeds!&#039;);
+                        }
+                        elem = new Image();
+                        elem.__beez_manager_image_uid = uid();
+                        this._total++;
+                    }
+
+                    //elem.crossOrigin = options.crossOrigin ? options.crossOrigin : elem.crossOrigin;
+                    //elem.crossOrigin = options.crossOrigin ? options.crossOrigin : options.crossOrigin;
+
+                    if (options.crossOrigin) {
+                        elem.crossOrigin = options.crossOrigin;
+                    } else if (this.options.crossOrigin) {
+                        elem.crossOrigin = this.options.crossOrigin;
+                    }
+
+                    this._num_used++;
+                    this._using[elem.__beez_manager_image_uid] = elem;
+
+                    var self = this;
+
+                    /**
+                     * The HTMLImageelement waiting for reuse.
+                     * This function will be removed in the release() timing.
+                     */
+                    elem.release = function release() {
+                        this.crossOrigin = null; // force null!!
+                        this.src = transparentImageDataURI;
+                        self._using &amp;&amp; delete self._using[this.__beez_manager_image_uid];
+                        self._unused &amp;&amp; self._unused.push(this);
+                        self._num_used &amp;&amp; self._num_used--;
+                        delete this.release;
+                    };
+
+                    return elem;
+                },
+
+
+                /**
+                 * It is the number of HTMLImageElement(s) during use.
+                 *
+                 * @memberof ImangePool
+                 * @instance
+                 * @returns {int}
+                 */
+                living: function living() {
+                    return this._num_used;
+                },
+
+
+                /**
+                 * The total number of HTMLImageElement
+                 *
+                 * @memberof ImangePool
+                 * @instance
+                 * @returns {int}
+                 */
+                peak: function peak() {
+                    return this._total;
+                },
+
+
+                /**
+                 * Waiting for reuse of HTMLImageElement
+                 *
+                 * @memberof ImangePool
+                 * @instance
+                 * @returns {int}
+                 */
+                waiting: function waiting() {
+                    return this._unused.length;
+                },
+
+                /**
+                 * Disposes of the instance
+                 *
+                 * @memberof ImangePool
+                 */
+                dispose: function dispose() {
+                    logger.trace(this.constructor.name, &#039;dispose&#039;);
+                    // release all of using images
+                    for (var id in this._using) {
+                        this._using[id].release();
+                    }
+                    delete this._using;
+
+                    while (this._unused.length &gt; 0) {
+                        var e = this._unused.pop();
+                        delete e.__beez_manager_image_uid;
+                    }
+                    delete this._unused;
+
+                    delete this._num_used;
+                    delete this._total;
+                    delete this._limit;
+                }
+            }
+        );
+
+
+
+        /**
+         * Image management class. asynchronous
+         *
+         * @class
+         * @name ImageManagerAsync
+         * @private
+         * @extends Bucks
+         * @example
+         * var l = new ImageManagerAsync();
+         * l.load(&#039;http://...&#039;).then(res, next) {
+         *     // res[0] is loaded image
+         * }).end();
+         */
+        var ImageManagerAsync = beez.Bucks.extend(
+            &#039;beez.mvcr.ImageManagerAsync&#039;,
+            {
+                /**
+                 * Constructor
+                 * @memberof ImageManagerAsync
+                 */
+                initialize: function initialize(imageManager) {
+                    this.imageManager = imageManager;
+                },
+
+                /**
+                 * Load the image.
+                 *
+                 * @memberof ImageManagerAsync
+                 * @instance
+                 * @param {String} url
+                 * @param {Object} options for creating image
+                 * @return {Bucks}
+                 * @example
+                 * loader.loadOne(&#039;http://...&#039;).then(function onload(res, next) {
+                 *     // res is a loaded-image
+                 *     // next(null, ...)
+                 * }).error(function onError(err, next) {
+                 *     // on error
+                 * }).end();
+                 */
+                loadOne: function loadOne(url, options) {
+
+                    var img = this.imageManager.create(options);
+                    var self = this;
+
+                    return this.add(function loadTask(err, res, next) {
+
+                        var $img = $(img);
+
+                        var onLoad = function onLoad() {
+                            $img.off();
+                            next(null, img);
+                        };
+                        var onError = function onError(ev) {
+                            var src = img.src;
+
+                            $img.off();
+                            img.release();
+                            next(new beez.Error(&#039;error on load image. src:&#039; + src));
+                        };
+                        var onAbort = function onAbort(ev) {
+                            var src = img.src;
+
+                            $img.off();
+                            img.release();
+                            next(new beez.Error(&#039;image loading aborted. src:&#039; + src));
+                        };
+
+                        $img.on(&#039;load&#039;, onLoad);
+                        $img.on(&#039;error&#039;, onError);
+                        $img.on(&#039;abort&#039;, onAbort);
+
+                        // start loading
+                        var _url = self.imageManager.imageUrl(url); // replace ${ratio}
+                        img.src = _url;
+                    });
+                },
+
+                /**
+                 * Load the image(s).
+                 *
+                 * @memberof ImageManagerAsync
+                 * @instance
+                 * @param {String|Array} url ex) Array: [&#039;hoge.png&#039;, &#039;foo.png&#039;]
+                 * @param {Object|Array} options ex) Array: [{crossOrigin: &quot;Anonymous&quot;}, {crossOrigin: &quot;&quot;}]
+                 * @return {Bucks} ex.) {res:[HTMLImageElement, null, null, HTMLImageElement], err:[null, Error, Error, HTMLImageElement]}
+                 */
+                load: function load(url, options) {
+
+                    // param check and Array-nize
+                    if (_.isString(url)) {
+                        url = [url];
+                    } else if (!_.isArray(url)) {
+                        throw new beez.Error(&#039;url can be String or Array of string.&#039;);
+                    }
+
+                    // param check and Array-nize
+
+                    options = options || {};
+                    if (!_.isArray(options)) {
+                        if (_.isObject(options)) {
+                            options = [options];
+                        } else {
+                            throw new beez.Error(&#039;options can be Object or Array of object.&#039;);
+                        }
+                    }
+
+                    // make tasks
+                    var self = this;
+                    var tasks = _.map(url, function makeTask(u, idx) {
+                        return function loadTask(err, res, next) {
+                            new ImageManagerAsync(self.imageManager)
+                                .loadOne(u, options[idx])
+                                .end(function complete(err, res) {
+                                    next(err, res[0]);
+                                }, function onError(e) {
+                                    next(e);
+                                });
+                        };
+                    });
+
+                    // parallel load
+                    return this.parallel(tasks);
+                },
+
+                /**
+                 * dispose this ImageManagerAsync
+                 *
+                 * @memberof ImageManagerAsync
+                 * @instance
+                 * @private
+                 */
+                dispose: function dispose() {
+                    delete this.imageManager;
+                }
+            }
+        );
+
+
+
+        /**
+         * Image management class. synchronism
+         *
+         * @class
+         * @name ImageManager
+         * @param {Object} [options]
+         * @param {int} [options.size] Pool size. Throw Error when exceeds the specified size. Setting &quot;0&quot;, unlimited.
+         */
+        var ImageManager = beez.extend(
+            &#039;beez.mvcr.ImageManager&#039;,
+            function constructor(options) {
+                return this.initialize(options);
+            },
+            {
+                /**
+                 * Constructor
+                 *
+                 * @memberof ImageManager
+                 * @param {Object} options for creating image
+                 * @example
+                 * var options = {
+                 *     size: 10,
+                 *     pool: {
+                 *         crossOrigin: &#039;Anonymous&#039;
+                 *     }
+                 * };
+                 *     var manager = new ImageManager(options);
+                 *
+                 *
+                 */
+                initialize: function initialize(options) {
+                    var size = (options &amp;&amp; options.size) ? options.size : 0;
+                    var pool = (options &amp;&amp; options.pool) ? options.pool : {};
+                    this.pool = new ImangePool(size, pool);
+                },
+
+                /**
+                 * Replaced by pixcelRatio of the URL $ {ratio}
+                 *
+                 * @memberof ImageManager
+                 */
+                imageUrl: function imageUrl(url) {
+                    return url.replace(&#039;${ratio}&#039;, beez.utils.pixelRatio * 10);
+                },
+
+                /**
+                 * Generate HTMLImageElement.
+                 *
+                 * It is returned when there is recyclable HTMLImageElement.
+                 * release() is given to HTMLImageElement.
+                 * Please call release () to always While destroying HTMLImageElement.
+                 *
+                 * @memberof ImageManager
+                 * @param {Object} options for creating image
+                 * @instance
+                 */
+                create: function create(options) {
+                    return this.pool.create(options);
+                },
+
+
+                /**
+                 * It is the number of HTMLImageElement(s) during use.
+                 *
+                 * @memberof ImageManager
+                 * @instance
+                 * @returns {int}
+                 */
+                living: function living() {
+                    return this.pool.living();
+                },
+
+
+                /**
+                 * The total number of HTMLImageElement
+                 *
+                 * @memberof ImageManager
+                 * @instance
+                 * @returns {int}
+                 */
+                peak: function peak() {
+                    return this.pool.peak();
+                },
+
+
+                /**
+                 * Waiting for reuse of HTMLImageElement
+                 *
+                 * @memberof ImageManager
+                 * @instance
+                 * @returns {int}
+                 */
+                waiting: function waiting() {
+                    return this.pool.waiting();
+                },
+
+
+                /**
+                 * Load the image(s).
+                 *
+                 * @memberof ImageManager
+                 * @instance
+                 * @param {String|Array} url
+                 * @param {Object|Array} options ex) Array: [{crossOrigin: &quot;Anonymous&quot;}, {crossOrigin: &quot;&quot;}]
+                 * @return {ImageManagerAsync}
+                 * @see ImageManagerAsync#load
+                 */
+                load: function load(url, options) {
+                    return new ImageManagerAsync(this).load(url, options);
+                },
+
+
+                /**
+                 * Load the image(s).
+                 *
+                 * @memberof ImageManager
+                 * @instance
+                 * @param {String} url
+                 * @param {Object} options
+                 * @return {ImageManagerAsync}
+                 * @see ImageManagerAsync#loadOne
+                 */
+                loadOne: function loadOne(url, options) {
+                    return new ImageManagerAsync(this).loadOne(url, options);
+                },
+
+                /**
+                 * dispose this ImageManagerAsync
+                 *
+                 * @memberof ImageManager
+                 * @instance
+                 * @private
+                 */
+                dispose: function dispose() {
+                    logger.trace(this.constructor.name, &#039;dispose&#039;);
+                    this.pool.dispose();
+                    delete this.pool;
+                }
+            }
+        );
+
+        return {
+            ImageManager: ImageManager,
+            ImageManagerAsync: ImageManagerAsync
+        };
+    });
+})(this);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

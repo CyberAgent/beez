@@ -1,0 +1,63 @@
+{
+    "release": { // enviroment name
+        "entrypoint": "index/index", // setting of "data-main"
+        "extend": { // Override Setting of requirejs
+        },
+        // Setting require.js
+        "requirejs": {
+            "baseUrl": "/local",
+            "paths": {
+                "underscore": "vendor/underscore",
+                "zepto"     : "vendor/zepto",
+                "backbone"  : "vendor/backbone",
+                "handlebars": "vendor/handlebars.runtime",
+                "beez"      : "vendor/beez"
+            },
+            "shim": {
+                "backbone": {
+                    "deps": ["underscore", "zepto"],
+                    "exports": "Backbone"
+                },
+                "zepto": {
+                    "exports": "$"
+                },
+                "underscore": {
+                    "exports": "_"
+                },
+                "handlebars": {
+                    "exports": "Handlebars"
+                }
+            },
+            "config": {
+                // configuration information used by beez
+                "beez.core": {
+                    "url": {
+                        //"app":"/", // application server url
+                        "api":"/", // api server url
+                        "base":"/local", // require.js#data-main url
+                        //"stat":"/local",// static file server url (css|image|...)
+                        "vendor":"/local/vendor" // require.js or library url
+                    },
+                    "defines": { // beez in the definition.
+                        "globals": { // set the global scope.
+                            "DEBUG": false
+                        }
+                    },
+                    "logging": {
+                        "level": "DEBUG",
+                        "separator": " "
+                    },
+                    // backbone#router
+                    "router": {
+                        "*default": {
+                            "route": "*default",
+                            "name": "index",
+                            "require": "index/index",
+                            "xpath": "/@/index"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

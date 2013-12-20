@@ -1,0 +1,28 @@
+{
+    "name": "beez-mvcr",
+    "version": "1.0.8",
+    "description": "It is the MVCR libraries that depend on Beez Project.",
+    "keywords": [
+        "beez",
+        "beez.mvcr",
+        "mvc",
+        "browser",
+        "mobile",
+        "backbone.js",
+        "development"
+    ],
+    "dependencies": {
+        "requirejs": ">=2.1.4"
+    },
+    "devDependencies": {
+        "mocha": ">=1.13.0",
+        "chai": ">=1.8.1",
+        "jshint": ">=0.7.0",
+        "jsdoc": "git+https://github.com/jsdoc3/jsdoc.git"
+    },
+    "engines": {
+        "node": ">=0.8.0",
+        "npm": ">=1.1.0"
+    },
+    "private": true
+}

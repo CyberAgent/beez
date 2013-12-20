@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>libs/beez-core/s/beez-core/bucks.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">69.42</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">657</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">70.48</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">2.93</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/**
+ * @name bucks.js
+ * @author Kazuma MISHIMAGI &lt;mishimagi_kazuma@cyberagent.co.jp&gt;
+ * copyright (c) Cyberagent Inc.
+ * @overview Async chain utility for node and the browser. (amd support)
+ */
+
+(function (global) {
+    &#039;use strict&#039;;
+
+    // no-op function
+    var none = function none() {};
+
+
+    /**
+     * 配列かどうかを返します
+     * @function
+     * @private
+     * @param {*} obj
+     * @return {boolean}
+     */
+    var isArray = Array.isArray || function isArray(obj) {
+        return obj.toString() === &#039;[object Array]&#039;;
+    };
+
+    /**
+     * 配列が空であればtrueを返します
+     * @function
+     * @private
+     * @param {Array} arr
+     * @return {boolean}
+     */
+    var isArrayEmpty = function isArrayEmpty(arr) {
+        return (arr.length === 0);
+    };
+
+    var logError = function logError(e) {
+        if (e.stack) {
+            console.error(e.stack);
+        } else if (e.message) {
+            console.error(e.message);
+        } else {
+            console.error(e);
+        }
+    };
+
+
+    var _uid = 0;
+    var uid = function uid() {
+        return &#039;__bucks__&#039; + _uid++;
+    };
+
+    /**
+     * Bucks chain constructor.
+     * @name Bucks
+     * @constructor
+     */
+    var Bucks = function Bucks(params) {
+        this._tasks = [];
+        this._taskcount = 0;
+        this._results = [];
+        this.callback = none;
+        this.failure  = none;
+        this._alive = true;
+        this.__id = uid();
+        Bucks.living[this.__id] = this;
+        this.initialize(params);
+    };
+
+    /**
+     * bucks.js version
+     * @memberof Bucks
+     * @static
+     */
+    Bucks.VERSION = &#039;0.8.2&#039;;
+
+    /**
+     * if set `true`, uncaught errors are logged
+     * @memberof Bucks
+     * @static
+     */
+    Bucks.DEBUG = false;
+
+    /**
+     * 実行中bucksオブジェクト群
+     * @memberof Bucks
+     * @static
+     */
+    Bucks.running = {};
+
+    /**
+     * 存在するがまだ`end`がコールされていないbucksオブジェクト群
+     * @memberof Bucks
+     * @static
+     */
+    Bucks.living = {};
+
+    /**
+     * onErrorが設定されているか
+     * @memberof Bucks
+     * @static
+     */
+    Bucks._isOnError = false;
+
+    /**
+     * すべての例外をcatchする関数
+     * @memberof Bucks
+     * @static
+     */
+    Bucks.onError = function onError(onError) {
+        var self = this;
+        (function (isOnError) {
+            Bucks._onError = onError;
+            Bucks._isOnError = isOnError;
+        })(true);
+    };
+
+    // prototype implementation
+    Bucks.prototype = {
+
+        /**
+         * Override Me to initialize
+         * @method
+         * @instance
+         * @memberof Bucks
+         */
+        initialize: none,
+
+        /**
+         * taskの引数をラップして共通化します。
+         * @memberof Bucks
+         * @instance
+         * @private
+         * @param {Function} task ex) task(err, res, next) | task(err, res) | task(err) | task()
+         * @throws {Error} args length invalid
+         * @return {function task(err, res, next)}
+         */
+        _normalizeTask: function _normalizeTask(task) {
+            var _task = task;
+            if (task.length &lt; 3) {
+                _task = function _task(err, res, next) {
+                    // wrap task with no callback
+                    var result = task.call(null, err, res);
+                    next.call(null, null, result);
+                };
+            } else if (task.length === 3) {
+
+                // normal
+                _task = task;
+
+            } else if (task.length === 4) {
+
+                // with index
+                _task = function _task(err, res, next, index) {
+                    task.call(null, err, res, next, index);
+                };
+
+            } else {
+                throw new Error(&#039;args length invalid&#039;);
+            }
+            return _task;
+        },
+
+
+        /**
+         * thenのコールバックをラップして引数を共通化します
+         * @memberof Bucks
+         * @instance
+         * @private
+         * @param {Function} onSuccess ex) onSuccess(res, next) | onSuccess(res) | onSuccess()
+         * @throws {Error} args length invalid
+         * @return {function onSuccess(res, next)} wrappedTask
+         */
+        _normalizeSuccess: function _normalizeSuccess(onSuccess) {
+            var _onSuccess = onSuccess;
+            if (onSuccess.length &lt; 2) {
+                _onSuccess = function (res, next) {
+                    var result = onSuccess(res);
+                    next(null, result);
+                };
+            } else if (onSuccess.length === 2) {
+                _onSuccess = onSuccess;
+            } else {
+                throw new Error(&#039;args length invalid&#039;);
+            }
+            return _onSuccess;
+        },
+
+
+        /**
+         * errorのコールバックをラップして引数を共通化します
+         * @memberof Bucks
+         * @instance
+         * @private
+         * @param {Function} onError ex) onError(err, next)
+         * @throws {Error} args length invalid
+         * @return {function onError(err, next)} wrappedTask
+         */
+        _normalizeError: function _normalizeError(onError) {
+            var _onError = onError;
+            if (onError.length &lt; 2 || 3 &lt; onError.length) {
+                throw new Error(onError.name + &#039;: args length invalid. should be: onError(err, next)&#039;);
+            }
+            return _onError;
+        },
+
+
+        /**
+         * タスクを追加します。
+         * @memberof Bucks
+         * @instance
+         * @param {Function} task taskの形式は `task(err, res, next)`,
+         * taskのcallbackであるnextの形式は `next(err, res)`
+         * @throws {Error} args length invalid
+         * @return {Bucks}
+         */
+        add: function add(task) {
+            if (!this._alive) {
+                throw new Error(&#039;this bucks object already destroyed.&#039;);
+            }
+            var _task = this._normalizeTask(task);
+            this._tasks.push(_task);
+            return this;
+        },
+
+
+        /**
+         * 前のタスクがエラーなく成功した場合のみ呼ばれるタスクを追加します
+         * @memberof Bucks
+         * @instance
+         * @param {Function} onSuccess `onSuccess(res, next)`. `next(err, res)`
+         * @throws {Error} args length invalid
+         * @return {Bucks}
+         */
+        then: function then(onSuccess) {
+            var _onSuccess = this._normalizeSuccess(onSuccess);
+            return this.add(function onSuccessTask(err, res, next) {
+                if (err) {
+                    // pass this error to next task
+                    next(err);
+                } else {
+                    // call onSuccess
+                    _onSuccess(res, next);
+                }
+            });
+        },
+
+        /**
+         * 空のタスクを追加します。
+         * @memberof Bucks
+         * @instance
+         * @return Bucks
+         */
+        empty: function empty() {
+            return this.then(function emptyTask() {});
+        },
+
+        /**
+         * 前のタスクがエラーだった場合のみ呼ばれるタスクを追加します
+         * @memberof Bucks
+         * @instance
+         * @param {Function} onError `onError(err, next)`. `next(err, res)`
+         * @throws {Error} args length invalid
+         * @return {Bucks}
+         */
+        error: function error(onError) {
+            var _onError = this._normalizeError(onError);
+            return this.add(function onErrorTask(err, res, next) {
+                if (err) {
+                    // call onError
+                    _onError(err, next);
+                } else {
+                    // pass this result to next
+                    next(err, res);
+                }
+            });
+        },
+
+
+        /**
+         * 次のタスクを実行します
+         * @memberof Bucks
+         * @instance
+         * @private
+         * @param {Object} err previous error
+         * @param {*} res previous result
+         * @return {Bucks}
+         */
+        _iterator: function _iterator(err, res) {
+
+            if (!this._alive) {
+                throw new Error(&#039;this bucks object already destroyed.&#039;);
+            }
+
+            //taskから渡ってきたresを配列に保持して最後に返す
+            res ? this._results.push(res) : this._results.push(null);
+
+            var task  = this._tasks.shift();
+
+            if (!task) { // end of task
+                return this.destroy(err);
+            }
+
+            try {
+                var self = this;
+                // handle task
+                task(err, res, function (err, res) {
+                    self._iterator(err, res);
+                    return this;
+                }, this._taskcount++);
+
+            } catch (exception) {
+
+                if (!this._results) {
+                    // this instance already destroyed.
+                    // this exception is uncaught exception.
+                    if (Bucks.DEBUG) {
+                        // if DEBUG, logging
+                        logError(exception);
+                    }
+                    if (Bucks._isOnError) {
+                        Bucks._onError(exception, this);
+                    } else {
+                        throw exception;
+                    }
+                }
+
+                // handle error
+                this._iterator(exception, null);
+            }
+            return this;
+        },
+
+
+        /**
+         * @TODO implement
+         */
+        debug: function debug() {
+            return this;
+        },
+
+
+        /**
+         * 複数タスクを並行して実行します。各タスクの結果が　{res:[], err:[]}
+         * として次に渡ります。res, errはそれぞれタスクと同じサイズの配列で
+         * 結果が無い部分はnullになります。
+         * @memberof Bucks
+         * @instance
+         * @param {Array} tasks タスクの配列です。タスクの形式は addと同様です
+         * @return {Bucks}
+         */
+        parallel: function parallel(tasks) {
+
+
+            if (!isArray(tasks)) {
+                throw new Error(&#039;tasks is not array.&#039;);
+            }
+
+            if (isArrayEmpty(tasks)) {
+                return this.add(function passEmpty(err, res, next) {
+                    next(null, new ParallelHandler(0).resultObj);
+                });
+            }
+
+            // normalize each task
+            for (var i = 0, l = tasks.length; i &lt; l; i++) {
+                var t = tasks[i];
+                tasks[i] = this._normalizeTask(t);
+            }
+
+            return this.add(function callParallel(err, res, next) {
+
+                var parallelHandler = new ParallelHandler(tasks.length);
+                parallelHandler.onFinish(function onFinishParallel(resultObj) {
+
+                    // pass a latest error, if exists
+                    var e;
+                    for (var i = 0, l = resultObj.err.length; i &lt; l; i++) {
+                        var anError = resultObj.err[i];
+                        if (anError !== undefined &amp;&amp; anError !== null) {
+                            e = anError;
+                        }
+                    }
+                    next(e, resultObj);
+                });
+
+                tasks.forEach(function callEachTask(t, idx) {
+
+                    setTimeout(function callTaskAsync() { // call async
+                        new Bucks().add(t).end(function (e, r) {
+                            if (e) {
+                                parallelHandler.successOne(idx, e, null);
+                            } else {
+                                parallelHandler.successOne(idx, null, r[0]);
+                            }
+                        });
+                    }, 0);
+                });
+            });
+        },
+
+
+        /**
+         * 複数タスクを配列でaddするメソッドです。
+         * @memberof Bucks
+         * @instance
+         * @param {Array} tasks タスクの配列です。タスクの形式は addと同様です
+         * @return {Bucks}
+         * @example
+         * var t1 = function t1(err, res, next) {
+         *     return &#039;t1&#039;;
+         * };
+         * var t2 = funciton t2(err, res, next) {
+         *     return &#039;t2&#039;;
+         * };
+         * new Bucks.waterfall([t1, t2]).end(function finish(err, ress) {
+         *     // ress =&gt; [&#039;t1&#039;, &#039;t2&#039;]
+         * });
+         *
+         * // same as
+         * new Bucks.add(t1).add(t2).end(function finish(err, ress) {
+         *     // ress =&gt; [&#039;t1&#039;, &#039;t2&#039;]
+         * });
+         */
+        waterfall: function waterfall(tasks) {
+
+            if (!isArray(tasks)) {
+                throw new Error(&#039;tasks is not array.&#039;);
+            }
+
+            if (isArrayEmpty(tasks)) {
+                return this.add(function passEmpty(err, res, next) {
+                    next(null, []);
+                });
+            }
+
+            // normalize and add each task
+            for (var i = 0, l = tasks.length; i &lt; l; i++) {
+                tasks[i] = this._normalizeTask(tasks[i]);
+
+                this.add(tasks[i]);
+            }
+
+            return this;
+        },
+
+
+        /**
+         * msミリ秒だけ次の処理を遅延させます
+         * @memberof Bucks
+         * @instance
+         * @param {int} ms 遅延させる時間[ms] default) 0
+         * @return {Bucks}
+         */
+        delay: function delay(ms) {
+            return this.add(function (err, res, next) {
+                setTimeout(function () {
+                    next(err, res);
+                }, ms || 0);
+            });
+        },
+
+
+        /**
+         * OVERRIDE ME.
+         * チェイン破棄時に行いたい処理があれば
+         * オーバーライドしてください
+         * @method
+         * @memberof Bucks
+         * @instance
+         */
+        dispose: none,
+
+
+        /**
+         * このオブジェクトを破棄して
+         * 最終コールバックをコールします
+         * @memberof Bucks
+         * @instance
+         * @private
+         * @param {Error} [err] エラーがあれば渡す
+         * @return {Bucks}
+         */
+        destroy: function destroy(err) {
+            if (!this._alive) {
+                return this;
+            }
+            var ress = this._results;
+            var callback = this.callback;
+            var failure  = this.failure;
+            var dispose = this.dispose;
+
+            this._tasks = null;
+            this._taskcount = 0;
+            this._results = null;
+            this.callback = none;
+            this.failure = none;
+            this.dispose = none;
+
+            // @TODO: Change where to run to finally.
+            //dispose.call(this); // run the &quot;dispose()&quot;
+
+            ress.shift(); // remove null-result created on first iterate
+
+            try {
+                if (callback) {
+                    callback(err, ress);
+                } else if (err) {
+                    // if err and no callback,
+                    // throw to exec failure callback
+                    throw err;
+                }
+            } catch (ex) {
+                if (failure) {
+                    try {
+                        failure(ex);
+                    } catch (ex1) {
+                        if (Bucks._isOnError) {
+                            Bucks._onError(ex1, this);
+                        } else {
+                            throw ex1;
+                        }
+                    }
+                } else {
+                    // if err and no failure callback
+                    // throw it
+                    if (Bucks.DEBUG) {
+                        // if DEBUG, logging
+                        logError(ex);
+                    }
+                    if (Bucks._isOnError) {
+                        Bucks._onError(ex, this);
+                    } else {
+                        throw ex;
+                    }
+
+                }
+            } finally {
+
+                try {
+                    dispose.call(this); // run the &quot;dispose()&quot;
+                } catch (ex1) {
+                    if (Bucks._isOnError) {
+                        Bucks._onError(ex1, this);
+                    } else {
+                        throw ex1;
+                    }
+                }
+
+
+                delete this._alive;
+                delete Bucks.running[this.__id];
+                delete Bucks.living[this.__id];
+                delete this.__id;
+            }
+            return this;
+        },
+
+
+        /**
+         * チェインを完了し実行を開始します
+         * @memberof Bucks
+         * @instance
+         * @param {function callback(err, res)} [callback] 最終コールバック関数 ressは各チェインの実行結果の配列
+         * @param {function errback(err)} [errback] callbackでエラーが発生した場合のハンドラ
+         */
+        end: function end(callback, errback) {
+            if (callback &amp;&amp; callback.length &lt; 1) {
+                // if callback specified, it should be `callback(err, ress)`.
+                // errが無視されると発生したエラーがどこにも出ずにデバッグが難しくなるので
+                // callbackには引数を1つ以上指定することを強制しています
+                throw new Error(&#039;callback args length invalid. should be `callback(err, ress)` or `callback(err)`.&#039;);
+            }
+
+            var self = this;
+
+            this.callback = callback;
+            this.failure  = errback;
+
+            if (!this._tasks || !this._tasks.length) {
+                var err = new Error(&#039;task is empty. add(task) first. if theres no task to execute but end is desired, empty() may be useful&#039;);
+                this.destroy(err, null);
+                return callback(err);
+            }
+
+            // add as running
+            Bucks.running[this.__id] = this;
+
+            this._iterator(); //execute
+
+            return undefined;
+        }
+    };
+
+    /**
+     * parallel実行待ちをするためのクラスです。
+     * 予め決められたsizeだけsuccessOneが呼ばれるとonFinishがコールされます。
+     * @name ParallelHandler
+     * @constructor
+     * @private
+     * @param {int} size  完了待ち数
+     */
+    var ParallelHandler = function ParallelHandler(size) {
+        this._results = [];
+        this._errors = [];
+        this._waiting = size;
+    };
+
+    ParallelHandler.prototype = {
+
+        /**
+         * 全件完了するとコールされるコールバックを設定します。
+         * @memberof ParallelHandler
+         * @instance
+         * @param {Function} callback callbackの形式はcallback({err:[], res:[]});
+         */
+        onFinish: function onFinish(callback) {
+            this._onFinish = callback;
+        },
+
+        /**
+         * 1件完了したことをこのParallelHandlerに通知します。
+         * @memberof ParallelHandler
+         * @instance
+         * @param {int} idx 完了したタスクの番号
+         * @param {Object} err エラーだった場合エラーオブジェクト
+         * @param {Object} res resultオブジェクト
+         */
+        successOne: function successOne(idx, err, res) {
+            this._errors[idx] = err;
+            this._results[idx] = res;
+            this._waiting--;
+            if (this._waiting &lt;= 0) {
+                this._onFinish.call(null, this.resultObj);
+            }
+        }
+    };
+
+    /**
+     * 現在の状態のresultObjを返します
+     * @memberof ParallelHandler
+     * @name resultObj
+     * @instance
+     * @property {{err:[], res:[]}} resultObj {err:[], res:[]}の形式
+     */
+    ParallelHandler.prototype.__defineGetter__(&#039;resultObj&#039;, function resultObj() {
+        return {err: this._errors, res: this._results};
+    });
+
+
+    if (typeof define === &#039;function&#039; &amp;&amp; define.amd) {
+        // requirejs
+        define(function (require, exports, module) {
+            return Bucks;
+        });
+    } else if (typeof module !== &#039;undefined&#039; &amp;&amp; module.exports) {
+        // node
+        module.exports = Bucks;
+    } else {
+        // others, export global
+        global.Bucks = Bucks;
+    }
+
+})(this);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

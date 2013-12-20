@@ -1,0 +1,87 @@
+{
+    "name": "beez",
+    "version": "1.0.8",
+    "description": "The framework for mobile browser faster development.",
+    "keywords": [
+        "beez",
+        "browser",
+        "mobile",
+        "backbone",
+        "require.js",
+        "development"
+    ],
+    "homepage": "https://github.com/CyberAgent/beez",
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "https://raw.github.com/CyberAgent/beez/master/LICENSE"
+        }
+    ],
+    "bugs": {
+        "email": "funagayama_kei@cyberagent.co.jp",
+        "url": "https://github.com/CyberAgent/beez/issues"
+    },
+    "author": {
+        "name": "CyberAgent, Inc",
+        "email": "npm@cyberagent.co.jp",
+        "url": "http://www.cyberagent.co.jp/"
+    },
+    "contributors": [
+        {
+            "name": "Kei Funagayama",
+            "email": "funagayama_kei@cyberagent.co.jp",
+            "url": "https://github.com/fkei"
+        },
+        {
+            "name": "Kazuma Mishimagi",
+            "email": "mishimagi_kazuma@cyberagent.co.jp",
+            "url": "https://github.com/maginemu"
+        },
+        {
+            "name": "HIRAKI Satoru",
+            "email": "hiraki_satoru@cyberagnet.co.jp",
+            "url": "https://github.com/Layzie"
+        },
+        {
+            "name": "Yuhei Aihara",
+            "email": "aihara_yuhei@cyberagent.co.jp",
+            "url": "https://github.com/yuhei-a"
+        }
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/CyberAgent/beez.git"
+    },
+    "dependencies": {
+        "bucks": "~0.8.1",
+        "beezlib": "~0.8.2",
+        "requirejs": "~2.1.0",
+        "underscore": "~1.5.0",
+        "colors": "~0.6.0",
+        "commander": "~2.0.0",
+        "handlebars": "~1.1.0",
+        "jsdoc": "~3.2.2",
+        "hbs": "~2.4.0",
+        "jsonminify": "~0.2.1"
+    },
+    "devDependencies": {
+        "plato": "~0.6.1",
+        "jshint": "~2.3.0",
+        "mocha": "~1.14.0",
+        "chai": "~1.8.0"
+    },
+    "engines": {
+        "node": "~0.10.1",
+        "npm": "~1.1.0"
+    },
+    "bin": {
+        "beez-project": "t/project.js",
+        "beez-stylus2css": "t/stylus2css.js",
+        "beez-hbs2hbsc": "t/hbs2hbsc.js",
+        "beez-ratioresize": "t/ratioresize.js",
+        "beez-csssprite": "t/csssprite.js",
+        "beez-ignore": "t/ignore.js",
+        "beez-deploy": "t/deploy.js"
+    },
+    "main": "./s/beez/index.js"
+}

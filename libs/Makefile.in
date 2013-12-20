@@ -1,0 +1,73 @@
+#
+# Beez Core: Makefile
+#
+
+PROJECTNAME="beez-core"
+DIST="dist"
+RELEASE="release"
+REPORT="report"
+
+__r_js=node_modules/requirejs/bin/r.js
+__jshint=node_modules/jshint/bin/jshint
+
+
+R_JS_CONFIG=build.js
+DIST_FILE=dist/beez-core/index.js
+NONE_RELEASE_FILE=release/beez.core.js
+OPTIMIZE_RELEASE_FILE=release/beez.core.min.js
+
+
+all: clean init jshint release last
+release: release-none release-uglify
+
+init:
+	@echo ""
+	@echo "####################"
+	@echo "# -- target: init"
+
+	npm install .
+	mkdir -p $(RELEASE)
+	#mkdir -p $(REPORT)
+
+clean:
+	@echo ""
+	@echo "####################"
+	@echo "# -- target: clean"
+
+	rm -rf $(DIST)
+	rm -rf $(RELEASE)
+
+jshint:
+	@echo ""
+	@echo "####################"
+	@echo "# -- target: jshint"
+	$(__jshint) --config .jshintrc s
+
+
+release-none:
+	@echo ""
+	@echo "####################"
+	@echo "# -- target: build-none"
+	$(__r_js) -o $(R_JS_CONFIG) optimize=none
+	cp -f $(DIST_FILE) $(NONE_RELEASE_FILE)
+
+release-uglify:
+	@echo ""
+	@echo "####################"
+	@echo "# -- target: build-uglify"
+
+	$(__r_js) -o $(R_JS_CONFIG) optimize=uglify2
+	cp -f $(DIST_FILE) $(OPTIMIZE_RELEASE_FILE)
+
+last:
+	@echo ""
+	@echo "####################"
+	@echo "# Successful!!!!"
+	@echo "####################"
+	@echo "release output"
+	@echo " - $(NONE_RELEASE_FILE)"
+	@echo " - $(OPTIMIZE_RELEASE_FILE)"
+	@echo ""
+	@echo ""
+
+.PHONY: all release init clean jshint release-none release-uglify last

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>libs/beez-mvcr/s/beez-mvcr/router.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">69.59</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">379</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">44.99</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">1.94</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/**
+ * @fileOverview Router
+ * @name router.js&lt;beez-mvcr&gt;
+ * @author Kei Funagayama &lt;funagayama_kei@cyberagnet.co.jp&gt;
+ */
+
+(function (global) {
+    define(function (require, exports, module) {
+        &#039;use strict&#039;;
+
+        var beez = require(&#039;beez.core&#039;);
+        require(&#039;beez.mvcr&#039;);
+
+        var logger = beez.getLogger(&#039;beez.mvcr.router&#039;);
+
+        var _ = beez.vendor._;
+        var Backbone = require(&#039;backbone&#039;);
+
+        var __RouterManager__ = {
+
+
+            initialize: function initialize() {
+
+                /**
+                 * Router instance (singleton)
+                 *
+                 * @memberof RouterManager
+                 * @instance
+                 */
+                this.router = undefined;
+
+                /**
+                 * Router setup is complete
+                 *
+                 * @memberof RouterManager
+                 * @instance
+                 */
+                this.setuped = false;
+            },
+
+            /**
+             * router is initialized and routing is setuped.
+             *
+             * @memberof RouterManager
+             * @instance
+             * @param {Object} [options] overwrite merge the routes pass the set of routes
+             * @param {beez.Router} [Router] Expanded Router instance.
+             */
+            setup: function setup(options, router) {
+                var self = this;
+
+                /* jshint loopfunc: true */
+                if (this.setuped) {
+                    throw new beez.Error(&#039;Already been executed once. If you want to add a route, please refer to the function add().&#039;);
+                }
+
+                var config = beez.config.router || {};
+                var routes = _.extend(config, options); // merge
+
+                //logger.debug(&quot;router.setup&quot;, JSON.stringify(routes));
+
+                if (this.router) {
+                    return this;
+                }
+
+                // router extend or create
+                this.router = router || new beez.Router();
+
+                // register routes
+                var names = _.keys(routes);
+                for (var i = 0; i &lt; names.length; i++) {
+                    var key = names[i];
+                    var data = routes[key];
+
+                    //logger.debug(&#039;router.route&#039;, key, JSON.stringify(data));
+
+                    this.router.route(data.route, data.name, (function (name) {
+                        function proxy() {
+
+                            if (!routes.hasOwnProperty(name)) {
+                                throw new beez.Error(&#039;route map key does not exist. name: &#039; + name);
+                            }
+                            var data = routes[name];
+                            //var parameter = arguments;
+                            var parameter = Array.prototype.slice.call(arguments);
+
+
+                            logger.debug(&quot;router.proxy&quot;, data);
+
+
+                            var job = new beez.Bucks();
+
+                            job.then(function (res, next) {
+                                if (beez.manager.c.get(data.xpath)) { // Already controller loaded
+                                    return next();
+                                }
+
+                                // First controller load function
+                                if (data.async) { // Asynchronous
+
+                                    if (self.router.firstBefore.length !== 2) {
+                                        throw new beez.Error(&#039;You should pass a callback function in arguments in case of async setting is true. firestBefore(data, callback)&#039;);
+                                    }
+
+                                    logger.trace(&quot;run controller firstBefore function(async). data:&quot;, data);
+                                    self.router.firstBefore(data, function (err, res) {
+                                        next(null, res);
+                                    });
+
+                                } else { // Synchronism
+                                    logger.trace(&quot;run controller firstBefore function(sync). data:&quot;, data);
+                                    self.router.firstBefore(data);
+                                    next();
+                                }
+                            });
+
+                            job.then(function (res, next) {
+                                require([data.require], function cnavigate(_Controller) {
+
+                                    logger.debug(&quot;controller.exec&quot;, data.xpath);
+                                    var _controller = beez.manager.c.get(data.xpath);
+
+                                    var state = {};
+                                    if (_controller) {
+                                        state.isFirstBefore = true;
+                                        next(null, {Controller: _Controller, controller: _controller, state: state});
+                                        return;
+                                    }
+                                    beez.manager.c.async().create(data.xpath, _Controller).then(function (_controller) {
+                                        state.isFirstBefore = false;
+                                        next(null, {Controller: _Controller, controller: _controller, state: state});
+                                    }).end();
+                                });
+                            });
+
+                            job.then(function (res, next) {
+                                var controller = res.controller;
+                                var Controller = res.Controller;
+                                // set state
+                                data.state = res.state;
+
+                                if (!controller[data.name]) {
+                                    throw new beez.Error(&#039;&quot;&#039; + data.name + &#039;&quot; to Controller I is undefined.&#039;);
+                                }
+                                if (data.async) {
+
+                                    if (self.router.before.length !== 3) {
+                                        throw new beez.Error(&#039;You should pass a callback function in arguments in case of async setting is true. before(data, Controller, callback)&#039;);
+                                    }
+
+                                    logger.trace(&quot;run controller before function(async). data:&quot;, data);
+                                    self.router.before(data, Controller, function (err, res) { // run before function
+
+                                        parameter.push(function (err, res) { // set after callback
+                                            if (self.router.after.length !== 3) {
+                                                throw new beez.Error(&#039;You should pass a callback function in arguments in case of async setting is true. after(data, Controller, callback)&#039;);
+                                            }
+
+                                            logger.trace(&quot;run controller after function(async). data:&quot;, data);
+                                            self.router.after(data, Controller, function (err, res) { // run after function
+                                                next();
+                                            });
+                                        });
+
+                                        if (controller[data.name].length !== parameter.length) {
+                                            throw new beez.Error(&#039;&quot;Controller.&#039; + data.name + &#039;&quot; function should takes &#039; + parameter.length + &#039; arguments. (&#039; + controller[data.name].length + &#039;)&#039;);
+                                        }
+                                        controller[data.name].apply(controller, parameter);
+                                    });
+
+                                } else {
+
+                                    logger.trace(&quot;run controller before function(sync). data:&quot;, data);
+                                    self.router.before(data, Controller); // run before function
+
+                                    controller[data.name].apply(controller, parameter); // exec!!
+
+                                    logger.trace(&quot;run controller after function(sync). data:&quot;, data);
+                                    self.router.after(data, Controller); // run after function
+
+                                    next();
+                                }
+                            });
+
+                            job.end(); // fire!!!
+
+
+                            /**
+                            // processing of controller before loading.
+                            if (!beez.manager.c.get(data.xpath)) {
+                                logger.trace(&quot;run controller firstBefore function. data:&quot;, data);
+                                self.router.firstBefore(data);
+                            }
+
+                            require([data.require], function cnavigate(_Controller) {
+
+                                logger.debug(&quot;controller.exec&quot;, data.xpath);
+                                var controller = beez.manager.c.get(data.xpath);
+                                if (controller) {
+                                    if (!controller[data.name]) {
+                                        throw new beez.Error(&#039;&quot;&#039; + data.name + &#039;&quot; to Controller I is undefined.&#039;);
+                                    }
+
+                                    logger.trace(&quot;run controller before function. data:&quot;, data);
+                                    self.router.before(data, _Controller); // run before function
+
+                                    controller[data.name].apply(controller, parameter); // exec!!
+
+                                    logger.trace(&quot;run controller after function. data:&quot;, data);
+                                    self.router.after(data, _Controller); // run after function
+
+                                } else {
+                                    beez.manager.c.async().create(data.xpath, _Controller).then(function (controller) {
+                                        if (!controller[data.name]) {
+                                            throw new beez.Error(&#039;&quot;&#039; + data.name + &#039;&quot; to Controller I is undefined.&#039;);
+                                        }
+
+                                        logger.trace(&quot;run controller before function. data:&quot;, data);
+                                        self.router.before(data, _Controller); // run before function
+
+                                        controller[data.name].apply(controller, parameter); // exec!!
+
+                                        logger.trace(&quot;run controller after function. data:&quot;, data);
+                                        self.router.after(data, _Controller); // run after function
+
+                                    }).end();
+                                }
+                            });
+                            */
+                        }
+
+
+                        return proxy;
+
+                    })(key));
+                }
+                this.setuped = true;
+            },
+
+            /**
+             * @see Backbone#Router.navigate
+             *
+             * @memberof RouterManager
+             * @instance
+             * @see Router
+             */
+            navigate: function navigate(fragment, options) {
+                if (!this.setuped || !this.router) {
+                    throw new beez.Error(
+                        &#039;Initialization has not been performed even once. Please do a &quot;setup()&quot;.&#039;);
+                }
+                return this.router.navigate(fragment, options);
+            },
+
+            /**
+             * Dispose self instance
+             *
+             * @name dispose
+             * @memberof RouterManager
+             * @instance
+             */
+            dispose: function dispse() {
+                logger.trace(this.constructor.name, &#039;dispose&#039;);
+                this.router &amp;&amp; this.router.dispose &amp;&amp; this.router.dispose();
+                delete this.router;
+                delete this.setuped;
+            }
+        };
+
+        /**
+         * Routing management class.
+         *
+         * @class
+         * @name RouterManager
+         */
+        var RouterManager = beez.extend(
+            &#039;beez.mvcr.RouterManager&#039;,
+            function constructor() {
+                return this.initialize();
+            }, __RouterManager__);
+
+
+        /**
+         * Router Class (singleton)
+         * @class
+         * @name Router
+         * @extends {Backbone.Router}
+         * @see Backbone.Router
+         */
+        var Router = beez.extend(
+            &#039;beez.mvcr.Router&#039;,
+            Backbone.Router,
+            {
+
+                /**
+                 * @memberof Router
+                 */
+                constructor: function constructor() {
+                    Router.__super__.constructor.apply(this, arguments);
+                },
+
+                /**
+                 * Constructor
+                 *
+                 * @memberof Router
+                 * @instance
+                 */
+                initialize: function initialize() {
+                    Router.__super__.initialize.apply(this, arguments);
+                },
+
+                /**
+                 * Interrupt processing of execution first before the controller.
+                 *
+                 * @memberof Router
+                 * @param {Object} data Router information of the target.
+                 * @instance
+                 */
+                firstBefore: function firstBefore(data, next) {
+                    if (next) {
+                        next();
+                    }
+                },
+                /**
+                 * Interrupt processing of execution before the controller.
+                 *
+                 * @memberof Router
+                 * @param {Object} data Router information of the target.
+                 * @param {Controller} Controller Controller class of target
+                 * @instance
+                 */
+                before: function before(data, Controller, next) {
+                    if (next) {
+                        next();
+                    }
+                },
+
+                /**
+                 * Interrupt processing of execution after the controller.
+                 *
+                 * @memberof Router
+                 * @param {Object} data Router information of the target.
+                 * @param {Controller} Controller Controller class of target
+                 * @instance
+                 */
+                after: function after(data, Controller, next) {
+                    if (next) {
+                        next();
+                    }
+                },
+
+                /**
+                 * Dispose self instance
+                 *
+                 * @name dispose
+                 * @memberof Router
+                 * @instance
+                 */
+                dispose: function dispse() {
+                    logger.trace(this.constructor.name, &#039;dispose&#039;);
+                }
+            }
+        );
+
+        /**
+         * @memberof Router
+         * @function
+         * @param {String} [name]
+         * @param {Object} childProto
+         * @borrows beez.extendThis as extend
+         * @example
+         * var MyRouter = beez.Router.extend(
+         *     &#039;myapp.MyRouter&#039;,
+         *     {
+         *     }
+         * );
+         */
+        Router.extend = beez.extendThis;
+
+        return {
+            Router: Router,
+            RouterManager: RouterManager
+        };
+    });
+})(this);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>
