@@ -86,9 +86,6 @@ beezでは付属のローカルサーバーを起動するだけで、静的フ�
 
 @see wiki : [Wiki - Documention](https://github.com/CyberAgent/beez/wiki)
 
-@see API : [API - Documention](http://cyberagent.github.io/beez/jsdoc/1.x/index.html)
-
-
 ## Requirements
 
 beezが依存しているライブラリは以下になります。
