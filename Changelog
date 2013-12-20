@@ -3,6 +3,10 @@ Changelog
 Key
 [A] - Added, [C] - Changed, [F] - Fixed, [R] - Removed
 
+
+Fri Dec 20 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 1.0.9
+- [F] Reopened beez cause of repository broken.
+
 Wed Dec 18 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 1.0.8
 - [C] Updated Zepto version to v1.1.2.
 - [A] Added status information in routing.
