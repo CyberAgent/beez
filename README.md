@@ -126,11 +126,18 @@ beezが依存しているライブラリは以下になります。
 
 > Versionについては、`package.json` を参照ください。
 
-## 関連プロジェクト
+## 姉妹プロジェクト
 
 - [beez-foundation](https://github.com/CyberAgent/beez-foundation)
 - [beezlib](https://github.com/CyberAgent/beezlib)
 - [beez-ua](https://github.com/CyberAgent/beez-ua)
+
+## 関連プロジェクト
+
+- [Layzie/generator-beez](https://github.com/Layzie/generator-beez)
+    - beezのプラグインを作成するYeomanジェネレータ
+- [Layzie/generator-beez-submodule](https://github.com/Layzie/generator-beez-submodule)
+    - beezのサブモジュール(プロジェクト内の各ディレクトリ)を作成するYeomanジェネレータ
 
 ## Changelog
 
