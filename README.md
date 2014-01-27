@@ -173,3 +173,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ```
 
 [jsonpath](https://code.google.com/p/jsonpath/) included in this product is [MIT License](http://opensource.org/licenses/mit-license.php).
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/CyberAgent/beez/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
