@@ -54,7 +54,7 @@
     },
     "dependencies": {
         "bucks": "~0.8.1",
-        "beezlib": "~0.8.2",
+        "beezlib": "~0.9.1",
         "requirejs": "~2.1.0",
         "underscore": "~1.5.0",
         "colors": "~0.6.0",
