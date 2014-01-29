@@ -7919,7 +7919,7 @@ v                 *
  * @overview beez entrypoint
  */
 
-var VERSION = '1.0.9';
+var VERSION = '1.0.10';
 
 if (typeof module !== 'undefined' && module.exports) { // node.js: main
     exports.VERSION = VERSION;
