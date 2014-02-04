@@ -26,7 +26,7 @@
             "model" : "./beez-mvcr/model",
             "modic" : "./beez-mvcr/modic",
             "router" : "./beez-mvcr/router",
-            "spec": '../spec'
+            "spec": "../spec"
         },
         "shim": {
             "backbone": {
@@ -67,6 +67,13 @@
                         "xpath": "/@/test",
                         //"async": true
                     },
+                    "testAsync": {
+                        "route": "testAsync(/:name)(/:desc)",
+                        "name": "testAsync",
+                        "require": "../spec/test",
+                        "xpath": "/@/test",
+                        "async": true
+                    }
 /**
                     "test/:id": {
                         "route": "test/:id",
@@ -91,14 +98,14 @@
     });
 
     // Require libraries
-    require(['require', 'chai', 'mocha', 'zepto'], function(require,chai,mocha,$){
+    require(["require", "chai", "mocha", "zepto"], function(require,chai,mocha,$){
         // Chai
         global.assert = chai.assert;
         //global.should = chai.should();
         global.expect = chai.expect;
 
         // Mocha
-        global.mocha.setup('bdd');
+        global.mocha.setup("bdd");
         var spec = global.spec;
 
         spec.rerun = function rerun() {
@@ -106,29 +113,29 @@
                 return;
             }
             var names = [];
-            if (spec.TestCaseName !== 'all') {
-                names.push('spec/' + spec.TestCaseName);
+            if (spec.TestCaseName !== "all") {
+                names.push("spec/" + spec.TestCaseName);
             } else {
-                $("#nav a").each(function(i, a) {
+                $("#nav a").each(function (i, a) {
                     var name = $(a).data("name");
-                    if (name === 'all') {
+                    if (name === "all") {
                         return;
                     }
-                    names.push('spec/' + name);
+                    names.push("spec/" + name);
                 });
             }
-            console.log('Test Case:', names);
-            //var suite = require(['spec/' + el.getAttribute("data-name")]);
+            console.log("Test Case:", names);
+            //var suite = require(["spec/" + el.getAttribute("data-name")]);
             // Require base tests before starting
-            require(names, function(){
+            require(names, function () {
                 // Start runner
                 global.mocha.suite.suites = []; // clear
-                _.each(arguments, function (suite, idx) {
+                _.each(arguments, function (suite) {
                     suite();
                 });
                 var runner = global.mocha.run();
                 runner.globals([
-                    '_zid' // Backbone.history
+                    "_zid" // Backbone.history
                 ]);
             });
         };

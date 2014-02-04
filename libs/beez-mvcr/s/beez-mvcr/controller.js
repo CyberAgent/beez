@@ -189,6 +189,20 @@
                 this.initialize.apply(this, arguments);
             },
             {
+                constructor: function constructor() {
+
+                    /**
+                     * Management flag
+                     * @memberof Controller
+                     */
+                    this.state = {
+                        isBeforeOnce: false,
+                        isAfterOnce: false
+                    };
+
+                    // call Backbone.contoller.constructor
+                    Controller.__super__.constructor.apply(this, arguments);
+                },
 
                 /**
                  * Constructor
@@ -267,6 +281,77 @@
                     return this;
 
                 },
+
+                /**
+                 * The function performed before a method is performed when a navigate function is performed. (only once)
+                 * Until next runs to waiting after that function, to define a next as an argument, to delay the process.
+                 *
+                 * @memberof Controller
+                 * @instance
+                 * @function
+                 * @param {Function} [next]
+                 * @example
+                 * beforeOnce: function beforeOnce(next) {
+                 *     somethingAsync(function() {
+                 *         next();
+                 *     });
+                 * }
+                 *
+                 */
+                beforeOnce: beez.none,
+
+
+                /**
+                 * The function performed before a method is performed when a navigate function is performed.
+                 * Until next runs to waiting after that function, to define a next as an argument, to delay the process.
+                 *
+                 * @memberof Controller
+                 * @instance
+                 * @function
+                 * @param {Function} [next]
+                 * @example
+                 * before: function before(next) {
+                 *     somethingAsync(function() {
+                 *         next();
+                 *     });
+                 * }
+                 *
+                 */
+                before: beez.none,
+
+                /**
+                 * Execute after this controller method performed.
+                 * You can delay processes to give `next` in arugument, then processes made to be delayed untill for call `next`.
+                 *
+                 * @memberof View
+                 * @instance
+                 * @function
+                 * @param {Function} [next]
+                 * @example
+                 * after: function after(next) {
+                 *     somethingAsync(function() {
+                 *         next();
+                 *     });
+                 * }
+                 */
+                after: beez.none,
+
+                /**
+                 * Execute once after this controller method performed.(only once)
+                 * You can delay processes to give `next` in arugument, then processes made to be delayed untill for call `next`.
+                 *
+                 * @memberof View
+                 * @instance
+                 * @function
+                 * @param {Function} [next]
+                 * @example
+                 * afterOnce: function afterOnce(next) {
+                 *     somethingAsync(function() {
+                 *         next();
+                 *     });
+                 * }
+                 */
+                afterOnce: beez.none,
 
                 /**
                  * automatic loading of css.
