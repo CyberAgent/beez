@@ -23,16 +23,16 @@ define(['router', 'beez.mvcr', 'beez.core'], function(r, mvcr, beez){
                 Router.__super__.initialize.apply(this, arguments);
             },
             firstBefore: function (data, next) {
-                expect(data.name).eq('test');
+                expect(data.name).be.ok;
                 next && next();
             },
             before: function (data, Controller, next) {
-                expect(data.name).eq('test');
+                expect(data.name).be.ok;
                 expect(Controller).be.ok;
                 next && next();
             },
             after: function (data, Controller, next) {
-                expect(data.name).eq('test');
+                expect(data.name).be.ok;
                 expect(Controller).be.ok;
                 hashNext();
                 next && next();
@@ -40,7 +40,8 @@ define(['router', 'beez.mvcr', 'beez.core'], function(r, mvcr, beez){
         }
     );
 
-    var fragment = "test/fkei";
+    var fragment1 = 'test/fkei';
+    var fragment2 = 'testAsync/fkei/hiraki'
     var r = new Router();
 
     return function () {
@@ -52,10 +53,15 @@ define(['router', 'beez.mvcr', 'beez.core'], function(r, mvcr, beez){
                 manager.setup(null, r);
                 expect(manager.setuped).be.ok;
             });
-            it('navigate', function(next) {
+            it('navigate: async', function(next) {
                 Backbone.history.start();
-                manager.navigate(fragment, true);
-                expect(window.location.hash).eq('#'+ fragment);
+                manager.navigate(fragment2, true);
+                expect(window.location.hash).eq('#'+ fragment2);
+                hashNext = next;
+            });
+            it('navigate: sync', function(next) {
+                manager.navigate(fragment1, true);
+                expect(window.location.hash).eq('#'+ fragment1);
                 hashNext = next; // 遷移先のControllerで実行
             });
             it('dispose', function() {

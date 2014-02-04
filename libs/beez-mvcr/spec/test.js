@@ -17,8 +17,23 @@ define(['controller', 'beez.core'], function(c, beez){
                 ja: 'spec/i18n/ja'
             },
 
+            beforeOnce: function beforeOnce(name, next) {
+                console.log('beforeOnce parameter: ', name);
+                setTimeout(function () {
+                    next && next();
+                }, 100);
+            },
+
+            before: function before(name, next) {
+                console.log('before parameter: ', name);
+                setTimeout(function () {
+                    next && next();
+                }, 100);
+            },
+
             //test: function(name, next) {
-            test: function(name, desc, next) {
+            test: function test(name, desc, next) {
+                console.log('test parameter: ', name);
                 console.log("spec/test.js#test exec!!");
                 var self = this;
                 setTimeout(function () {
@@ -26,7 +41,31 @@ define(['controller', 'beez.core'], function(c, beez){
                     next && next();
                 }, 100);
             },
-            message: function() {
+
+            testAsync: function testAsync(name, desc, next) {
+                console.log("spec/test.js#testAsync exec!!");
+                var self = this;
+                setTimeout(function () {
+                    self.message();
+                    next && next();
+                }, 100);
+            },
+
+            after: function after(name, desc, next) {
+                console.log('after parameter: ', name, desc);
+                setTimeout(function () {
+                    next && next();
+                }, 100);
+            },
+
+            afterOnce: function afterOnce(name, desc, next) {
+                console.log('afterOnce parameter: ', name, desc);
+                setTimeout(function () {
+                    next && next();
+                }, 100);
+            },
+
+            message: function message() {
                 var message = beez.i18n.__('name');
                 console.log(message);
                 return message;
