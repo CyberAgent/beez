@@ -3576,7 +3576,7 @@ v                 *
                              * @param  {Array}   parameter
                              * @param  {Function} callback
                              */
-                            function normalize(controller, name, parameter, callback) {
+                            var normalize = function (controller, name, parameter, callback) {
                                 var method = controller[name],
                                     length = method.length,
                                     args = _.clone(parameter);
@@ -3588,7 +3588,7 @@ v                 *
                                     method.apply(controller, args);
                                     callback();
                                 }
-                            }
+                            };
 
                             /**
                              * Process of controller method
@@ -3596,7 +3596,7 @@ v                 *
                              * Processing is performed by the flow of
                              * [beforeOnce -> before -> render -> after -> afterOnce].
                              */
-                            function _exec(controller, name, parameter, callback) {
+                            var _exec = function (controller, name, parameter, callback) {
                                 var job = new beez.Bucks();
 
                                 // call before once
@@ -3640,8 +3640,22 @@ v                 *
                                     callback && callback();
                                 });
 
-                                job.end(); // fire!!
-                            }
+                                // fire!!
+                                job.end(
+                                    function last(err) {
+                                        if (err) {
+                                            logger.error(err.message);
+                                            throw new beez.Error(err);
+                                        }
+                                    },
+                                    function finalError(err) {
+                                        if (err) {
+                                            logger.error(err.message);
+                                            throw new beez.Error(err);
+                                        }
+                                    }
+                                );
+                            };
 
 
                             // first before function
@@ -3768,48 +3782,6 @@ v                 *
 
                             job.end(); // fire!!!
 
-                            /**
-                            // processing of controller before loading.
-                            if (!beez.manager.c.get(data.xpath)) {
-                                logger.trace("run controller firstBefore function. data:", data);
-                                self.router.firstBefore(data);
-                            }
-
-                            require([data.require], function cnavigate(_Controller) {
-
-                                logger.debug("controller.exec", data.xpath);
-                                var controller = beez.manager.c.get(data.xpath);
-                                if (controller) {
-                                    if (!controller[data.name]) {
-                                        throw new beez.Error('"' + data.name + '" to Controller I is undefined.');
-                                    }
-
-                                    logger.trace("run controller before function. data:", data);
-                                    self.router.before(data, _Controller); // run before function
-
-                                    controller[data.name].apply(controller, parameter); // exec!!
-
-                                    logger.trace("run controller after function. data:", data);
-                                    self.router.after(data, _Controller); // run after function
-
-                                } else {
-                                    beez.manager.c.async().create(data.xpath, _Controller).then(function (controller) {
-                                        if (!controller[data.name]) {
-                                            throw new beez.Error('"' + data.name + '" to Controller I is undefined.');
-                                        }
-
-                                        logger.trace("run controller before function. data:", data);
-                                        self.router.before(data, _Controller); // run before function
-
-                                        controller[data.name].apply(controller, parameter); // exec!!
-
-                                        logger.trace("run controller after function. data:", data);
-                                        self.router.after(data, _Controller); // run after function
-
-                                    }).end();
-                                }
-                            });
-                            */
                         }
 
 
