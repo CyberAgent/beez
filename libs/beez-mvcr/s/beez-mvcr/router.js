@@ -165,14 +165,13 @@
                                 job.end(
                                     function last(err) {
                                         if (err) {
-                                            logger.error(err.message);
-                                            throw new beez.Error(err);
+                                            logger.error(err);
+                                            throw err;
                                         }
                                     },
                                     function finalError(err) {
                                         if (err) {
-                                            logger.error(err.message);
-                                            throw new beez.Error(err);
+                                            throw err;
                                         }
                                     }
                                 );
