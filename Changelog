@@ -3,6 +3,9 @@ Changelog
 Key
 [A] - Added, [C] - Changed, [F] - Fixed, [R] - Removed
 
+Thu Feb 06 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.12
+- [F] nest of exception
+
 Wed Feb 05 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.11
 - [C] added configure of sample projects
 - [C] Controller Processing is performed by the flow of [beforeOnce -> before -> method -> after -> afterOnce].
