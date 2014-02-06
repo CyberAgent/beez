@@ -6519,14 +6519,13 @@ v                 *
                                 job.end(
                                     function last(err) {
                                         if (err) {
-                                            logger.error(err.message);
-                                            throw new beez.Error(err);
+                                            logger.error(err);
+                                            throw err;
                                         }
                                     },
                                     function finalError(err) {
                                         if (err) {
-                                            logger.error(err.message);
-                                            throw new beez.Error(err);
+                                            throw err;
                                         }
                                     }
                                 );
@@ -8094,7 +8093,7 @@ v                 *
  * @overview beez entrypoint
  */
 
-var VERSION = '1.0.10';
+var VERSION = '1.0.12';
 
 if (typeof module !== 'undefined' && module.exports) { // node.js: main
     exports.VERSION = VERSION;
