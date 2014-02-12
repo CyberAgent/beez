@@ -2,6 +2,9 @@
 
 ![LOGO](https://github.com/CyberAgent/beez/raw/master/design/beez_200x200.png)
 
+[![NPM](https://nodei.co/npm/beez.png)](https://nodei.co/npm/beez/)
+
+
 ## About beez
 
 beez は、複雑化するスマートフォン向けブラウザアプリ開発をスピーディーにする目的で開発された、中・大規模向けフレームワークを含む開発ツールキットです
