@@ -2,8 +2,6 @@
 
 ![LOGO](https://github.com/CyberAgent/beez/raw/master/design/beez_200x200.png)
 
-[![NPM](https://nodei.co/npm/beez.png)](https://nodei.co/npm/beez/)
-
 
 ## About beez
 
