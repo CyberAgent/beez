@@ -138,6 +138,10 @@ beezが依存しているライブラリは以下になります。
     - beezのプラグインを作成するYeomanジェネレータ
 - [Layzie/generator-beez-submodule](https://github.com/Layzie/generator-beez-submodule)
     - beezのサブモジュール(プロジェクト内の各ディレクトリ)を作成するYeomanジェネレータ
+- [fkei/beez-confbuilder](https://github.com/fkei/beez-confbuilder)
+    - beezの環境別設定ファイルをテンプレートから生成する設定ファイルビルダー
+- [fkei/grunt-beez-confbuilder](https://github.com/fkei/grunt-beez-confbuilder) 
+    - beez-confbuilderをGruntから実行できるGruntタスク
 
 ## Changelog
 
