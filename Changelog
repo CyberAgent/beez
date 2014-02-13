@@ -3,6 +3,9 @@ Changelog
 Key
 [A] - Added, [C] - Changed, [F] - Fixed, [R] - Removed
 
+Thu Feb 13 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.13
+- [C] Changed view sequence
+
 Thu Feb 06 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.12
 - [F] nest of exception
 
@@ -272,4 +275,6 @@ from Backbone.js
 
 * Mon Feb 25 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.6.0
 - Initial release.
+
+
 
