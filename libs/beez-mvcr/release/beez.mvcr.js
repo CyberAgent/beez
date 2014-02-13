@@ -2445,7 +2445,7 @@ v                 *
                             }
 
                             // if `beforeOnce` have `done` as a param
-                            if (view.beforeOnce.length) {
+                            if (view.beforeOnce.length > 0) {
                                 view.beforeOnce(function wrappedDone() {
                                     view.state.isBeforeOnce = true;
                                     next(null, view);
@@ -2470,7 +2470,7 @@ v                 *
                         }
 
                         // if `before` have `done` as a param
-                        if (view.before.length) {
+                        if (view.before.length > 0) {
                             view.before(function wrappedDone() {
                                 next(null, view);
                             });
@@ -2492,7 +2492,7 @@ v                 *
                         }
 
                         // if `render` have `done` as a param
-                        if (view.render.length) {
+                        if (view.render.length > 0) {
                             view.render(function wrappedDone() {
                                 next(null, view);
                             });
@@ -2514,7 +2514,7 @@ v                 *
                         }
 
                         // if `afterOnce` have `done` as a param
-                        if (view.after.length) {
+                        if (view.after.length > 0) {
                             view.after(function wrappedDone() {
                                 next(null, view);
                             });
@@ -2538,7 +2538,7 @@ v                 *
                             }
 
                             // if `afterOnce` have `done` as a param
-                            if (view.afterOnce.length) {
+                            if (view.afterOnce.length > 0) {
                                 view.afterOnce(function wrappedDone() {
                                     view.state.isAfterOnce = true;
                                     next(null, view);
@@ -2569,10 +2569,33 @@ v                 *
                  */
                 _remove: function _remove(view) {
 
-                    return this.then(function () {
-                        view.remove();
+                    this.then(function () {
                         return view;
                     });
+
+                    this.then(function conceal(view, next) {
+                        // if `conceal` have `done` as a param
+                        if (view.conceal.length > 0) {
+                            view.conceal(function wrappedDone() {
+                                next(null, view);
+                            });
+                            return;
+                        }
+                        // else exec as sync
+                        view.conceal();
+                        next(null, view);
+                        return;
+                    });
+
+                    this.then(function remove(view, next) {
+                        // else exec as sync
+                        view.remove();
+                        next(null, view);
+                        return;
+                    });
+
+                    return this;
+
                 },
 
 
@@ -2620,14 +2643,13 @@ v                 *
                     }
 
                     var self = this;
-                    if (!_.isArray(view)) {
-                        logger.debug('showing', view.vidx);
-                        this._render(view, showChildren); // case of single view
-                    } else {
-                        if (_.isEmpty(view)) { return this; }
+                    var children = view.getChildren();
 
-                        // sort order property
-                        view.sort(function (a, b) {
+                    logger.debug('showing', view.vidx);
+                    this._render(view);
+
+                    if (children.length > 0 && showChildren) {
+                        children.sort(function (a, b) {
                             if (a.order < b.order) {
                                 return -1;
                             }
@@ -2638,36 +2660,8 @@ v                 *
                             return 0;
                         });
 
-                        // create render tasks
-                        var tasks = _.map(
-                            view,
-                            function makeTask(v) {
-                                return function task(err, res, next) {
-                                    if (err) { throw err; }
-                                    new ViewAsync()
-                                        ._show(v, showChildren)
-                                        .end(function (e, r) {
-                                            next(e, undefined);
-                                        });
-                                };
-                            }
-                        );
-                        this.waterfall(tasks);
-
-                    }
-
-                    if (showChildren) {
-                        this.then(function renderC(view, next) {
-                            if (!view) { return next(null, view); }
-
-                            var children = view.getChildren();
-                            if (_.isEmpty(children)) {
-                                return next(null, view);
-                            } else {
-                                return new ViewAsync()
-                                    ._show(children, showChildren)
-                                    .end(next);
-                            }
+                        _.each(children, function (v) {
+                            self._show(v);
                         });
                     }
 
@@ -2718,40 +2712,27 @@ v                 *
                     }
 
                     var self = this;
-                    if (!_.isArray(view)) { // case of single view
-                        logger.debug('hiding', view.vidx);
-                        this._remove(view);
 
-                    } else { // create render tasks
-                        var tasks = _.map(
-                            view,
-                            function makeTask(v) {
-                                return function task(err, res, next) {
-                                    if (err) { throw err; }
-                                    new ViewAsync()
-                                        ._hide(v, hideChildren)
-                                        .end(function (err, ress) {
-                                            next(err, undefined);
-                                        });
-                                };
+                    var children = view.getChildren();
+                    if (children.length > 0 && hideChildren) {
+                        children.sort(function (a, b) {
+                            if (a.order < b.order) {
+                                return 1;
                             }
-                        );
-                        this.waterfall(tasks);
-                    }
+                            if (a.order > b.order) {
+                                return -1;
+                            }
 
-                    if (hideChildren) {
-                        this.then(function hideC(view, next) {
-                            if (!view) { return next(null, view); }
-                            var children = view.getChildren();
-                            if (_.isEmpty(children)) {
-                                return next(null, view);
-                            } else {
-                                return new ViewAsync()
-                                    ._hide(children, hideChildren)
-                                    .end(next);
-                            }
+                            return 0;
+                        });
+                        _.each(children, function (v) {
+                            self._hide(v);
                         });
                     }
+
+                    // case of single view
+                    logger.debug('hiding', view.vidx);
+                    this._remove(view);
 
                     return this;
                 },
@@ -3005,6 +2986,24 @@ v                 *
                     // call Base.dispose()
                     // View.__super__.dispose.call(this);
                 },
+
+                /**
+                 * The function performed before remove is performed
+                 * Until next runs to waiting after that function, to define a next as an argument, to delay the process.
+                 *
+                 * @memberof View
+                 * @instance
+                 * @function
+                 * @param {Function} [next]
+                 * @example
+                 * conceal: function conceal(next) {
+                 *     somethingAsync(function() {
+                 *         next();
+                 *     });
+                 * }
+                 */
+                conceal: beez.none,
+
                 /**
                  * Remove HTMLElement.
                  *
