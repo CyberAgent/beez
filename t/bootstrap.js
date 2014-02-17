@@ -307,7 +307,7 @@ Bootstrap.prototype.ratioResize = function ratioResize(callback) {
     if (commander.config) {
         // option: config
         try {
-            beezlib.fsys.readFileMultiConfigureSync(commander.config, 'utf-8');
+            var loadedconfig = beezlib.fsys.readFileMultiConfigureSync(commander.config, 'utf-8');
             _.extend(this.config, loadedconfig);
         } catch (e) {
             beezlib.logger.error(e.message, "path:", commander.config);
