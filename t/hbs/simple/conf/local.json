@@ -55,6 +55,14 @@
             "nib": true, // stylus nib on/of
             "url": {}, // @see http://learnboost.github.io/stylus/docs/functions.url.html
             "fn": {} // variable that can be used with stylus file
+        },
+        "extend": { // Overwrite the case of mobile data
+            "condition": {
+                "ua": [ "android", "ios" ]
+            },
+            "content": {
+                "options": {}
+            }
         }
     },
     "image": { // Image convert configure
