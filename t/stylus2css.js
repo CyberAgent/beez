@@ -44,7 +44,7 @@ bootstrap.stylus2css(function (err) {
         var src = path.join(dir, file);
         var dst = path.normalize(src.replace(REG_STYL, EXTENSION_CSS));
 
-        beezlib.css.stylus.write(src, dst, options, function(err, css) {
+        beezlib.css.stylus.write(src, dst, {options: options}, function(err, css) {
             if (err) {
                 beezlib.logger.error("stylus compile error. src:", src, 'dst:', dst);
                 beezlib.logger.error(err);
