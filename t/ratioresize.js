@@ -32,9 +32,13 @@ bootstrap.ratioResize(function (err, result) {
     bucks.empty();
 
     if (config.walkPath) {
+
+        options.include.push(config.walkPath); // add command-line options -w
+
         beezlib.fsys.walk(config.walkPath, function filefn(prefix, dir, file, stats) {
             var src = path.join(dir, file);
             if (!beezlib.image.isResizeImage(src, options)) {
+                beezlib.logger.debug("Skip file. path:", dir + '/' + file);
                 return;
             }
 
