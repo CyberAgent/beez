@@ -3,6 +3,9 @@ Changelog
 Key
 [A] - Added, [C] - Changed, [F] - Fixed, [R] - Removed
 
+Mon Feb 17  2014 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 1.0.15
+- [F] beez-ratioresize command-line options -w
+
 Mon Feb 17  2014 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 1.0.14
 - [F] change api beezlib@0.9.6
 
