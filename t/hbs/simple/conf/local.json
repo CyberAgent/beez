@@ -57,32 +57,35 @@
             "fn": {} // variable that can be used with stylus file
         }
     },
-    "image": {
+    "image": { // Image convert configure
         "options": {
-            "baseRatio": 2, // 元の画像のratio
-            "ratios": [ 1, 1.5, 2, 3 ], // resizeするratio
-            "extnames": [ ".png" ], // 対象拡張子
-            "include": [], // resizeをするファイルorディレクトリ
-            "exclude": [], // resizeしないファイルorディレクトリ
-            "separator": "-" // resize後ファイル名に用いる元ファイル名とratioの接続文字
+            "baseRatio": 2, // base ratio
+            "ratios": [ 1, 1.5, 2, 3 ], // generate ratio
+            "extnames": [ ".png" ], // extension to be converted
+            "include": [], // directory or file you want to resize
+            "exclude": [], // directory or file you want not to resize
+            "separator": "-" // separator to be used in a output file name
         }
-    },
+    }, // Sprite sheet configure
     "sprite": {
         "options": {
-            "ratios": [ 1, 1.3, 1.5, 2 ], // 生成するsprite sheetのratio
-            "extnames": [ ".png", ".jpg" ], // sprite sheetのpartsとなる画像の対象拡張子
-            "heads": [ "sprite", "_sprite" ], // sprite sheetのpartsとなる画像のファイル名の先頭
-            "separator": "-" // ファイル名のheadやratioの接続文字
+            "ratios": [ 1, 1.3, 1.5, 2 ], // generate ratio
+            "extnames": [ ".png", ".jpg" ], // extension to convert
+            "heads": [ "sprite", "_sprite" ], // prefix of filename to convert
+            "separator": "-", // separator to be used in a output file name
+            "overwrite": true // overwrite spritesheet or not
+            // "logpath": "/project/temp", // place of stat log
+            // "logname": ".sprite" // name of stat log
         }
     },
     "deploy": {
         "optipng": true,
         "jpegoptim": true,
-        "include": [ "dist/*/index.js", "dist/index/require.beez.*.js", "*.html", "*.css", "*.png", "*.jpg", "*.gif", "*.ttf", "*.eot", "*.woff" ], // deployするファイル
-        "exclude": [ "_*.css", "_*.png", "_*.jpg", "_*.gif", "_*.ttf", "_*.eot", "_*.woff" ] // deployしないファイル
+        "include": [ "dist/*/index.js", "dist/index/require.beez.*.js", "*.html", "*.css", "*.png", "*.jpg", "*.gif", "*.ttf", "*.eot", "*.woff" ], // files you want to deploy
+        "exclude": [ "_*.css", "_*.png", "_*.jpg", "_*.gif", "_*.ttf", "_*.eot", "_*.woff" ] // files you want not to deploy
     },
     "ignore": {
-        "include": [], // release物から除外するファイル
-        "exclude": [] // release物から除外しないファイル
+        "include": [], // files to be included in the product
+        "exclude": [] // exclude files from the product
     }
 }

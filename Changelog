@@ -3,6 +3,16 @@ Changelog
 Key
 [A] - Added, [C] - Changed, [F] - Fixed, [R] - Removed
 
+Thu Feb 13 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.13
+- [C] Changed view sequence
+
+Thu Feb 06 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.12
+- [F] nest of exception
+
+Wed Feb 05 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.11
+- [C] added configure of sample projects
+- [C] Controller Processing is performed by the flow of [beforeOnce -> before -> method -> after -> afterOnce].
+
 Wed Jan 29 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 1.0.10
 - [C] Updated beezlib version to ~0.9.1.
 
@@ -240,10 +250,10 @@ from Backbone.js
 * Mon Mar 25 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.8.1
 - [A] Added jsdoc comment.
 - [C] Removed the prefix Beez lyrics from the class name.
-- fixed: Fixed a bug in the test case.
-- fixed: Fixed jshint format.
-- fixed: Fixed css timeout when processing.
-- fixed: Fixed the test case for load a css.
+- [F] Fixed a bug in the test case.
+- [F] Fixed jshint format.
+- [F] Fixed css timeout when processing.
+- [F] Fixed the test case for load a css.
 
 * Mon Mar 25 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.8.0
 - [C] `CSSRouter.navigate` and `i18n` are loaded automatically when initialize.
@@ -265,3 +275,6 @@ from Backbone.js
 
 * Mon Feb 25 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.6.0
 - Initial release.
+
+
+

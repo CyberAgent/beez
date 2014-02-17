@@ -2,6 +2,7 @@
 
 ![LOGO](https://github.com/CyberAgent/beez/raw/master/design/beez_200x200.png)
 
+
 ## About beez
 
 beez は、複雑化するスマートフォン向けブラウザアプリ開発をスピーディーにする目的で開発された、中・大規模向けフレームワークを含む開発ツールキットです
@@ -138,6 +139,10 @@ beezが依存しているライブラリは以下になります。
     - beezのプラグインを作成するYeomanジェネレータ
 - [Layzie/generator-beez-submodule](https://github.com/Layzie/generator-beez-submodule)
     - beezのサブモジュール(プロジェクト内の各ディレクトリ)を作成するYeomanジェネレータ
+- [fkei/beez-confbuilder](https://github.com/fkei/beez-confbuilder)
+    - beezの環境別設定ファイルをテンプレートから生成する設定ファイルビルダー
+- [fkei/grunt-beez-confbuilder](https://github.com/fkei/grunt-beez-confbuilder) 
+    - beez-confbuilderをGruntから実行できるGruntタスク
 
 ## Changelog
 

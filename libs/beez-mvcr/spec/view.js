@@ -61,6 +61,12 @@ define(['view'], function(view){
             onDblClick: function() {
                 this.test.events.dblclick = true;
             },
+            conceal: function(done) {
+                var self = this;
+                setTimeout(function () {
+                    done(true);
+                }, 100);
+            },
             test: {
                 events: {
                     'dblclick': false
@@ -156,7 +162,6 @@ define(['view'], function(view){
                     .then(function(view, next) {
                         expect($("#__test_view_testview_render__").length).eq(1);
                         expect(view.isRendered()).eq(true);
-
                         expect(view.state.isBeforeOnce).be.ok;
                         expect(view.state.isAfterOnce).be.ok;
 
@@ -176,15 +181,104 @@ define(['view'], function(view){
                         ;
                     })
                     .error(function(err, res) {
-                        throw new Error("show error.");
+                        throw new Error("show error.", err);
                         done();
                     })
                     .end()
                 ;
 
             });
+
+            it('show()/hide()-sequense', function (done) {
+                manager.root(TestView);
+                var hideSequence = [];
+                var showSequence = [];
+                var sequence = ['parent_a', 'child_a', 'child_b', 'grand_child_a', 'grand_child_b'];
+                var ParentA = View.extend('test.view.ParentA', { vidx: 'parent_a',
+                        after: function () {
+                            this.getParent().$el.append(this.$el);
+                            showSequence.push(this.vidx);
+                        },
+                        conceal: function () {
+                            hideSequence.push(this.vidx);
+                        }
+                    }
+                );
+                var ChildA = View.extend('test.view.ChildA', { vidx: 'child_a', order: 1,
+                        after: function () {
+                            this.getParent().$el.append(this.$el);
+                            showSequence.push(this.vidx);
+                        },
+                        conceal: function () {
+                            hideSequence.push(this.vidx);
+                        }
+                    }
+                );
+                var ChildB = View.extend('test.view.ChildB', { vidx: 'child_b', order: 2,
+                        after: function () {
+                            this.getParent().$el.append(this.$el);
+                            showSequence.push(this.vidx);
+                        },
+                        conceal: function () {
+                            hideSequence.push(this.vidx);
+                        }
+                    }
+                );
+                var GrandChildA = View.extend('test.view.GrandChildA', { vidx: 'grand_child_a', order: 1,
+                        after: function () {
+                            this.getParent().$el.append(this.$el);
+                            showSequence.push(this.vidx);
+                        },
+                        conceal: function () {
+                            hideSequence.push(this.vidx);
+                        }
+                    }
+                );
+                var GrandChildB = View.extend('test.view.GrandChildB', { vidx: 'grand_child_b', order: 2,
+                        after: function () {
+                            this.getParent().$el.append(this.$el);
+                            showSequence.push(this.vidx);
+                        },
+                        conceal: function () {
+                            hideSequence.push(this.vidx);
+                        }
+                    }
+                );
+
+                var parent_a = manager.create('/@', ParentA);
+                var child_a = manager.create('/@/parent_a', ChildA);
+                var child_b = manager.create('/@/parent_a', ChildB);
+                var g_child_a = manager.create('/@/parent_a/child_b', GrandChildA);
+                var g_child_b = manager.create('/@/parent_a/child_b', GrandChildB);
+
+                manager.get('/@').async().show().then(function () {
+
+                    expect(showSequence).to.deep.equal(sequence);
+                    expect(parent_a.isRendered()).eq(true);
+                    expect(child_a.isRendered()).eq(true);
+                    expect(child_b.isRendered()).eq(true);
+                    expect(g_child_a.isRendered()).eq(true);
+                    expect(g_child_b.isRendered()).eq(true);
+
+                    sequence.reverse();
+
+                    manager.get('/@').async().hide().then(function () {
+
+                        expect(hideSequence).to.deep.equal(sequence);
+                        expect(parent_a.isRendered()).eq(false);
+                        expect(child_a.isRendered()).eq(false);
+                        expect(child_b.isRendered()).eq(false);
+                        expect(g_child_a.isRendered()).eq(false);
+                        expect(g_child_b.isRendered()).eq(false);
+
+                        manager.remove('/@');
+                        done();
+                    }).end();
+
+                }).end();
+            });
             it('setVisible', function() {
-                manager.async().root(TestView).end();
+                manager.root(TestView);
                 testView1 = manager.create('/@', TestView1, {'test': true});
                 testView.setVisible(false);
                 expect(testView.visible).eq(false);

@@ -5320,7 +5320,7 @@ v                 *
                             }
 
                             // if `beforeOnce` have `done` as a param
-                            if (view.beforeOnce.length) {
+                            if (view.beforeOnce.length > 0) {
                                 view.beforeOnce(function wrappedDone() {
                                     view.state.isBeforeOnce = true;
                                     next(null, view);
@@ -5345,7 +5345,7 @@ v                 *
                         }
 
                         // if `before` have `done` as a param
-                        if (view.before.length) {
+                        if (view.before.length > 0) {
                             view.before(function wrappedDone() {
                                 next(null, view);
                             });
@@ -5367,7 +5367,7 @@ v                 *
                         }
 
                         // if `render` have `done` as a param
-                        if (view.render.length) {
+                        if (view.render.length > 0) {
                             view.render(function wrappedDone() {
                                 next(null, view);
                             });
@@ -5389,7 +5389,7 @@ v                 *
                         }
 
                         // if `afterOnce` have `done` as a param
-                        if (view.after.length) {
+                        if (view.after.length > 0) {
                             view.after(function wrappedDone() {
                                 next(null, view);
                             });
@@ -5413,7 +5413,7 @@ v                 *
                             }
 
                             // if `afterOnce` have `done` as a param
-                            if (view.afterOnce.length) {
+                            if (view.afterOnce.length > 0) {
                                 view.afterOnce(function wrappedDone() {
                                     view.state.isAfterOnce = true;
                                     next(null, view);
@@ -5444,10 +5444,33 @@ v                 *
                  */
                 _remove: function _remove(view) {
 
-                    return this.then(function () {
-                        view.remove();
+                    this.then(function () {
                         return view;
                     });
+
+                    this.then(function conceal(view, next) {
+                        // if `conceal` have `done` as a param
+                        if (view.conceal.length > 0) {
+                            view.conceal(function wrappedDone() {
+                                next(null, view);
+                            });
+                            return;
+                        }
+                        // else exec as sync
+                        view.conceal();
+                        next(null, view);
+                        return;
+                    });
+
+                    this.then(function remove(view, next) {
+                        // else exec as sync
+                        view.remove();
+                        next(null, view);
+                        return;
+                    });
+
+                    return this;
+
                 },
 
 
@@ -5495,14 +5518,13 @@ v                 *
                     }
 
                     var self = this;
-                    if (!_.isArray(view)) {
-                        logger.debug('showing', view.vidx);
-                        this._render(view, showChildren); // case of single view
-                    } else {
-                        if (_.isEmpty(view)) { return this; }
+                    var children = view.getChildren();
 
-                        // sort order property
-                        view.sort(function (a, b) {
+                    logger.debug('showing', view.vidx);
+                    this._render(view);
+
+                    if (children.length > 0 && showChildren) {
+                        children.sort(function (a, b) {
                             if (a.order < b.order) {
                                 return -1;
                             }
@@ -5513,36 +5535,8 @@ v                 *
                             return 0;
                         });
 
-                        // create render tasks
-                        var tasks = _.map(
-                            view,
-                            function makeTask(v) {
-                                return function task(err, res, next) {
-                                    if (err) { throw err; }
-                                    new ViewAsync()
-                                        ._show(v, showChildren)
-                                        .end(function (e, r) {
-                                            next(e, undefined);
-                                        });
-                                };
-                            }
-                        );
-                        this.waterfall(tasks);
-
-                    }
-
-                    if (showChildren) {
-                        this.then(function renderC(view, next) {
-                            if (!view) { return next(null, view); }
-
-                            var children = view.getChildren();
-                            if (_.isEmpty(children)) {
-                                return next(null, view);
-                            } else {
-                                return new ViewAsync()
-                                    ._show(children, showChildren)
-                                    .end(next);
-                            }
+                        _.each(children, function (v) {
+                            self._show(v);
                         });
                     }
 
@@ -5593,40 +5587,27 @@ v                 *
                     }
 
                     var self = this;
-                    if (!_.isArray(view)) { // case of single view
-                        logger.debug('hiding', view.vidx);
-                        this._remove(view);
 
-                    } else { // create render tasks
-                        var tasks = _.map(
-                            view,
-                            function makeTask(v) {
-                                return function task(err, res, next) {
-                                    if (err) { throw err; }
-                                    new ViewAsync()
-                                        ._hide(v, hideChildren)
-                                        .end(function (err, ress) {
-                                            next(err, undefined);
-                                        });
-                                };
+                    var children = view.getChildren();
+                    if (children.length > 0 && hideChildren) {
+                        children.sort(function (a, b) {
+                            if (a.order < b.order) {
+                                return 1;
                             }
-                        );
-                        this.waterfall(tasks);
-                    }
+                            if (a.order > b.order) {
+                                return -1;
+                            }
 
-                    if (hideChildren) {
-                        this.then(function hideC(view, next) {
-                            if (!view) { return next(null, view); }
-                            var children = view.getChildren();
-                            if (_.isEmpty(children)) {
-                                return next(null, view);
-                            } else {
-                                return new ViewAsync()
-                                    ._hide(children, hideChildren)
-                                    .end(next);
-                            }
+                            return 0;
+                        });
+                        _.each(children, function (v) {
+                            self._hide(v);
                         });
                     }
+
+                    // case of single view
+                    logger.debug('hiding', view.vidx);
+                    this._remove(view);
 
                     return this;
                 },
@@ -5880,6 +5861,24 @@ v                 *
                     // call Base.dispose()
                     // View.__super__.dispose.call(this);
                 },
+
+                /**
+                 * The function performed before remove is performed
+                 * Until next runs to waiting after that function, to define a next as an argument, to delay the process.
+                 *
+                 * @memberof View
+                 * @instance
+                 * @function
+                 * @param {Function} [next]
+                 * @example
+                 * conceal: function conceal(next) {
+                 *     somethingAsync(function() {
+                 *         next();
+                 *     });
+                 * }
+                 */
+                conceal: beez.none,
+
                 /**
                  * Remove HTMLElement.
                  *
@@ -6113,6 +6112,20 @@ v                 *
                 this.initialize.apply(this, arguments);
             },
             {
+                constructor: function constructor() {
+
+                    /**
+                     * Management flag
+                     * @memberof Controller
+                     */
+                    this.state = {
+                        isBeforeOnce: false,
+                        isAfterOnce: false
+                    };
+
+                    // call Backbone.contoller.constructor
+                    Controller.__super__.constructor.apply(this, arguments);
+                },
 
                 /**
                  * Constructor
@@ -6191,6 +6204,77 @@ v                 *
                     return this;
 
                 },
+
+                /**
+                 * The function performed before a method is performed when a navigate function is performed. (only once)
+                 * Until next runs to waiting after that function, to define a next as an argument, to delay the process.
+                 *
+                 * @memberof Controller
+                 * @instance
+                 * @function
+                 * @param {Function} [next]
+                 * @example
+                 * beforeOnce: function beforeOnce(next) {
+                 *     somethingAsync(function() {
+                 *         next();
+                 *     });
+                 * }
+                 *
+                 */
+                beforeOnce: beez.none,
+
+
+                /**
+                 * The function performed before a method is performed when a navigate function is performed.
+                 * Until next runs to waiting after that function, to define a next as an argument, to delay the process.
+                 *
+                 * @memberof Controller
+                 * @instance
+                 * @function
+                 * @param {Function} [next]
+                 * @example
+                 * before: function before(next) {
+                 *     somethingAsync(function() {
+                 *         next();
+                 *     });
+                 * }
+                 *
+                 */
+                before: beez.none,
+
+                /**
+                 * Execute after this controller method performed.
+                 * You can delay processes to give `next` in arugument, then processes made to be delayed untill for call `next`.
+                 *
+                 * @memberof View
+                 * @instance
+                 * @function
+                 * @param {Function} [next]
+                 * @example
+                 * after: function after(next) {
+                 *     somethingAsync(function() {
+                 *         next();
+                 *     });
+                 * }
+                 */
+                after: beez.none,
+
+                /**
+                 * Execute once after this controller method performed.(only once)
+                 * You can delay processes to give `next` in arugument, then processes made to be delayed untill for call `next`.
+                 *
+                 * @memberof View
+                 * @instance
+                 * @function
+                 * @param {Function} [next]
+                 * @example
+                 * afterOnce: function afterOnce(next) {
+                 *     somethingAsync(function() {
+                 *         next();
+                 *     });
+                 * }
+                 */
+                afterOnce: beez.none,
 
                 /**
                  * automatic loading of css.
@@ -6349,153 +6433,228 @@ v                 *
                             if (!routes.hasOwnProperty(name)) {
                                 throw new beez.Error('route map key does not exist. name: ' + name);
                             }
-                            var data = routes[name];
-                            //var parameter = arguments;
-                            var parameter = Array.prototype.slice.call(arguments);
 
+                            var data = routes[name]; // routing data
+                            var parameter = Array.prototype.slice.call(arguments);
+                            var job = new beez.Bucks();
+                            var isLoaded = !!beez.manager.c.get(data.xpath);
+                            var isAsync = data.async;
 
                             logger.debug("router.proxy", data);
 
 
-                            var job = new beez.Bucks();
+                            /**
+                             * normalize asyncronous handler
+                             * @param  {Controller} controller
+                             * @param  {String}   name
+                             * @param  {Array}   parameter
+                             * @param  {Function} callback
+                             */
+                            var normalize = function (controller, name, parameter, callback) {
+                                var method = controller[name],
+                                    length = method.length,
+                                    args = _.clone(parameter);
 
-                            job.then(function (res, next) {
-                                if (beez.manager.c.get(data.xpath)) { // Already controller loaded
-                                    return next();
+                                if (length && isAsync) {
+                                    args[length - 1] = callback;
+                                    method.apply(controller, args);
+                                } else {
+                                    method.apply(controller, args);
+                                    callback();
                                 }
+                            };
 
-                                // First controller load function
-                                if (data.async) { // Asynchronous
+                            /**
+                             * Process of controller method
+                             *
+                             * Processing is performed by the flow of
+                             * [beforeOnce -> before -> render -> after -> afterOnce].
+                             */
+                            var _exec = function (controller, name, parameter, callback) {
+                                var job = new beez.Bucks();
 
-                                    if (self.router.firstBefore.length !== 2) {
-                                        throw new beez.Error('You should pass a callback function in arguments in case of async setting is true. firestBefore(data, callback)');
-                                    }
-
-                                    logger.trace("run controller firstBefore function(async). data:", data);
-                                    self.router.firstBefore(data, function (err, res) {
-                                        next(null, res);
+                                // call before once
+                                if (!controller.state.isBeforeOnce) {
+                                    job.then(function beforeOnce(res, next) {
+                                        normalize(controller, 'beforeOnce', parameter, function () {
+                                            controller.state.isBeforeOnce = true;
+                                            next(null, controller);
+                                        });
                                     });
-
-                                } else { // Synchronism
-                                    logger.trace("run controller firstBefore function(sync). data:", data);
-                                    self.router.firstBefore(data);
-                                    next();
                                 }
-                            });
+                                // call before
+                                job.then(function before(res, next) {
+                                    normalize(controller, 'before', parameter, function () {
+                                        next(null, controller);
+                                    });
+                                });
+                                // call method
+                                job.then(function exec(res, next) {
+                                    normalize(controller, name, parameter, function () {
+                                        next(null, controller);
+                                    });
+                                });
+                                // call after
+                                job.then(function after(res, next) {
+                                    normalize(controller, 'after', parameter, function () {
+                                        next(null, controller);
+                                    });
+                                });
+                                // call afterOnce
+                                if (!controller.state.isAfterOnce) {
+                                    job.then(function afterOnce(res, next) {
+                                        normalize(controller, 'afterOnce', parameter, function () {
+                                            controller.state.isAfterOnce = true;
+                                            next(null, controller);
+                                        });
+                                    });
+                                }
+                                // exec router.after
+                                job.then(function () {
+                                    callback && callback();
+                                });
 
-                            job.then(function (res, next) {
-                                require([data.require], function cnavigate(_Controller) {
-
-                                    logger.debug("controller.exec", data.xpath);
-                                    var _controller = beez.manager.c.get(data.xpath);
-
-                                    var state = {};
-                                    if (_controller) {
-                                        state.isFirstBefore = true;
-                                        next(null, {Controller: _Controller, controller: _controller, state: state});
-                                        return;
+                                // fire!!
+                                job.end(
+                                    function last(err) {
+                                        if (err) {
+                                            logger.error(err);
+                                            throw err;
+                                        }
+                                    },
+                                    function finalError(err) {
+                                        if (err) {
+                                            throw err;
+                                        }
                                     }
-                                    beez.manager.c.async().create(data.xpath, _Controller).then(function (_controller) {
-                                        state.isFirstBefore = false;
-                                        next(null, {Controller: _Controller, controller: _controller, state: state});
-                                    }).end();
+                                );
+                            };
+
+
+                            // first before function
+                            if (!isLoaded) {
+                                job.then(function firstBefore(res, next) {
+
+                                    // First controller load function
+                                    if (isAsync) { // Asynchronous
+                                        if (self.router.firstBefore.length !== 2) {
+                                            throw new beez.Error('You should pass a callback function in arguments in case of async setting is true. firestBefore(data, callback)');
+                                        }
+
+                                        logger.trace("run controller firstBefore function(async). data:", data);
+
+                                        self.router.firstBefore(data, function (err, res) {
+                                            next(null, res);
+                                        });
+
+                                    } else { // Synchronism
+                                        logger.trace("run controller firstBefore function(sync). data:", data);
+
+                                        self.router.firstBefore(data);
+                                        next(null, res);
+                                    }
+                                });
+                            }
+
+                            // create controller
+                            job.then(function create(res, next) {
+                                require([data.require], function cnavigate(_Controller) {
+                                    var _controller = beez.manager.c.get(data.xpath);
+                                    var state = {};
+                                    state.isFirstBefore = !isLoaded;
+
+                                    var result = {Controller: _Controller, controller: _controller, state: state};
+
+                                    if (isLoaded) {
+                                        next(null, result);
+                                    } else {
+                                        beez.manager.c.async().create(data.xpath, _Controller).then(function (_controller) {
+                                            result.controller = _controller;
+                                            next(null, result);
+                                        }).end();
+                                    }
+
                                 });
                             });
 
-                            job.then(function (res, next) {
-                                var controller = res.controller;
+                            // before
+                            job.then(function exec(res, next) {
                                 var Controller = res.Controller;
-                                // set state
                                 data.state = res.state;
+                                if (isAsync) {
+                                    if (self.router.before.length !== 3) {
+                                        throw new beez.Error('You should pass a callback function in arguments in case of async setting is true. before(data, Controller, callback)');
+                                    }
+                                    logger.trace("run controller before function(async). data:", data);
+                                    self.router.before(data, Controller, function () {
+                                        next(null, res);
+                                    });
+                                } else {
+                                    logger.trace("run controller before function(sync). data:", data);
+                                    self.router.before(data, Controller);
+                                    next(null, res);
+                                }
+
+                            });
+
+                            // exec
+                            job.then(function exec(res, next) {
+                                var controller = res.controller;
 
                                 if (!controller[data.name]) {
                                     throw new beez.Error('"' + data.name + '" to Controller I is undefined.');
                                 }
-                                if (data.async) {
 
-                                    if (self.router.before.length !== 3) {
-                                        throw new beez.Error('You should pass a callback function in arguments in case of async setting is true. before(data, Controller, callback)');
+                                if (isAsync) {
+                                    logger.trace("run controller exec function(async). data:", data);
+                                    _exec(controller, data.name, parameter, function () {
+                                        next(null, res);
+                                    });
+                                } else {
+                                    logger.trace("run controller exec function(sync). data:", data);
+                                    _exec(controller, data.name, parameter);
+                                    next(null, res);
+                                }
+
+                            });
+
+                            // after function
+                            job.then(function after(res, next) {
+                                logger.trace('run controller after function(sync). data:', data);
+
+                                if (isAsync) {
+
+                                    if (self.router.after.length !== 3) {
+                                        throw new beez.Error('You should pass a callback function in arguments in case of async setting is true. after(data, Controller, callback)');
                                     }
 
-                                    logger.trace("run controller before function(async). data:", data);
-                                    self.router.before(data, Controller, function (err, res) { // run before function
-
-                                        parameter.push(function (err, res) { // set after callback
-                                            if (self.router.after.length !== 3) {
-                                                throw new beez.Error('You should pass a callback function in arguments in case of async setting is true. after(data, Controller, callback)');
-                                            }
-
-                                            logger.trace("run controller after function(async). data:", data);
-                                            self.router.after(data, Controller, function (err, res) { // run after function
-                                                next();
-                                            });
-                                        });
-
-                                        if (controller[data.name].length !== parameter.length) {
-                                            throw new beez.Error('"Controller.' + data.name + '" function should takes ' + parameter.length + ' arguments. (' + controller[data.name].length + ')');
-                                        }
-                                        controller[data.name].apply(controller, parameter);
+                                    logger.trace("run controller after function(async). data:", data);
+                                    self.router.after(data, res.Controller, function (err) {
+                                        next(err, res);
                                     });
 
                                 } else {
 
-                                    logger.trace("run controller before function(sync). data:", data);
-                                    self.router.before(data, Controller); // run before function
-
-                                    controller[data.name].apply(controller, parameter); // exec!!
-
                                     logger.trace("run controller after function(sync). data:", data);
-                                    self.router.after(data, Controller); // run after function
+                                    self.router.after(data, res.Controller);
+                                    next(null, res);
 
-                                    next();
                                 }
                             });
+
+                            // first after function
+                            if (!isLoaded) {
+                                job.then(function firstAfter(res, next) {
+                                    logger.trace('run controller first after function');
+
+                                    self.router.firstAfter(data, res.Controller, function (err, res) {
+                                        next(err, res);
+                                    });
+                                });
+                            }
 
                             job.end(); // fire!!!
 
-
-                            /**
-                            // processing of controller before loading.
-                            if (!beez.manager.c.get(data.xpath)) {
-                                logger.trace("run controller firstBefore function. data:", data);
-                                self.router.firstBefore(data);
-                            }
-
-                            require([data.require], function cnavigate(_Controller) {
-
-                                logger.debug("controller.exec", data.xpath);
-                                var controller = beez.manager.c.get(data.xpath);
-                                if (controller) {
-                                    if (!controller[data.name]) {
-                                        throw new beez.Error('"' + data.name + '" to Controller I is undefined.');
-                                    }
-
-                                    logger.trace("run controller before function. data:", data);
-                                    self.router.before(data, _Controller); // run before function
-
-                                    controller[data.name].apply(controller, parameter); // exec!!
-
-                                    logger.trace("run controller after function. data:", data);
-                                    self.router.after(data, _Controller); // run after function
-
-                                } else {
-                                    beez.manager.c.async().create(data.xpath, _Controller).then(function (controller) {
-                                        if (!controller[data.name]) {
-                                            throw new beez.Error('"' + data.name + '" to Controller I is undefined.');
-                                        }
-
-                                        logger.trace("run controller before function. data:", data);
-                                        self.router.before(data, _Controller); // run before function
-
-                                        controller[data.name].apply(controller, parameter); // exec!!
-
-                                        logger.trace("run controller after function. data:", data);
-                                        self.router.after(data, _Controller); // run after function
-
-                                    }).end();
-                                }
-                            });
-                            */
                         }
 
 
@@ -6613,6 +6772,20 @@ v                 *
                  * @instance
                  */
                 after: function after(data, Controller, next) {
+                    if (next) {
+                        next();
+                    }
+                },
+
+                /*
+                 * Interrupt processing of execution first[
+                 * ] after the controller.
+                 * @memberof Router
+                 * @param {Object} data Router information of the target.
+                 * @param {Controller} Controller Controller class of target
+                 * @instance
+                 */
+                firstAfter: function firstAfter(data, Controller, next) {
                     if (next) {
                         next();
                     }
@@ -7919,7 +8092,7 @@ v                 *
  * @overview beez entrypoint
  */
 
-var VERSION = '1.0.10';
+var VERSION = '1.0.13';
 
 if (typeof module !== 'undefined' && module.exports) { // node.js: main
     exports.VERSION = VERSION;
