@@ -87,8 +87,12 @@
         }
     },
     "deploy": {
-        "optipng": true,
-        "jpegoptim": true,
+        "optipng": {
+            "use": true
+        },
+        "jpegoptim": {
+            "use": true
+        },
         "include": [ "dist/*/index.js", "dist/index/require.beez.*.js", "*.html", "*.css", "*.png", "*.jpg", "*.gif", "*.ttf", "*.eot", "*.woff" ], // files you want to deploy
         "exclude": [ "_*.css", "_*.png", "_*.jpg", "_*.gif", "_*.ttf", "_*.eot", "_*.woff" ] // files you want not to deploy
     },
