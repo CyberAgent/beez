@@ -12,8 +12,6 @@ var Bucks = require('bucks');
 var bootstrap = require('./bootstrap');
 
 var DEFAULT_OPTIONS = beezlib.constant.DEPLOY_DEFAULT_OPTIONS;
-var REG_OPTIPNG_FILE = beezlib.constant.REG_OPTIPNG_FILE;
-var REG_JPEGOPTIM_FILE = beezlib.constant.REG_JPEGOPTIM_FILE;
 
 bootstrap.deploy(function (err) {
     if (err) {
@@ -38,6 +36,14 @@ bootstrap.deploy(function (err) {
     beezlib.logger.message('  deploy regexp:'.green, include ? includeReg : 'unused'.grey);
     beezlib.logger.message('  do not deploy regexp:'.green, exclude ? excludeReg : 'unused'.grey);
     beezlib.logger.message('  extend regexp:'.green, config.deploy.regexp || 'unused'.grey);
+
+    // backward compatibility
+    if (typeof config.deploy.optipng === 'boolean') {
+        config.deploy.optipng = { use: config.deploy.optipng };
+    }
+    if (typeof config.deploy.jpegoptim === 'boolean') {
+        config.deploy.jpegoptim = { use: config.deploy.jpegoptim };
+    }
 
     var bucks = new Bucks();
     bucks.empty();
@@ -73,28 +79,12 @@ bootstrap.deploy(function (err) {
                     }
 
                     beezlib.logger.message('deploy:', dst);
-                    if (REG_OPTIPNG_FILE.test(dst) && config.deploy.optipng) {
-                        // optipng
-                        beezlib.image.optipng(dst, function(err) {
-                            if (err) {
-                                return next(err);
-                            }
-                            beezlib.logger.message('optipng:', dst);
-                            next();
-                        });
-                    } else if (REG_JPEGOPTIM_FILE.test(dst) && config.deploy.jpegoptim) {
-                        // jpegoptim
-                        beezlib.image.jpegoptim(dst, function(err) {
-                            if (err) {
-                                return next(err);
-                            }
-                            beezlib.logger.message('jpegoptim:', dst);
-                            next();
-                        });
-                    } else {
-                        next();
-                    }
+                    next();
                 });
+            });
+            // optim
+            bucks.add(function task(err, res, next) {
+                beezlib.image.optim(dst, config.deploy, next);
             });
         }
     });
