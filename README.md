@@ -143,6 +143,11 @@ beezが依存しているライブラリは以下になります。
     - beezの環境別設定ファイルをテンプレートから生成する設定ファイルビルダー
 - [fkei/grunt-beez-confbuilder](https://github.com/fkei/grunt-beez-confbuilder) 
     - beez-confbuilderをGruntから実行できるGruntタスク
+- [fkei/beez-optim](https://github.com/fkei/beez-optim)
+	- 任意のディレクトリ配下の `.png` `.jpeg` `.jpg` を圧縮するコマンド
+- [fkei/grunt-beez-optim](https://github.com/fkei/grunt-beez-optim) 
+	- beez-optimをGruntから実行できるGruntタスク
+
 
 ## Changelog
 
