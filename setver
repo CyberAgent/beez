@@ -4,6 +4,7 @@ var fs = require('fs');
 
 var list = [
     './package.json',
+    './bower.json',
     'libs/beez-core/package.json',
     'libs/beez-mvcr/package.json',
 //    'libs/beez-ua/package.json',
