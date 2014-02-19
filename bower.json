@@ -32,7 +32,8 @@
         "s",
         "setver",
         "t",
-        "vendor"
+        "vendor",
+        "bower.json"
     ],
     "repository": {
         "type": "git",
