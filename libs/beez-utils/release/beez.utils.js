@@ -1,3 +1,4 @@
+
 /**
  * @name browser.js<utils>
  * @author Kazuma MISHIMAGI <mishimagi_kazuma@cyberagent.co.jp>
@@ -585,4 +586,3 @@
         return beez.utils;
     });
 })(this);
-

@@ -1,3 +1,4 @@
+
 /**
  * @name suns.js
  * @author Kazuma MISHIMAGI <mishimagi_kazuma@cyberagent.co.jp>
@@ -1565,4 +1566,3 @@
         return beez;
     });
 })(this);
-

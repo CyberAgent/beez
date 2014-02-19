@@ -1,3 +1,4 @@
+
 /**
  * @name base.js<beez-mvcr>
  * @author Kei Funagayama <funagayama_kei@cyberagent.co.jp>
@@ -5208,4 +5209,3 @@ v                 *
         return beez.mvcr;
     });
 })(this);
-

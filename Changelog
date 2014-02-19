@@ -3,13 +3,16 @@ Changelog
 Key
 [A] - Added, [C] - Changed, [F] - Fixed, [R] - Removed
 
-Tue Feb 18  2014 Yuhei Aihara <aihara_yuhei@cyberagent.co.jp> - 1.0.16
+Wed Feb 19 2014 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 1.0.17
+- [A] bower support
+
+Tue Feb 18 2014 Yuhei Aihara <aihara_yuhei@cyberagent.co.jp> - 1.0.16
 - [C] beez-deploy image optim
 
-Mon Feb 17  2014 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 1.0.15
+Mon Feb 17 2014 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 1.0.15
 - [F] beez-ratioresize command-line options -w
 
-Mon Feb 17  2014 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 1.0.14
+Mon Feb 17 2014 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 1.0.14
 - [F] change api beezlib@0.9.6
 
 Thu Feb 13 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.13
