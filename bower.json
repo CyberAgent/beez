@@ -17,10 +17,21 @@
     ],
     "ignore": [
         "**/.*",
+        "AUTHORS",
+        "Changelog",
+        "LICENSE",
+        "Makefile",
+        "README.md",
+        "build.js",
         "design",
-        "report",
-        "node_modules",
-        "bower_components"
+        "libs",
+        "package.json",
+        "report/beez-*",
+        "report/README.md",
+        "s",
+        "setver",
+        "t",
+        "vendor"
     ],
     "repository": {
         "type": "git",
