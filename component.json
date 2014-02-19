@@ -3,6 +3,9 @@
   "repo": "CyberAgent/beez",
   "description": "The framework for mobile browser faster development.",
   "version": "1.0.17",
+  "remotes": [
+    "https://raw2.github.com/CyberAgent"
+  ],
   "keywords": [
     "beez",
     "browser",
