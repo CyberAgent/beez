@@ -147,6 +147,8 @@ beezが依存しているライブラリは以下になります。
 	- 任意のディレクトリ配下の `.png` `.jpeg` `.jpg` を圧縮するコマンド
 - [fkei/grunt-beez-optim](https://github.com/fkei/grunt-beez-optim) 
 	- beez-optimをGruntから実行できるGruntタスク
+- [masakisueda/beez-touch](https://github.com/masakisueda/beez-touch) 
+	- beez専用のタッププラグイン
 
 
 ## Changelog
