@@ -65,15 +65,58 @@ define(['controller', 'beez.mvcr', 'beez.core'], function (c, mvcr, beez){
             }
         }
     );
+    var TestController3 = Controller.extend(
+        'test.controller.TestController3',
+        {
+            css: [
+                'https://raw.github.com/fkei/mjson-server/master/public/stylesheets/style.css',
+                '/m/public/styl/style.css' // beez-foundation started!! ok
+            ],
 
-    var testController1;
-    var testController2;
+            i18n : function i18n(next) {
+                require(['spec/i18n/en', 'spec/i18n/ja'], function (en, ja) {
+                    next(null, {
+                        en: en,
+                        ja: ja
+                    });
+                });
+            },
 
+            beforeOnce: function (next) {
+                sequence.push(1);
+                next();
+            },
+
+            before: function (next) {
+                sequence.push(2);
+                next();
+            },
+
+            index: function (next) {
+                sequence.push(3);
+                next();
+            },
+
+            after: function (next) {
+                sequence.push(4);
+                next();
+            },
+
+            afterOnce: function (next) {
+                sequence.push(5);
+                next();
+            }
+        }
+    );
+
+    var testController1, testController2, testController3
+        sequence = [];
     return function () {
         describe('Controller', function (){
             it('new', function () {
                 testController1 = new TestController1();
                 testController2 = new TestController2();
+                testController3 = new TestController3();
             });
             it('css', function (done) {
                 testController1.loadCSS(function (err, ress) {
@@ -109,6 +152,15 @@ define(['controller', 'beez.mvcr', 'beez.core'], function (c, mvcr, beez){
                         expect(testController2.message()).equals("えふけい");
                         done();
                     });
+                });
+            });
+            it('controller#show()', function (done) {
+                testController3.show('index', ['test'], function (err, ress) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(sequence).deep.equal([1,2,3,4,5]);
+                    done();
                 });
             });
         });
