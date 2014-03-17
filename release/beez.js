@@ -1,4 +1,5 @@
 
+
 /**
  * @name suns.js
  * @author Kazuma MISHIMAGI <mishimagi_kazuma@cyberagent.co.jp>
@@ -6312,6 +6313,81 @@ v                 *
                 },
 
                 /**
+                 * Processing is performed by the flow of [beforeOnce -> before -> render -> after -> afterOnce].
+                 *
+                 * @memberof Controller
+                 * @instance
+                 * @private
+                 * @param {String} name method name of controller
+                 * @param {Array} parameter the paramter which will be passed to the method
+                 * @param {Function} callback
+                 */
+                show: function show(name, parameter, callback) {
+                    var self = this;
+                    var job = new beez.Bucks();
+                    var isAsync = beez.utils.isFunction(callback);
+                    var _normalize = function (name, parameter, done) {
+                        var method = self[name],
+                            length = method.length,
+                            args = _.clone(parameter);
+
+                        if (length && isAsync) {
+                            args[length - 1] = done;
+                            method.apply(self, args);
+                        } else {
+                            method.apply(self, args);
+                            done();
+                        }
+                    };
+
+                    // call before once
+                    if (!this.state.isBeforeOnce) {
+                        job.then(function beforeOnce(res, next) {
+                            _normalize('beforeOnce', parameter, function () {
+                                self.state.isBeforeOnce = true;
+                                next(null, self);
+                            });
+                        });
+                    }
+                    // call before
+                    job.then(function before(res, next) {
+                        _normalize('before', parameter, function () {
+                            next(null, self);
+                        });
+                    });
+                    // call method
+                    job.then(function exec(res, next) {
+                        _normalize(name, parameter, function () {
+                            next(null, self);
+                        });
+                    });
+                    // call after
+                    job.then(function after(res, next) {
+                        _normalize('after', parameter, function () {
+                            next(null, self);
+                        });
+                    });
+                    // call afterOnce
+                    if (!this.state.isAfterOnce) {
+                        job.then(function afterOnce(res, next) {
+                            _normalize('afterOnce', parameter, function () {
+                                self.state.isAfterOnce = true;
+                                next(null, self);
+                            });
+                        });
+                    }
+
+                    // fire!!
+                    job.end(function (err, ress) {
+                        if (callback) {
+                            callback(err, ress);
+                        } else if (err) {
+                            throw err;
+                        }
+                    });
+                },
+
+                /**
                  * Disposes of the instance
                  *
                  * @memberof Controller
@@ -6441,95 +6517,6 @@ v                 *
 
                             logger.debug("router.proxy", data);
 
-
-                            /**
-                             * normalize asyncronous handler
-                             * @param  {Controller} controller
-                             * @param  {String}   name
-                             * @param  {Array}   parameter
-                             * @param  {Function} callback
-                             */
-                            var normalize = function (controller, name, parameter, callback) {
-                                var method = controller[name],
-                                    length = method.length,
-                                    args = _.clone(parameter);
-
-                                if (length && isAsync) {
-                                    args[length - 1] = callback;
-                                    method.apply(controller, args);
-                                } else {
-                                    method.apply(controller, args);
-                                    callback();
-                                }
-                            };
-
-                            /**
-                             * Process of controller method
-                             *
-                             * Processing is performed by the flow of
-                             * [beforeOnce -> before -> render -> after -> afterOnce].
-                             */
-                            var _exec = function (controller, name, parameter, callback) {
-                                var job = new beez.Bucks();
-
-                                // call before once
-                                if (!controller.state.isBeforeOnce) {
-                                    job.then(function beforeOnce(res, next) {
-                                        normalize(controller, 'beforeOnce', parameter, function () {
-                                            controller.state.isBeforeOnce = true;
-                                            next(null, controller);
-                                        });
-                                    });
-                                }
-                                // call before
-                                job.then(function before(res, next) {
-                                    normalize(controller, 'before', parameter, function () {
-                                        next(null, controller);
-                                    });
-                                });
-                                // call method
-                                job.then(function exec(res, next) {
-                                    normalize(controller, name, parameter, function () {
-                                        next(null, controller);
-                                    });
-                                });
-                                // call after
-                                job.then(function after(res, next) {
-                                    normalize(controller, 'after', parameter, function () {
-                                        next(null, controller);
-                                    });
-                                });
-                                // call afterOnce
-                                if (!controller.state.isAfterOnce) {
-                                    job.then(function afterOnce(res, next) {
-                                        normalize(controller, 'afterOnce', parameter, function () {
-                                            controller.state.isAfterOnce = true;
-                                            next(null, controller);
-                                        });
-                                    });
-                                }
-                                // exec router.after
-                                job.then(function () {
-                                    callback && callback();
-                                });
-
-                                // fire!!
-                                job.end(
-                                    function last(err) {
-                                        if (err) {
-                                            logger.error(err);
-                                            throw err;
-                                        }
-                                    },
-                                    function finalError(err) {
-                                        if (err) {
-                                            throw err;
-                                        }
-                                    }
-                                );
-                            };
-
-
                             // first before function
                             if (!isLoaded) {
                                 job.then(function firstBefore(res, next) {
@@ -6606,12 +6593,15 @@ v                 *
 
                                 if (isAsync) {
                                     logger.trace("run controller exec function(async). data:", data);
-                                    _exec(controller, data.name, parameter, function () {
+                                    controller.show(data.name, parameter, function (err) {
+                                        if (err) {
+                                            throw err;
+                                        }
                                         next(null, res);
                                     });
                                 } else {
                                     logger.trace("run controller exec function(sync). data:", data);
-                                    _exec(controller, data.name, parameter);
+                                    controller.show(data.name, parameter);
                                     next(null, res);
                                 }
 
@@ -8091,7 +8081,7 @@ v                 *
  * @overview beez entrypoint
  */
 
-var VERSION = '1.0.17';
+var VERSION = '1.0.18';
 
 if (typeof module !== 'undefined' && module.exports) { // node.js: main
     exports.VERSION = VERSION;

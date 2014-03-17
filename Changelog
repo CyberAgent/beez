@@ -3,6 +3,9 @@ Changelog
 Key
 [A] - Added, [C] - Changed, [F] - Fixed, [R] - Removed
 
+Mon Mar 17 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.18
+- [C] improve controller process
+
 Wed Feb 19 2014 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 1.0.17
 - [A] bower support
 
