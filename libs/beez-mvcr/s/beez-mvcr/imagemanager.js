@@ -28,16 +28,19 @@
             return '__beez_manager_image_uid_' + _uid++;
         };
 
+        var DEFAULT_CACHEKEY = '_';
         /**
          * get URL sting to isolate cache of asset from that of gotten by css with specifying URL query string
          * @private
          * @param {String} url specify URL of image asset
-         * @param {String} cacheId specify cacheId (if not specified, use current timestamp. that is, never cached.)
+         * @param {Object} options for cache isolating
          * @returns {String} URL string of cache-isolated
          */
-        function ensureUrlIsolated(url, cacheId) {
-            cacheId || (cacheId = Date.now());
-            var strCacheIsolator = '_=' + cacheId;
+        function ensureUrlIsolated(url, options) {
+            options || (options = {});
+            var cacheKey = (options.cacheKey || DEFAULT_CACHEKEY);
+            var cacheId = (options.cacheId || Date.now()); // if not specified, use current timestamp. that is, never cached.
+            var strCacheIsolator = cacheKey + '=' + cacheId;
             if (url.indexOf(strCacheIsolator) === -1) {
                 url += (-1 < url.indexOf('?') ? '&' : '?') + strCacheIsolator;
             }
@@ -270,6 +273,7 @@
                  */
                 initialize: function initialize(imageManager) {
                     this.imageManager = imageManager;
+                    this.cacheKey = imageManager.cacheKey;
                 },
 
                 /**
@@ -293,8 +297,12 @@
                     var img = this.imageManager.create(options);
                     var self = this;
 
+                    var cacheKey = this.cacheKey;
                     var cacheId;
-                    options && (cacheId = options.cacheId);
+                    if (options) {
+                        cacheKey = options.cacheKey || cacheKey;
+                        cacheId = options.cacheId;
+                    }
 
                     return this.add(function loadTask(err, res, next) {
 
@@ -325,7 +333,7 @@
 
                         // start loading
                         var _url = self.imageManager.imageUrl(url); // replace ${ratio}
-                        cacheId && (_url = ensureUrlIsolated(_url, cacheId)); // if cacheId specified, append query string
+                        cacheId && (_url = ensureUrlIsolated(_url, { cacheKey: cacheKey, cacheId: cacheId })); // if cacheId specified, append query string
                         img.src = _url;
                     });
                 },
@@ -416,7 +424,8 @@
                  *     size: 10,
                  *     pool: {
                  *         crossOrigin: 'Anonymous'
-                 *     }
+                 *     },
+                 *     cacheKey: '_'
                  * };
                  *     var manager = new ImageManager(options);
                  *
@@ -425,7 +434,9 @@
                 initialize: function initialize(options) {
                     var size = (options && options.size) ? options.size : 0;
                     var pool = (options && options.pool) ? options.pool : {};
+                    var cacheKey = (options && options.cacheKey) ? options.cacheKey : DEFAULT_CACHEKEY;
                     this.pool = new ImangePool(size, pool);
+                    this.cacheKey = cacheKey;
                 },
 
                 /**
@@ -529,6 +540,7 @@
                     logger.trace(this.constructor.name, 'dispose');
                     this.pool.dispose();
                     delete this.pool;
+                    delete this.cacheKey;
                 }
             }
         );
