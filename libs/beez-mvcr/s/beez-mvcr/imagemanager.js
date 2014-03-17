@@ -29,6 +29,23 @@
         };
 
         /**
+         * get URL sting to isolate cache of asset from that of gotten by css with specifying URL query string
+         * @private
+         * @param {String} url specify URL of image asset
+         * @param {String} cacheId specify cacheId (if not specified, use current timestamp. that is, never cached.)
+         * @returns {String} URL string of cache-isolated
+         */
+        function ensureUrlIsolated(url, cacheId) {
+            cacheId || (cacheId = Date.now());
+            var strCacheIsolator = '_=' + cacheId;
+            if (url.indexOf(strCacheIsolator) === -1) {
+                url += (-1 < url.indexOf('?') ? '&' : '?') + strCacheIsolator;
+            }
+
+            return url;
+        }
+
+        /**
          * Class that manages multiple Image Object. re-use function of <img>.
          *
          * @class
@@ -276,6 +293,9 @@
                     var img = this.imageManager.create(options);
                     var self = this;
 
+                    var cacheId;
+                    options && (cacheId = options.cacheId);
+
                     return this.add(function loadTask(err, res, next) {
 
                         var $img = $(img);
@@ -305,6 +325,7 @@
 
                         // start loading
                         var _url = self.imageManager.imageUrl(url); // replace ${ratio}
+                        cacheId && (_url = ensureUrlIsolated(_url, cacheId)); // if cacheId specified, append query string
                         img.src = _url;
                     });
                 },
