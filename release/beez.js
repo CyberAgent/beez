@@ -1,5 +1,4 @@
 
-
 /**
  * @name suns.js
  * @author Kazuma MISHIMAGI <mishimagi_kazuma@cyberagent.co.jp>
@@ -4963,10 +4962,11 @@ v                 *
  */
 
 (function (global) {
-    define('beez-mvcr/view',['require','exports','module','beez.core','backbone','beez-mvcr/base'],function __View__(require, exports, module) {
+    define('beez-mvcr/view',['require','exports','module','beez.core','beez.utils','backbone','beez-mvcr/base'],function __View__(require, exports, module) {
         
 
         var beez = require('beez.core');
+        require('beez.utils');
 
         var _ = beez.vendor._;
         var Backbone = require('backbone');
@@ -5430,6 +5430,18 @@ v                 *
                         });
                     }
 
+                    this.then(function rendered(view, next) {
+                        if (!view.visible) {
+                            logger.debug('view', view.vidx, 'is not visible. skip trigger events beez:view:render');
+                            next(null, view);
+                            return;
+                        }
+                        logger.debug('view', view.vidx, 'is rendered. trigger beez:view:render');
+                        view.trigger('beez:view:render');
+                        next(null, view);
+                        return;
+                    });
+
                     return this;
                 },
 
@@ -5463,8 +5475,9 @@ v                 *
                     });
 
                     this.then(function remove(view, next) {
-                        // else exec as sync
                         view.remove();
+                        logger.debug('view', view.vidx, 'is removed. trigger beez:view:remove');
+                        view.trigger('beez:view:remove');
                         next(null, view);
                         return;
                     });
@@ -5484,15 +5497,29 @@ v                 *
                  * @memberof ViewAsync
                  * @instance
                  * @public
-                 * @param {boolean} [showChildren=false] if not show children, set false
+                 * @param {boolean} [options.showChildren=true] if not show children, set false
+                 * @param {Function} options.filter show filtered view by the function 
                  * @return {ViewAsync}
                  * @throws {beez.Error} render root is not set
                  */
-                show: function show(showChildren) {
+                show: function show(options) {
                     if (!this._root) {
                         throw new beez.Error('render root is not set. initialize renderer with root view parameter.');
                     }
-                    return this._show(this._root, showChildren);
+                    options = options || {};
+
+                    // TODO: Put out in the future 
+                    if (beez.utils.isBoolean(options)) {
+                        options = {
+                            showChildren: options
+                        };
+                    }
+
+                    if (options.showChildren === undefined) {
+                        options.showChildren = true;
+                    }
+
+                    return this._show(this._root, options);
                 },
 
 
@@ -5508,22 +5535,24 @@ v                 *
                  * @instance
                  * @private
                  * @param {View} view view to show
-                 * @param {boolean} [showChildren=false] if not show children, set false
+                 * @param {boolean} [options.showChildren=true] if not show children, set false
+                 * @param {Function} options.filter show filtered view by the function 
                  * @return {ViewAsync}
                  */
-                _show: function _show(view, showChildren) {
-
-                    if (showChildren === undefined) {
-                        showChildren = true;
-                    }
+                _show: function _show(view, options) {
+                    logger.debug('showing', view.vidx);
 
                     var self = this;
                     var children = view.getChildren();
 
-                    logger.debug('showing', view.vidx);
+                    if (options.filter) {
+                        logger.debug('filtering', view.vidx);
+                        children = _.filter(children, options.filter);
+                    }
+
                     this._render(view);
 
-                    if (children.length > 0 && showChildren) {
+                    if (children.length > 0 && options.showChildren) {
                         children.sort(function (a, b) {
                             if (a.order < b.order) {
                                 return -1;
@@ -5536,7 +5565,7 @@ v                 *
                         });
 
                         _.each(children, function (v) {
-                            self._show(v);
+                            self._show(v, options);
                         });
                     }
 
@@ -5555,14 +5584,27 @@ v                 *
                  * @instance
                  * @private
                  * @param {View} view view to hide
-                 * @param {boolean} [hideChildren=true] if set false, children not be removed
+                 * @param {boolean} [options.hideChildren=true] if set false, children not be removed
+                 * @param {Function} options.filter hide filetered view by the function 
                  * @return {ViewAsync}
                  */
-                hide: function hide(hideChildren) {
+                hide: function hide(options) {
                     if (!this._root) {
                         throw new beez.Error('render root is not set. initialize renderer with root view parameter.');
                     }
-                    return this._hide(this._root, hideChildren);
+                    options = options || {};
+
+                    // TODO: Put out in the future 
+                    if (beez.utils.isBoolean(options)) {
+                        options = {
+                            hideChildren: options
+                        };
+                    }
+
+                    if (options.hideChildren === undefined) {
+                        options.hideChildren = true;
+                    }
+                    return this._hide(this._root, options);
                 },
 
 
@@ -5577,19 +5619,22 @@ v                 *
                  * @instance
                  * @private
                  * @param {View} view view to hide
-                 * @param {boolean} [hideChildren=true] if set false, children not be removed
+                 * @param {boolean} [options.hideChildren=true] if set false, children not be removed
+                 * @param {Function} options.filter hide filetered view by the function 
                  * @return {ViewAsync}
                  */
-                _hide: function _hide(view, hideChildren) {
-
-                    if (hideChildren === undefined) {
-                        hideChildren = true;
-                    }
+                _hide: function _hide(view, options) {
+                    logger.debug('hiding', view.vidx);
 
                     var self = this;
-
                     var children = view.getChildren();
-                    if (children.length > 0 && hideChildren) {
+
+                    if (options.filter) {
+                        logger.debug('filtering', view.vidx);
+                        children = _.filter(children, options.filter);
+                    }
+
+                    if (children.length > 0 && options.hideChildren) {
                         children.sort(function (a, b) {
                             if (a.order < b.order) {
                                 return 1;
@@ -5601,7 +5646,7 @@ v                 *
                             return 0;
                         });
                         _.each(children, function (v) {
-                            self._hide(v);
+                            self._hide(v, options);
                         });
                     }
 
@@ -5748,7 +5793,6 @@ v                 *
                  * }
                  */
                 before: beez.none,
-
 
                 /**
                  * Execute after this view have been rendered.
@@ -7158,6 +7202,26 @@ v                 *
             return '__beez_manager_image_uid_' + _uid++;
         };
 
+        var DEFAULT_CACHEKEY = '_';
+        /**
+         * get URL sting to isolate cache of asset from that of gotten by css with specifying URL query string
+         * @private
+         * @param {String} url specify URL of image asset
+         * @param {Object} options for cache isolating
+         * @returns {String} URL string of cache-isolated
+         */
+        function ensureUrlIsolated(url, options) {
+            options || (options = {});
+            var cacheKey = (options.cacheKey || DEFAULT_CACHEKEY);
+            var cacheId = (options.cacheId || Date.now()); // if not specified, use current timestamp. that is, never cached.
+            var strCacheIsolator = cacheKey + '=' + cacheId;
+            if (url.indexOf(strCacheIsolator) === -1) {
+                url += (-1 < url.indexOf('?') ? '&' : '?') + strCacheIsolator;
+            }
+
+            return url;
+        }
+
         /**
          * Class that manages multiple Image Object. re-use function of <img>.
          *
@@ -7383,6 +7447,7 @@ v                 *
                  */
                 initialize: function initialize(imageManager) {
                     this.imageManager = imageManager;
+                    this.cacheKey = imageManager.cacheKey;
                 },
 
                 /**
@@ -7405,6 +7470,13 @@ v                 *
 
                     var img = this.imageManager.create(options);
                     var self = this;
+
+                    var cacheKey = this.cacheKey;
+                    var cacheId;
+                    if (options) {
+                        cacheKey = options.cacheKey || cacheKey;
+                        cacheId = options.cacheId;
+                    }
 
                     return this.add(function loadTask(err, res, next) {
 
@@ -7435,6 +7507,7 @@ v                 *
 
                         // start loading
                         var _url = self.imageManager.imageUrl(url); // replace ${ratio}
+                        cacheId && (_url = ensureUrlIsolated(_url, { cacheKey: cacheKey, cacheId: cacheId })); // if cacheId specified, append query string
                         img.src = _url;
                     });
                 },
@@ -7525,7 +7598,8 @@ v                 *
                  *     size: 10,
                  *     pool: {
                  *         crossOrigin: 'Anonymous'
-                 *     }
+                 *     },
+                 *     cacheKey: '_'
                  * };
                  *     var manager = new ImageManager(options);
                  *
@@ -7534,7 +7608,9 @@ v                 *
                 initialize: function initialize(options) {
                     var size = (options && options.size) ? options.size : 0;
                     var pool = (options && options.pool) ? options.pool : {};
+                    var cacheKey = (options && options.cacheKey) ? options.cacheKey : DEFAULT_CACHEKEY;
                     this.pool = new ImangePool(size, pool);
+                    this.cacheKey = cacheKey;
                 },
 
                 /**
@@ -7638,6 +7714,7 @@ v                 *
                     logger.trace(this.constructor.name, 'dispose');
                     this.pool.dispose();
                     delete this.pool;
+                    delete this.cacheKey;
                 }
             }
         );
@@ -8081,7 +8158,7 @@ v                 *
  * @overview beez entrypoint
  */
 
-var VERSION = '1.0.18';
+var VERSION = '1.0.19';
 
 if (typeof module !== 'undefined' && module.exports) { // node.js: main
     exports.VERSION = VERSION;
