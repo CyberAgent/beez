@@ -19,12 +19,16 @@ define(['imagemanager'], function (imagemanager) {
     var imgUrl = 'https://aos.a4c.jp/sasuke/d/1.0.6/wear/common/underwearFemale/base_pk_1304/img/8/wear_common_underwearFemale-base_pk_1304-8_10.png';
     var imgUrls = [
         'https://aos.a4c.jp/sasuke/d/1.0.6/wear/common/underwearFemale/base_pk_1304/img/8/wear_common_underwearFemale-base_pk_1304-8_13.png', // *1
-        'https://aos.a4c.jp/sasuke/d/1.0.6/wear/common/underwearFemale/base_pk_1304/img/8/wear_common_underwearFemale-base_pk_1304-8_15.png' // *2
+        'https://aos.a4c.jp/sasuke/d/1.0.6/wear/common/underwearFemale/base_pk_1304/img/8/wear_common_underwearFemale-base_pk_1304-8_15.png', // *2
+        'https://aos.a4c.jp/sasuke/d/1.0.6/wear/common/underwearFemale/base_pk_1304/img/8/wear_common_underwearFemale-base_pk_1304-8_15.png', // *3
+        'https://aos.a4c.jp/sasuke/d/1.0.6/wear/common/underwearFemale/base_pk_1304/img/8/wear_common_underwearFemale-base_pk_1304-8_15.png' // *4
     ];
     var imgUrls_options = [
         {crossOrigin: "Anonymous"}, // *1
         //{}, // *1
-        {/** empty */} // *2
+        {crossOrigin: "Anonymous", "cacheId": "beez"}, // *2
+        {crossOrigin: "Anonymous", "cacheKey": "cachekey", "cacheId": "beez"}, // *3
+        {/** empty */} // *4
     ];
 
     var loadImg;
@@ -70,7 +74,20 @@ define(['imagemanager'], function (imagemanager) {
                     .then(function (res, next) {
                         for (var i = 0; i < res.res.length; i++) {
                             expect((res.err[i] === null)).be.ok;
-                            expect(res.res[i].src).eq(imgUrls[i]);
+                            switch (i) {
+                                case 0:
+                                    expect(res.res[i].src).eq(imgUrls[i]);
+                                    break;
+                                case 1:
+                                    expect(res.res[i].src).eq(imgUrls[i] + '?_=beez');
+                                    break;
+                                case 2:
+                                    expect(res.res[i].src).eq(imgUrls[i] + '?cachekey=beez');
+                                    break;
+                                case 3:
+                                    expect(res.res[i].src).eq(imgUrls[i]);
+                                    break;
+                            }
                         }
                         done();
                     }).error(function (err, next) {
