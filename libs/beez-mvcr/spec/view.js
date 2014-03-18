@@ -155,6 +155,20 @@ define(['view'], function(view){
                 expect(testView.test.events.dblclick).be.ok;
             });
 
+            it('beez:events', function(done) {
+                testView.once('beez:view:remove', function() {
+                    console.log('beez:view:remove is called!!');
+                    expect(testView.isRendered()).eq(false);
+                    done();
+                });
+                testView.once('beez:view:render', function() {
+                    console.log('beez:view:render is called!!');
+                    expect(testView.isRendered()).eq(true);
+                    testView.async().hide().end();
+                });
+                testView.async().show().end();
+            });
+
             it('show()/hide()', function(done) {
                 testView
                     .async()
