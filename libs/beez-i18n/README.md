@@ -1,8 +1,6 @@
 beez-i18n
 =========
 
-
-
 # About
 
 It's a small library to provide the I18n translations on the Beez.
@@ -47,7 +45,7 @@ console.log(message);
 > 'ようこそ fkei :)'
 ```
 
-# build
+# Build
 
 ```
 $ make
@@ -59,10 +57,11 @@ $ make
 $ make jshint
 ```
 
-# test
+# Test
 
 ```
-browser -> ./docs/all.html
+$ make init # or make
+$ $ open ./spec/all.html # browser access
 ```
 
 # License

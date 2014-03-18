@@ -24,8 +24,8 @@ define(['controller', 'beez.mvcr', 'beez.core'], function (c, mvcr, beez){
         'test.controller.TestController1',
         {
             css: [
-                'https://raw.github.com/fkei/mjson-server/master/public/stylesheets/style.css',
-                '/m/public/styl/style.css' // beez-foundation started!! ok
+                'http://0.0.0.0:1109/__beez_foundation__/style/style.css',
+                '/__beez_foundation__/style/style.css' // beez-foundation started!! ok
             ],
 
             i18n : {
@@ -45,8 +45,8 @@ define(['controller', 'beez.mvcr', 'beez.core'], function (c, mvcr, beez){
         'test.controller.TestController2',
         {
             css: [
-                'https://raw.github.com/fkei/mjson-server/master/public/stylesheets/style.css',
-                '/m/public/styl/style.css' // beez-foundation started!! ok
+                'http://0.0.0.0:1109/__beez_foundation__/style/style.css',
+                '/__beez_foundation__/style/style.css' // beez-foundation started!! ok
             ],
 
             i18n : function i18n(next) {
@@ -69,8 +69,8 @@ define(['controller', 'beez.mvcr', 'beez.core'], function (c, mvcr, beez){
         'test.controller.TestController3',
         {
             css: [
-                'https://raw.github.com/fkei/mjson-server/master/public/stylesheets/style.css',
-                '/m/public/styl/style.css' // beez-foundation started!! ok
+                'http://0.0.0.0:1109/__beez_foundation__/style/style.css',
+                '/__beez_foundation__/style/style.css' // beez-foundation started!! ok
             ],
 
             i18n : function i18n(next) {
