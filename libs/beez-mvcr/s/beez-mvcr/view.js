@@ -526,15 +526,29 @@
                  * @memberof ViewAsync
                  * @instance
                  * @public
-                 * @param {boolean} [showChildren=false] if not show children, set false
+                 * @param {boolean} [options.showChildren=true] if not show children, set false
+                 * @param {Function} options.filter show filtered view by the function 
                  * @return {ViewAsync}
                  * @throws {beez.Error} render root is not set
                  */
-                show: function show(showChildren) {
+                show: function show(options) {
                     if (!this._root) {
                         throw new beez.Error('render root is not set. initialize renderer with root view parameter.');
                     }
-                    return this._show(this._root, showChildren);
+                    options = options || {};
+
+                    // TODO: Put out in the future 
+                    if (Object.prototype.toString.call(options) === '[object Boolean]') {
+                        options = {
+                            showChildren: options
+                        };
+                    }
+
+                    if (options.showChildren === undefined) {
+                        options.showChildren = true;
+                    }
+
+                    return this._show(this._root, options);
                 },
 
 
@@ -550,22 +564,23 @@
                  * @instance
                  * @private
                  * @param {View} view view to show
-                 * @param {boolean} [showChildren=false] if not show children, set false
+                 * @param {boolean} [options.showChildren=true] if not show children, set false
+                 * @param {Function} options.filter show filtered view by the function 
                  * @return {ViewAsync}
                  */
-                _show: function _show(view, showChildren) {
-
-                    if (showChildren === undefined) {
-                        showChildren = true;
-                    }
+                _show: function _show(view, options) {
+                    logger.debug('showing', view.vidx);
 
                     var self = this;
                     var children = view.getChildren();
 
-                    logger.debug('showing', view.vidx);
+                    if (options.filter) {
+                        children = _.filter(children, options.filter);
+                    }
+
                     this._render(view);
 
-                    if (children.length > 0 && showChildren) {
+                    if (children.length > 0 && options.showChildren) {
                         children.sort(function (a, b) {
                             if (a.order < b.order) {
                                 return -1;
@@ -578,7 +593,7 @@
                         });
 
                         _.each(children, function (v) {
-                            self._show(v);
+                            self._show(v, options);
                         });
                     }
 
@@ -597,14 +612,27 @@
                  * @instance
                  * @private
                  * @param {View} view view to hide
-                 * @param {boolean} [hideChildren=true] if set false, children not be removed
+                 * @param {boolean} [options.hideChildren=true] if set false, children not be removed
+                 * @param {Function} options.filter hide filetered view by the function 
                  * @return {ViewAsync}
                  */
-                hide: function hide(hideChildren) {
+                hide: function hide(options) {
                     if (!this._root) {
                         throw new beez.Error('render root is not set. initialize renderer with root view parameter.');
                     }
-                    return this._hide(this._root, hideChildren);
+                    options = options || {};
+
+                    // TODO: Put out in the future 
+                    if (Object.prototype.toString.call(options) === '[object Boolean]') {
+                        options = {
+                            hideChildren: options
+                        };
+                    }
+
+                    if (options.hideChildren === undefined) {
+                        options.hideChildren = true;
+                    }
+                    return this._hide(this._root, options);
                 },
 
 
@@ -619,19 +647,21 @@
                  * @instance
                  * @private
                  * @param {View} view view to hide
-                 * @param {boolean} [hideChildren=true] if set false, children not be removed
+                 * @param {boolean} [options.hideChildren=true] if set false, children not be removed
+                 * @param {Function} options.filter hide filetered view by the function 
                  * @return {ViewAsync}
                  */
-                _hide: function _hide(view, hideChildren) {
-
-                    if (hideChildren === undefined) {
-                        hideChildren = true;
-                    }
+                _hide: function _hide(view, options) {
+                    logger.debug('hiding', view.vidx);
 
                     var self = this;
-
                     var children = view.getChildren();
-                    if (children.length > 0 && hideChildren) {
+
+                    if (options.filter) {
+                        children = _.filter(children, options.filter);
+                    }
+
+                    if (children.length > 0 && options.hideChildren) {
                         children.sort(function (a, b) {
                             if (a.order < b.order) {
                                 return 1;
@@ -643,7 +673,7 @@
                             return 0;
                         });
                         _.each(children, function (v) {
-                            self._hide(v);
+                            self._hide(v, options);
                         });
                     }
 
