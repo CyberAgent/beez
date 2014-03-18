@@ -3,6 +3,13 @@ Changelog
 Key
 [A] - Added, [C] - Changed, [F] - Fixed, [R] - Removed
 
+Tue Mar 18 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.19
+- [A] trigger some events related with view
+- [C] use beez utility
+- [A] image asset cache isolation
+- [A] enable to apply filter to select view which will show/hide
+- [C] make field of query string for cache isolation configurable
+
 Mon Mar 17 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.18
 - [C] improve controller process
 
@@ -290,6 +297,4 @@ from Backbone.js
 
 * Mon Feb 25 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.6.0
 - Initial release.
-
-
 
