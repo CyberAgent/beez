@@ -16,12 +16,12 @@ define(['imagemanager'], function (imagemanager) {
     var ImageManager = imagemanager.ImageManager;
     var manager = new ImageManager(options);
 
-    var imgUrl = 'https://aos.a4c.jp/sasuke/d/1.0.6/wear/common/underwearFemale/base_pk_1304/img/8/wear_common_underwearFemale-base_pk_1304-8_10.png';
+    var imgUrl = 'http://0.0.0.0:1109/m/beez/design/beez_200x200.png';
     var imgUrls = [
-        'https://aos.a4c.jp/sasuke/d/1.0.6/wear/common/underwearFemale/base_pk_1304/img/8/wear_common_underwearFemale-base_pk_1304-8_13.png', // *1
-        'https://aos.a4c.jp/sasuke/d/1.0.6/wear/common/underwearFemale/base_pk_1304/img/8/wear_common_underwearFemale-base_pk_1304-8_15.png', // *2
-        'https://aos.a4c.jp/sasuke/d/1.0.6/wear/common/underwearFemale/base_pk_1304/img/8/wear_common_underwearFemale-base_pk_1304-8_15.png', // *3
-        'https://aos.a4c.jp/sasuke/d/1.0.6/wear/common/underwearFemale/base_pk_1304/img/8/wear_common_underwearFemale-base_pk_1304-8_15.png' // *4
+        'http://0.0.0.0:1109/m/beez/design/beez_400x400.png', // *1
+        'http://0.0.0.0:1109/m/beez/design/beez_400x400.png?_=' + Date.now(), // *2
+        'http://0.0.0.0:1109/m/beez/design/beez_400x400.png?_=' + Date.now(), // *3
+        'http://0.0.0.0:1109/m/beez/design/beez_400x400.png?_=' + Date.now() // *4
     ];
     var imgUrls_options = [
         {crossOrigin: "Anonymous"}, // *1
