@@ -9,6 +9,7 @@
         'use strict';
 
         var beez = require('beez.core');
+        require('beez.utils');
 
         var _ = beez.vendor._;
         var Backbone = require('backbone');
@@ -538,7 +539,7 @@
                     options = options || {};
 
                     // TODO: Put out in the future 
-                    if (Object.prototype.toString.call(options) === '[object Boolean]') {
+                    if (beez.utils.isBoolean(options)) {
                         options = {
                             showChildren: options
                         };
@@ -623,7 +624,7 @@
                     options = options || {};
 
                     // TODO: Put out in the future 
-                    if (Object.prototype.toString.call(options) === '[object Boolean]') {
+                    if (beez.utils.isBoolean(options)) {
                         options = {
                             hideChildren: options
                         };
