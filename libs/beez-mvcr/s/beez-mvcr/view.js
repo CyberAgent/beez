@@ -473,6 +473,18 @@
                         });
                     }
 
+                    this.then(function rendered(view, next) {
+                        if (!view.visible) {
+                            logger.debug('view', view.vidx, 'is not visible. skip trigger events beez:view:render');
+                            next(null, view);
+                            return;
+                        }
+                        logger.debug('view', view.vidx, 'is rendered. trigger beez:view:render');
+                        view.trigger('beez:view:render');
+                        next(null, view);
+                        return;
+                    });
+
                     return this;
                 },
 
@@ -506,8 +518,9 @@
                     });
 
                     this.then(function remove(view, next) {
-                        // else exec as sync
                         view.remove();
+                        logger.debug('view', view.vidx, 'is removed. trigger beez:view:remove');
+                        view.trigger('beez:view:remove');
                         next(null, view);
                         return;
                     });
@@ -576,6 +589,7 @@
                     var children = view.getChildren();
 
                     if (options.filter) {
+                        logger.debug('filtering', view.vidx);
                         children = _.filter(children, options.filter);
                     }
 
@@ -659,6 +673,7 @@
                     var children = view.getChildren();
 
                     if (options.filter) {
+                        logger.debug('filtering', view.vidx);
                         children = _.filter(children, options.filter);
                     }
 
@@ -821,7 +836,6 @@
                  * }
                  */
                 before: beez.none,
-
 
                 /**
                  * Execute after this view have been rendered.
