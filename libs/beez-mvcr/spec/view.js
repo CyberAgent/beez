@@ -277,6 +277,65 @@ define(['view'], function(view){
 
                 }).end();
             });
+
+            it('#show()/hide())-filter', function(done) {
+
+                var ShowView = View.extend(
+                    'show.view',
+                    {
+                        vidx: 'show',
+                        render: function () {
+                            this.getParent().$el.append(this.$el); 
+                        }
+                    }
+                );
+                var HideView = View.extend(
+                    'hide.view',
+                    {
+                        vidx: 'hide',
+                        render: function () {
+                            this.getParent().$el.append(this.$el);
+                        }
+                    }
+                );
+                var IgnoreView = View.extend(
+                    'ignore.view',
+                    {
+                        vidx: 'ignore',
+                        render: function () {
+                            this.getParent().$el.append(this.$el); 
+                        }
+                    }
+                );
+                manager.root(TestView);
+                var ignoreView = manager.create('/@', IgnoreView);
+                var showView = manager.create('/@', ShowView);
+                var hideView = manager.create('/@', HideView);
+
+                manager.get('/@').async().show({
+                    filter: function (view) {
+                        return view.vidx === 'show' || view.vidx === 'hide';
+                    }
+                }).then(function () {
+                    expect(showView.isRendered()).eq(true);
+                    expect(hideView.isRendered()).eq(true);
+                    expect(ignoreView.isRendered()).eq(false);
+                    manager.get('/@').async().hide({
+                        filter: function (view) {
+                            return view.vidx === 'hide';
+                        }
+                    }).then(function () {
+                        expect(showView.isRendered()).eq(true);
+                        expect(hideView.isRendered()).eq(false);
+                        manager.remove('/@');
+                        done();
+                    })
+                    .end();
+                })
+                .end();
+
+            });
+
             it('setVisible', function() {
                 manager.root(TestView);
                 testView1 = manager.create('/@', TestView1, {'test': true});
