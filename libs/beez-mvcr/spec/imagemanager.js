@@ -79,10 +79,10 @@ define(['imagemanager'], function (imagemanager) {
                                     expect(res.res[i].src).eq(imgUrls[i]);
                                     break;
                                 case 1:
-                                    expect(res.res[i].src).eq(imgUrls[i] + '?_=beez');
+                                    expect(res.res[i].src).eq(imgUrls[i] + '&_=beez');
                                     break;
                                 case 2:
-                                    expect(res.res[i].src).eq(imgUrls[i] + '?cachekey=beez');
+                                    expect(res.res[i].src).eq(imgUrls[i] + '&cachekey=beez');
                                     break;
                                 case 3:
                                     expect(res.res[i].src).eq(imgUrls[i]);
