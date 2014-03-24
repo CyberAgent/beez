@@ -176,7 +176,7 @@
                      * This function will be removed in the release() timing.
                      */
                     elem.release = function release() {
-                        this.crossOrigin = null; // force null!!
+                        this.removeAttribute('crossorigin'); // turn off CORS mode
                         this.src = transparentImageDataURI;
                         self._using && delete self._using[this.__beez_manager_image_uid];
                         self._unused && self._unused.push(this);
