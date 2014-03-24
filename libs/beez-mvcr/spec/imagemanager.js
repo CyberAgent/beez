@@ -131,10 +131,6 @@ define(['imagemanager'], function (imagemanager) {
                 expect(loadImg.id).not.be.ok;
                 expect(loadImg.name).not.be.ok;
 
-
-                console.log(loadImg)
-
-
             });
             it('dispose', function () {
                 manager.dispose();
