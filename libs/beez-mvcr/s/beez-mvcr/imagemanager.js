@@ -178,6 +178,12 @@
                     elem.release = function release() {
                         this.removeAttribute('crossorigin'); // turn off CORS mode
                         this.src = transparentImageDataURI;
+                        this.removeAttribute("class");
+                        this.removeAttribute("height");
+                        this.removeAttribute("width");
+                        $(this).removeAttr('id');
+                        $(this).removeAttr('name');
+
                         self._using && delete self._using[this.__beez_manager_image_uid];
                         self._unused && self._unused.push(this);
                         self._num_used && self._num_used--;

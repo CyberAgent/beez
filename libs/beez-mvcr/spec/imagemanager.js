@@ -32,6 +32,7 @@ define(['imagemanager'], function (imagemanager) {
     ];
 
     var loadImg;
+    var loadImgs;
 
     return function () {
         describe('ImageManager', function () {
@@ -74,6 +75,7 @@ define(['imagemanager'], function (imagemanager) {
                     .then(function (res, next) {
                         for (var i = 0; i < res.res.length; i++) {
                             expect((res.err[i] === null)).be.ok;
+                            loadImgs = res.res;
                             switch (i) {
                                 case 0:
                                     expect(res.res[i].src).eq(imgUrls[i]);
@@ -101,6 +103,38 @@ define(['imagemanager'], function (imagemanager) {
                 var url = 'http://www.cyberagent.co.jp/test-${raito}.png';
                 var res = manager.imageUrl(url);
                 expect(url.replace('${ratio}', window.devicePixelRatio * 10)).eq(url);
+            });
+            it('release', function () {
+                loadImg.crossOrigin = "Anonymous";
+                loadImg.width = 100;
+                loadImg.height = 100;
+                $(loadImg).attr("id", "id0001");
+                $(loadImg).attr("name", "name0001");
+                $(loadImg).addClass("hoge");
+                $(loadImg).addClass("foo");
+
+                expect(loadImg.crossOrigin).eq('Anonymous').be.ok;
+                expect(loadImg.src).eq("http://0.0.0.0:1109/m/beez/design/beez_200x200.png").be.ok;
+                expect(loadImg.width).eq(100).be.ok;
+                expect(loadImg.height).eq(100).be.ok;
+                expect(loadImg.id).eq("id0001").be.ok;
+                expect(loadImg.name).eq("name0001").be.ok;
+
+
+
+                loadImg.release();
+
+                expect(loadImg.crossOrigin).not.be.ok;
+                expect(loadImg.src).eq('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAMAAAAoyzS7AAAABlBMVEX///8AAABVwtN+AAAAAXRSTlMAQObYZgAAAA1JREFUeNoBAgD9/wAAAAIAAVMrnDAAAAAASUVORK5CYII=').be.ok;
+                expect(loadImg.width === 1).be.ok;
+                expect(loadImg.height === 1).be.ok;
+                expect(loadImg.id).not.be.ok;
+                expect(loadImg.name).not.be.ok;
+
+
+                console.log(loadImg)
+
+
             });
             it('dispose', function () {
                 manager.dispose();
