@@ -164,6 +164,8 @@
                         elem.crossOrigin = options.crossOrigin;
                     } else if (this.options.crossOrigin) {
                         elem.crossOrigin = this.options.crossOrigin;
+                    } else {
+                        elem.removeAttribute('crossorigin'); // turn off CORS mode
                     }
 
                     this._num_used++;
