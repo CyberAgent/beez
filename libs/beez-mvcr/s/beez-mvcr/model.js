@@ -853,12 +853,16 @@
                  */
                 isBinded: function isBinded() {
                     if (this._events) {
-                        var i, l, name, names, list, events;
+                        var self = this,
+                            i, l, name, names, list, events;
                         names = _.keys(this._events);
                         for (i = 0, l = names.length; i < l; i++) {
                             name = names[i];
                             list = this._events[name];
-                            if (list && list.length > 0) {
+                            list = _.reject(list, function(binding) {
+                                return binding.context === self;
+                            });
+                            if (list.length > 0) {
                                 return true;
                             }
                         }
@@ -1164,12 +1168,16 @@ v                 *
                  */
                 isBinded: function isBinded() {
                     if (this._events) {
-                        var i, l, name, names, list, events;
+                        var self = this,
+                            i, l, name, names, list, events;
                         names = _.keys(this._events);
                         for (i = 0, l = names.length; i < l; i++) {
                             name = names[i];
                             list = this._events[name];
-                            if (list && list.length > 0) {
+                            list = _.reject(list, function(binding) {
+                                return binding.context === self;
+                            });
+                            if (list.length > 0) {
                                 return true;
                             }
                         }
