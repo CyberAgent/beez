@@ -128,6 +128,17 @@ define(['model', 'backbone.localStorage'], function(model, LocalStorage){
                     .end()
                 ;
             });
+            it('isBinded', function () {
+                var model1 = new TestModel();
+                var model2 = new TestModel();
+                var model3 = new TestModel();
+
+                model1.listenTo(model2, 'sync', beez.none);
+                model3.listenTo(model3, 'sync', beez.none);
+                expect(model1.isBinded()).be.not.ok;
+                expect(model2.isBinded()).be.ok;
+                expect(model3.isBinded()).be.not.ok;
+            });
         });
 
         describe('Collection', function () {
@@ -170,6 +181,17 @@ define(['model', 'backbone.localStorage'], function(model, LocalStorage){
                     done();
                 }).end()
                 ;
+            });
+            it('isBinded', function () {
+                var cmodel1 = new TestCModel();
+                var cmodel2 = new TestCModel();
+                var cmodel3 = new TestCModel();
+
+                cmodel1.listenTo(cmodel2, 'sync', beez.none);
+                cmodel3.listenTo(cmodel3, 'sync', beez.none);
+                expect(cmodel1.isBinded()).be.not.ok;
+                expect(cmodel2.isBinded()).be.ok;
+                expect(cmodel3.isBinded()).be.not.ok;
             });
         });
 
