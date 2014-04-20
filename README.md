@@ -57,7 +57,7 @@ beezでは付属のローカルサーバーを起動するだけで、静的フ�
     - サブモジュール遅延ロードをサポート: [Require.js](http://requirejs.org/)
     - browser eventを管理: [Backbone.js](http://backbonejs.org/)
     - 国際化(i18n)対応
-    - スマホに特化したUserAgent判定ライブラリ: [beez-ua]()
+    - スマホに特化したUserAgent判定ライブラリ: [beez-ua](https://github.com/CyberAgent/beez-ua)
     - 非同期ライブラリ: [bucks.js](https://github.com/CyberAgent/bucks.js)
     - ログ出力: [logcafe.js](https://github.com/CyberAgent/logcafe.js)
     - OOPライクなコーディングスタイル extend/mixin
