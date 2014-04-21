@@ -3,6 +3,11 @@ Changelog
 Key
 [A] - Added, [C] - Changed, [F] - Fixed, [R] - Removed
 
+Tue Apr 18 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.20
+- [F] unable to remove model when it binds itself
+- [F] Fixed fails turning off CORS mode and error thrown on PC Chrome
+- [F] Fixed bug of image isolation of ImageManager
+
 Tue Mar 18 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.19
 - [A] trigger some events related with view
 - [C] use beez utility

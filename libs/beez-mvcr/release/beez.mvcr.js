@@ -1595,15 +1595,14 @@
                  */
                 isBinded: function isBinded() {
                     if (this._events) {
-                        var i, l, name, names, list, events;
-                        names = _.keys(this._events);
-                        for (i = 0, l = names.length; i < l; i++) {
-                            name = names[i];
-                            list = this._events[name];
-                            if (list && list.length > 0) {
-                                return true;
-                            }
-                        }
+                        var self = this,
+                            list;
+                        return _.some(this._events, function (evt) {
+                            list = _.reject(evt, function (binding) {
+                                return binding.context === self;
+                            });
+                            return list.length > 0;
+                        });
                     }
                     return false;
                 },
@@ -1906,15 +1905,14 @@ v                 *
                  */
                 isBinded: function isBinded() {
                     if (this._events) {
-                        var i, l, name, names, list, events;
-                        names = _.keys(this._events);
-                        for (i = 0, l = names.length; i < l; i++) {
-                            name = names[i];
-                            list = this._events[name];
-                            if (list && list.length > 0) {
-                                return true;
-                            }
-                        }
+                        var self = this,
+                            list;
+                        return _.some(this._events, function (evt) {
+                            list = _.reject(evt, function (binding) {
+                                return binding.context === self;
+                            });
+                            return list.length > 0;
+                        });
                     }
                     return false;
                 },
@@ -4476,7 +4474,7 @@ v                 *
                      * This function will be removed in the release() timing.
                      */
                     elem.release = function release() {
-                        this.crossOrigin = null; // force null!!
+                        this.removeAttribute('crossorigin'); // turn off CORS mode
                         this.src = transparentImageDataURI;
                         self._using && delete self._using[this.__beez_manager_image_uid];
                         self._unused && self._unused.push(this);
