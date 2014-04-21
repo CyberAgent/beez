@@ -854,18 +854,13 @@
                 isBinded: function isBinded() {
                     if (this._events) {
                         var self = this,
-                            i, l, name, names, list, events;
-                        names = _.keys(this._events);
-                        for (i = 0, l = names.length; i < l; i++) {
-                            name = names[i];
-                            list = this._events[name];
-                            list = _.reject(list, function(binding) {
+                            list;
+                        return _.some(this._events, function (evt) {
+                            list = _.reject(evt, function (binding) {
                                 return binding.context === self;
                             });
-                            if (list.length > 0) {
-                                return true;
-                            }
-                        }
+                            return list.length > 0;
+                        });
                     }
                     return false;
                 },
@@ -1169,18 +1164,13 @@ v                 *
                 isBinded: function isBinded() {
                     if (this._events) {
                         var self = this,
-                            i, l, name, names, list, events;
-                        names = _.keys(this._events);
-                        for (i = 0, l = names.length; i < l; i++) {
-                            name = names[i];
-                            list = this._events[name];
-                            list = _.reject(list, function(binding) {
+                            list;
+                        return _.some(this._events, function (evt) {
+                            list = _.reject(evt, function (binding) {
                                 return binding.context === self;
                             });
-                            if (list.length > 0) {
-                                return true;
-                            }
-                        }
+                            return list.length > 0;
+                        });
                     }
                     return false;
                 },
