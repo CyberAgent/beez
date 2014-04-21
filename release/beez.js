@@ -4081,13 +4081,15 @@
                     if (objs && !_.isArray(objs)) {
                         objs = [objs];
                     }
+
+                    var deletes = this._decideBindedModel(objs);
                     // remove refference
-                    _.each(this._decideBindedModel(objs), function (d) {
+                    _.each(deletes, function (d) {
                         this.deleteFromParent(d);
                     }, this);
 
                     // dispose
-                    _.each(this._decideBindedModel(objs), function (d) {
+                    _.each(deletes, function (d) {
                         d.dispose && d.dispose();
                     });
 
@@ -8156,7 +8158,7 @@ v                 *
  * @overview beez entrypoint
  */
 
-var VERSION = '1.0.20';
+var VERSION = '1.0.21';
 
 if (typeof module !== 'undefined' && module.exports) { // node.js: main
     exports.VERSION = VERSION;

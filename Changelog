@@ -3,6 +3,9 @@ Changelog
 Key
 [A] - Added, [C] - Changed, [F] - Fixed, [R] - Removed
 
+Tue Apr 21 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.21
+- [F] children of the model are not dispose
+
 Tue Apr 18 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.20
 - [F] unable to remove model when it binds itself
 - [F] Fixed fails turning off CORS mode and error thrown on PC Chrome
@@ -302,4 +305,3 @@ from Backbone.js
 
 * Mon Feb 25 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.6.0
 - Initial release.
-
