@@ -18,6 +18,7 @@ define(['base', 'view', 'model', 'backbone.localStorage'], function (base, view,
     var vManager = new ViewManager('vidx');
 
     var managerBase;
+    var disposeFlag = false;
 
     return function () {
         var obj    = { vidx: '@', add: true, prefix: '/@' };
@@ -77,6 +78,7 @@ define(['base', 'view', 'model', 'backbone.localStorage'], function (base, view,
             urlRoot: 'http://0.0.0.0:1109/p',
             dispose: function () {
                 this.flag = true;
+                console.log('dispose test model3');
                 TestModel3.__super__.dispose.apply(this);
             }
         });
@@ -88,6 +90,7 @@ define(['base', 'view', 'model', 'backbone.localStorage'], function (base, view,
             urlRoot: 'http://0.0.0.0:1109/p',
             dispose: function () {
                 this.flag = true;
+                console.log('dispose test model4');
                 TestModel4.__super__.dispose.apply(this);
             }
         });
@@ -100,7 +103,20 @@ define(['base', 'view', 'model', 'backbone.localStorage'], function (base, view,
             urlRoot: 'http://0.0.0.0:1109/p',
             dispose: function () {
                 this.flag = true;
+                console.log('dispose test model5');
                 TestModel5.__super__.dispose.apply(this);
+            }
+        });
+
+        var TestModel6 = Model.extend('TestModel6', {
+            midx: 'test6',
+            defaults: {title: '', completed: false},
+            flag: false,
+            urlRoot: 'http://0.0.0.0:1109/p',
+            dispose: function () {
+                disposeFlag = true;
+                console.log('dispose test model6');
+                TestModel6.__super__.dispose.apply(this);
             }
         });
 
@@ -294,7 +310,7 @@ define(['base', 'view', 'model', 'backbone.localStorage'], function (base, view,
             }
         });
 
-        var testView, testModel1, testModel2, testModel3, testModel4, testModel5, testView1, testView2, viewRoot, viewRoot2,
+        var testView, testModel1, testModel2, testModel3, testModel4, testModel5, testModel6, testView1, testView2, viewRoot, viewRoot2,
             testViewManager1, testViewManager2, testViewManager3, testViewManager4, testViewManager5, testViewManager6, model, model2, collection;
 
         describe('ManagerBase', function () {
@@ -651,6 +667,7 @@ define(['base', 'view', 'model', 'backbone.localStorage'], function (base, view,
                 mManager.create('/@', TestModel3);
                 mManager.create('/@', TestModel4);
                 mManager.create('/@/test4', TestModel5);
+                mManager.create('/@/test4/test5', TestModel6);
 
                 // mManager.get('/@/test4/test5').bind('change', function () {
                 //     console.log('change');
@@ -661,6 +678,7 @@ define(['base', 'view', 'model', 'backbone.localStorage'], function (base, view,
                 mManager.remove('/@/test3');
                 mManager.remove('/@/test4');
 
+                expect(disposeFlag).eq(true);
                 expect(mManager.get('/@')).have.property('test');
                 expect(mManager.get('/@')).have.property('test2');
                 expect(mManager.get('/@')).not.have.property('test3');

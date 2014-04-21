@@ -465,13 +465,15 @@
                     if (objs && !_.isArray(objs)) {
                         objs = [objs];
                     }
+
+                    var deletes = this._decideBindedModel(objs);
                     // remove refference
-                    _.each(this._decideBindedModel(objs), function (d) {
+                    _.each(deletes, function (d) {
                         this.deleteFromParent(d);
                     }, this);
 
                     // dispose
-                    _.each(this._decideBindedModel(objs), function (d) {
+                    _.each(deletes, function (d) {
                         d.dispose && d.dispose();
                     });
 
