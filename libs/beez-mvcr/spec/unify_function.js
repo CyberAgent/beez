@@ -661,7 +661,7 @@ define(['base', 'view', 'model', 'backbone.localStorage'], function (base, view,
                 mManager.remove('/@/tests', {silent: true});
 
                 expect(mManager.get('/@')).not.have.property('tests');
-                expect(collection.models).eql([]);
+                expect(collection.models).eql(undefined);
             });
             it('remove', function () {
                 mManager.create('/@', TestModel3);

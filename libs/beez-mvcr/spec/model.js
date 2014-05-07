@@ -10,50 +10,56 @@ define(['model', 'backbone.localStorage'], function(model, LocalStorage){
     var Collection = model.Collection;
     var Model = model.Model;
     var ModelManager = model.ModelManager;
+    var disposeFlag = {};
+    var preDisposeFlag = {};
 
     //var manager = model.manager;
     var manager = new ModelManager('midx');
 
     var TestRootModel = Model.extend('TestRootModel', {
         midx: '@', defaults: {title: '', completed: false}, localStorage: new LocalStorage('beez-spec'), flag: false, urlRoot: 'http://0.0.0.0:1109/p',
-        dispose: function() { this.flag = true; TestRootModel.__super__.dispose.apply(this); }
+        dispose: function() { disposeFlag[this.midx] = true; TestRootModel.__super__.dispose.apply(this); }
     });
     var TestModel = Model.extend('TestModel', {
         midx:'test', defaults:{title:'',completed:false}, localStorage:new LocalStorage('beez-spec'), flag:false, urlRoot:'http://0.0.0.0:1109/p',
-        dispose:function () { this.flag=true; TestModel.__super__.dispose.apply(this);}
+        dispose:function () { disposeFlag[this.midx] = true; TestModel.__super__.dispose.apply(this);}
     });
     var TestModel1 = Model.extend('TestModel1', {
         midx:'test1', defaults:{title:'',completed:false}, localStorage:new LocalStorage('beez-spec'), flag:false, urlRoot:'http://0.0.0.0:1109/p',
-        dispose: function () { this.flag=true; TestModel1.__super__.dispose.apply(this); }
+        beforeDispose: function () { this.stopListening(); preDisposeFlag[this.midx] = true;},
+        dispose: function () { disposeFlag[this.midx] = true; TestModel1.__super__.dispose.apply(this); }
     });
     var TestModel2 = Model.extend('TestModel2', {
         midx:'test2', defaults:{title:'',completed:false}, localStorage:new LocalStorage('beez-spec'), flag:false, urlRoot:'http://0.0.0.0:1109/p',
-        dispose:function(){ this.flag=true; TestModel2.__super__.dispose.apply(this); }
+        beforeDispose: function () {  this.stopListening(); preDisposeFlag[this.midx] = true;},
+        dispose:function(){ disposeFlag[this.midx] = true; TestModel2.__super__.dispose.apply(this); }
     });
     var TestModel3 = Model.extend('TestModel3', {
         midx:'test3', defaults:{title:'',completed:false}, localStorage:new LocalStorage('beez-spec'), flag:false, urlRoot:'http://0.0.0.0:1109/p',
-        dispose:function () { this.flag=true; TestModel3.__super__.dispose.apply(this);}
+        beforeDispose: function () {  this.stopListening(); preDisposeFlag[this.midx] = true;},
+        dispose:function () { disposeFlag[this.midx] = true; TestModel3.__super__.dispose.apply(this);}
     });
     var TestCollection = Collection.extend('TestCollection', {
         midx:'tests', model:TestModel, localStorage:new LocalStorage('beez-spec-Collection'), flag:false,
-        dispose:function(){ this.flag=true; TestCollection.__super__.dispose.apply(this); }
+        dispose:function(){ disposeFlag[this.midx] = true; TestCollection.__super__.dispose.apply(this); }
     });
     var TestCModel = Model.extend('TestCModel', {
         midx:'ctest', defaults:{title:'',completed:false}, localStorage:new LocalStorage('beez-spec-Collection'), flag:false,
-        dispose:function(){ this.flag=true; }
+        dispose:function(){ disposeFlag[this.midx] = true; }
     });
 
     var model1, collection1, testModel1;
 
     return function () {
 
-        before(function () {
-            console.log('localStorage is cleared');
-            window.localStorage.removeItem('beez-spec');
-            window.localStorage.removeItem('beez-spec-Collection');
-            localStorage.clear(); // prepared for failing test.
-        });
         describe('Model', function () {
+
+            before(function () {
+                window.localStorage.clear();
+                window.localStorage.removeItem("beez-spec");
+                window.localStorage.removeItem("beez-spec-Collection");
+            });
+
             it('set/fetch/save/destroy sync', function () {
                 for (var i = 0; i < 10; i++) {
                     var t = new TestModel();
@@ -61,7 +67,6 @@ define(['model', 'backbone.localStorage'], function(model, LocalStorage){
                     t.fetch();
                     t.save();
                     t.destroy();
-                    t.fetch();
                 }
                 expect(localStorage.getItem("beez-spec")).not.be.ok; // browser api
 
@@ -161,12 +166,13 @@ define(['model', 'backbone.localStorage'], function(model, LocalStorage){
             });
 
             it('create async', function (done) {
-                var cmodel1 = new TestCModel();
-                cmodel1.set('title', "1");
-                var cmodel2 = new TestCModel();
-                cmodel2.set('title', "2");
+                var cmodel1 = {title: 'test1'};
+                var cmodel2 = {title: 'test2'};
 
-                c.async().create(cmodel1).create(cmodel2).then(function() {
+                c.async()
+                .create(cmodel1)
+                .create(cmodel2)
+                .then(function() {
                     expect(c.models.length).eq(2);
                     expect(localStorage.getItem('beez-spec-Collection').split(",").length).eq(2);
                     cmodel1.destroy();
@@ -182,6 +188,7 @@ define(['model', 'backbone.localStorage'], function(model, LocalStorage){
                 }).end()
                 ;
             });
+
             it('isBinded', function () {
                 var cmodel1 = new TestCModel();
                 var cmodel2 = new TestCModel();
@@ -193,6 +200,7 @@ define(['model', 'backbone.localStorage'], function(model, LocalStorage){
                 expect(cmodel2.isBinded()).be.ok;
                 expect(cmodel3.isBinded()).be.not.ok;
             });
+
         });
 
         describe('manager', function () {
@@ -224,8 +232,18 @@ define(['model', 'backbone.localStorage'], function(model, LocalStorage){
             it('create', function () {
                 expect(manager.create('/@', TestModel1)).be.ok;
                 expect(manager.get('/@/test1')).be.ok;
+
                 expect(manager.create('/@', TestModel2)).be.ok;
                 expect(manager.get('/@/test2')).be.ok;
+
+                expect(manager.create('/@/test1', TestModel3)).be.ok;
+                expect(manager.get('/@/test1/test3')).be.ok;
+
+                expect(manager.create('/@/test2', TestModel1)).be.ok;
+                expect(manager.get('/@/test2/test1')).be.ok;
+                expect(manager.create('/@/test2', TestModel3)).be.ok;
+                expect(manager.get('/@/test2/test3')).be.ok;
+
             });
             it('createCollection', function () {
                 var model = new TestModel3({'title': 'Collection in TestModel!!'});
@@ -242,17 +260,43 @@ define(['model', 'backbone.localStorage'], function(model, LocalStorage){
                 }, this);
                 expect(col.length).eq(0);
             });
+
+            it ('remove: model', function () {
+                manager.remove('/@/test1');
+
+                expect(disposeFlag['test1']).be.ok;
+                expect(disposeFlag['test1']).eq(true);
+                expect(disposeFlag['test3']).be.ok;
+                expect(disposeFlag['test3']).eq(true);
+
+                var m1 = manager.get('/@/test2/test1');
+                var m2 = manager.get('/@/test2/test3');
+                m1.listenTo(m2, 'change', function () {});
+
+                manager.remove('/@/test2');
+
+                expect(preDisposeFlag['test1']).be.ok;
+                expect(preDisposeFlag['test1']).eq(true);
+                expect(preDisposeFlag['test2']).be.ok;
+                expect(preDisposeFlag['test2']).eq(true);
+                expect(preDisposeFlag['test3']).be.ok;
+                expect(preDisposeFlag['test3']).eq(true);
+
+            });
+
+            it('remove: collection', function () {
+                manager.remove('/@/tests');
+
+                expect(disposeFlag['tests']).be.ok;
+                expect(disposeFlag['tests']).eq(true);
+            });
+
             it('dispose: function dispose(path) {', function () {
                 manager.dispose('/@/test2');
                 if (manager.get('/@/test2')) {
                     throw new Error('/@/test2 dispose error');
                 }
             });
-        });
-        describe('ModelManager', function () {
-            it('TODO', function () {
-                // TOOD
-            })
         });
     };
 });
