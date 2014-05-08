@@ -5,7 +5,7 @@
  * @overview beez entrypoint
  */
 
-var VERSION = '1.0.21';
+var VERSION = '1.0.22';
 
 if (typeof module !== 'undefined' && module.exports) { // node.js: main
     exports.VERSION = VERSION;

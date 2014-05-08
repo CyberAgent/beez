@@ -4008,49 +4008,29 @@
                 },
 
                 /**
-                 * _decideBindedModel
+                 * _decideDeleteModel
                  *
                  * @memberof ModelManager
                  * @instance
                  * @private
                  * @param {Object} obj
-                 * @param {Boolean} isCollection
-                 * @return object
+                 * @return Array
                  */
-                _decideBindedModel: function _decideBindedModel(obj, isCollection) {
-                    var model;
-                    var returnedModel;
-                    var children;
+                _decideDeleteModel: function _decideDeleteModel(obj) {
+                    var deletes = [];
 
-                    if (!isCollection) {
-                        model = obj;
-                        children = [];
-
-                        _.each(model, function (v) {
-                            var c = this.getChildrenAll(v);
-                            children = children.concat(c);
-                        }, this);
-
-                        var candidates = children.concat(model);
-
-                        // remove still binded models
-                        var deletes = _.reject(candidates, function (d) {
-                            return d.isBinded();
-                        });
-
-                        // models in diff still have some bindings
-                        var diff = _.difference(candidates, deletes);
-                        _.each(diff, function (model) {
-                            throw new beez.Error('a disposing model have some bindings. models cid: ' + model.cid);
-                        });
-
-                        returnedModel = deletes;
-                    } else {
-                        returnedModel = obj;
+                    if (!_.isArray(obj)) {
+                        obj = [obj];
                     }
 
-                    return returnedModel;
+                    _.each(obj, function (m) {
+                        deletes = deletes.concat(m.getChildrenAll());
+                    }, this);
+                    deletes = deletes.concat(obj);
+
+                    return deletes;
                 },
+
                 /**
                  * model or collection specified by path is canceled and it removes from management. delete the descendants.
                  * If the binding is not removed. If the reference may be state without properly.
@@ -4070,28 +4050,36 @@
                     logger.debug(this.constructor.name, 'remove. path:', path);
 
                     if (objs.isCollection()) {
-                        this._decideBindedModel(objs, true).removeAll &&
-                        this._decideBindedModel(objs, true).removeAll(options);
 
+                        objs.removeAll && objs.removeAll(options);
                         this.deleteFromParent(objs);
+                        objs.dispose();
 
                         return this;
                     }
 
-                    if (objs && !_.isArray(objs)) {
-                        objs = [objs];
+                    var deletes = this._decideDeleteModel(objs),
+                        binding;
+
+                    _.each(deletes, function (d) {
+                        d.beforeDispose && d.beforeDispose();
+                    });
+
+                    binding = _.reduce(deletes, function (list, d) {
+                        if (d.isBinded()) {
+                            list.push(d.cid);
+                        }
+                        return list;
+                    }, []);
+
+                    if (!_.isEmpty(binding)) {
+                        throw new beez.Error('a disposing model have some bindings. models cid: [' + binding.join(', ') + ']');
                     }
 
-                    var deletes = this._decideBindedModel(objs);
-                    // remove refference
                     _.each(deletes, function (d) {
                         this.deleteFromParent(d);
-                    }, this);
-
-                    // dispose
-                    _.each(deletes, function (d) {
                         d.dispose && d.dispose();
-                    });
+                    }, this);
 
                     return this;
                 },
@@ -8158,7 +8146,7 @@ v                 *
  * @overview beez entrypoint
  */
 
-var VERSION = '1.0.21';
+var VERSION = '1.0.22';
 
 if (typeof module !== 'undefined' && module.exports) { // node.js: main
     exports.VERSION = VERSION;
