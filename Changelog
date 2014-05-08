@@ -3,6 +3,9 @@ Changelog
 Key
 [A] - Added, [C] - Changed, [F] - Fixed, [R] - Removed
 
+Tue May 08 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.22
+- [A] enable to execute function before dispose of the model
+
 Tue Apr 21 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.21
 - [F] children of the model are not dispose
 
