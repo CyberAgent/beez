@@ -768,7 +768,13 @@
                     if ((args.length === 1 && args[0].objs) ||
                         (args.length === 2 && args[1].objs) ||
                         (args.length === 3 && args[2].objs)) {
+
                         this.manager = args[args.length - 1];
+
+                        if (args.length === 1) {
+                            attribute = null;
+                        }
+
                     }
 
                     if (!this.manager) {
