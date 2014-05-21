@@ -109,10 +109,12 @@ define(['index', 'beez.core'], function(I18n, beez){
 
                 var res = i18n.add({
                     'ja': {
-                        'hello': 'こんにちは {#name} さん [ステータス] : {#status}'
+                        'hello': 'こんにちは {#name} さん [ステータス] : {#status}',
+                        'number': 'これは数字の {#num} です'
                     }
                 });
                 expect(i18n.getMessage('hello', 'fkei', ':)')).equal('こんにちは fkei さん [ステータス] : :)').be.ok;
+                expect(i18n.getMessage('number', 0)).equal('これは数字の 0 です').be.ok;
             });
             it ('Irregular case [getMessage()]', function () {
                 i18n.remove();
