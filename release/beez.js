@@ -2652,7 +2652,11 @@
 
                 var res = '';
                 _.each(list, function (val, idx) {
-                    res += val + (vars[idx] || '');
+                    if (beez.utils.isUndefined(vars[idx])) {
+                        res += val;
+                    } else {
+                        res += val + (vars[idx] + '' || '');
+                    }
                 });
                 return res;
             },
@@ -4384,7 +4388,13 @@
                     if ((args.length === 1 && args[0].objs) ||
                         (args.length === 2 && args[1].objs) ||
                         (args.length === 3 && args[2].objs)) {
+
                         this.manager = args[args.length - 1];
+
+                        if (args.length === 1) {
+                            attribute = null;
+                        }
+
                     }
 
                     if (!this.manager) {
@@ -8146,7 +8156,7 @@ v                 *
  * @overview beez entrypoint
  */
 
-var VERSION = '1.0.22';
+var VERSION = '1.0.23';
 
 if (typeof module !== 'undefined' && module.exports) { // node.js: main
     exports.VERSION = VERSION;

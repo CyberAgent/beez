@@ -123,7 +123,11 @@
 
                 var res = '';
                 _.each(list, function (val, idx) {
-                    res += val + (vars[idx] || '');
+                    if (beez.utils.isUndefined(vars[idx])) {
+                        res += val;
+                    } else {
+                        res += val + (vars[idx] + '' || '');
+                    }
                 });
                 return res;
             },

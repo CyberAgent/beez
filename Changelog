@@ -3,6 +3,10 @@ Changelog
 Key
 [A] - Added, [C] - Changed, [F] - Fixed, [R] - Removed
 
+Tue May 21 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.23
+- [F] beez.i18n.parse
+- [F] Root model had the prohibit manager as attribute
+
 Tue May 08 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.22
 - [A] enable to execute function before dispose of the model
 
@@ -308,3 +312,5 @@ from Backbone.js
 
 * Mon Feb 25 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.6.0
 - Initial release.
+
+
