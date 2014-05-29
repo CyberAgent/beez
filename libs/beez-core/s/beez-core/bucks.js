@@ -16,7 +16,7 @@
      * 配列かどうかを返します
      * @function
      * @private
-     * @param {*} obj
+     * @param {Object} obj
      * @return {boolean}
      */
     var isArray = Array.isArray || function isArray(obj) {
@@ -72,7 +72,7 @@
      * @memberof Bucks
      * @static
      */
-    Bucks.VERSION = '0.8.2';
+    Bucks.VERSION = '0.8.3';
 
     /**
      * if set `true`, uncaught errors are logged
@@ -133,7 +133,7 @@
          * @private
          * @param {Function} task ex) task(err, res, next) | task(err, res) | task(err) | task()
          * @throws {Error} args length invalid
-         * @return {function task(err, res, next)}
+         * @return {functio} task(err, res, next)
          */
         _normalizeTask: function _normalizeTask(task) {
             var _task = task;
@@ -169,7 +169,7 @@
          * @private
          * @param {Function} onSuccess ex) onSuccess(res, next) | onSuccess(res) | onSuccess()
          * @throws {Error} args length invalid
-         * @return {function onSuccess(res, next)} wrappedTask
+         * @return {function} wrappedTask onSuccess(res, next)
          */
         _normalizeSuccess: function _normalizeSuccess(onSuccess) {
             var _onSuccess = onSuccess;
@@ -194,7 +194,7 @@
          * @private
          * @param {Function} onError ex) onError(err, next)
          * @throws {Error} args length invalid
-         * @return {function onError(err, next)} wrappedTask
+         * @return {function} wrappedTask ex) onError(err, next)
          */
         _normalizeError: function _normalizeError(onError) {
             var _onError = onError;
@@ -283,7 +283,7 @@
          * @instance
          * @private
          * @param {Object} err previous error
-         * @param {*} res previous result
+         * @param {Object} res previous result
          * @return {Bucks}
          */
         _iterator: function _iterator(err, res) {
@@ -561,8 +561,8 @@
          * チェインを完了し実行を開始します
          * @memberof Bucks
          * @instance
-         * @param {function callback(err, res)} [callback] 最終コールバック関数 ressは各チェインの実行結果の配列
-         * @param {function errback(err)} [errback] callbackでエラーが発生した場合のハンドラ
+         * @param {function} [callback] 最終コールバック関数 ressは各チェインの実行結果の配列 ex) callback(err, res)
+         * @param {function} [errback] callbackでエラーが発生した場合のハンドラ ex) errback(err)
          */
         end: function end(callback, errback) {
             if (callback && callback.length < 1) {
@@ -641,7 +641,7 @@
      * @memberof ParallelHandler
      * @name resultObj
      * @instance
-     * @property {{err:[], res:[]}} resultObj {err:[], res:[]}の形式
+     * @property {} resultObj {err:[], res:[]}の形式
      */
     ParallelHandler.prototype.__defineGetter__('resultObj', function resultObj() {
         return {err: this._errors, res: this._results};
