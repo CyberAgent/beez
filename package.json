@@ -1,6 +1,6 @@
 {
     "name": "beez",
-    "version": "1.0.23",
+    "version": "1.0.24",
     "description": "The framework for mobile browser faster development.",
     "keywords": [
         "beez",
@@ -54,7 +54,7 @@
     },
     "dependencies": {
         "bucks": "~0.8.1",
-        "beezlib": "~0.9.1",
+        "beezlib": "~0.9.4",
         "requirejs": "~2.1.0",
         "underscore": "~1.5.0",
         "colors": "~0.6.0",
