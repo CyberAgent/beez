@@ -46,7 +46,8 @@ bootstrap.ratioResize(function (err, result) {
                 beezlib.image.imagemagick.ratioResize(
                     {
                         srcPath: src,
-                        dstPath: dir
+                        dstPath: dir,
+                        separator: options.separator
                     },
                     options.baseRatio,
                     options.ratios,
@@ -74,7 +75,8 @@ bootstrap.ratioResize(function (err, result) {
             beezlib.image.imagemagick.ratioResize(
                 {
                     srcPath: src,
-                    dstPath: dir
+                    dstPath: dir,
+                    separator: options.separator
                 },
                 options.baseRatio,
                 options.ratios,
