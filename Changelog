@@ -3,6 +3,9 @@ Changelog
 Key
 [A] - Added, [C] - Changed, [F] - Fixed, [R] - Removed
 
+Tue Jun 3 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.24
+- [C] update dependencies
+
 Tue May 21 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.23
 - [F] beez.i18n.parse
 - [F] Root model had the prohibit manager as attribute
