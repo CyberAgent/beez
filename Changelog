@@ -3,6 +3,9 @@ Changelog
 Key
 [A] - Added, [C] - Changed, [F] - Fixed, [R] - Removed
 
+Tue Jun 4 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.25
+- [F] enable to use separator option
+
 Tue Jun 3 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.24
 - [C] update dependencies
 
