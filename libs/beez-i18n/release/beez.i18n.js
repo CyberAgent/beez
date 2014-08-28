@@ -1,4 +1,3 @@
-
 /**
  * @name index.js<beez-i18n>
  * @author Kei Funagayama <funagayama_kei@cyberagent.co.jp>
@@ -346,3 +345,4 @@
         return beez.I18n;
     });
 })(this);
+

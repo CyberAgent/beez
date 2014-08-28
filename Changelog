@@ -3,6 +3,9 @@ Changelog
 Key
 [A] - Added, [C] - Changed, [F] - Fixed, [R] - Removed
 
+Tue Aug 28 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.26
+- [F] fixed bug query is not parsed with get
+
 Tue Jun 4 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.25
 - [F] enable to use separator option
 
@@ -318,5 +321,4 @@ from Backbone.js
 
 * Mon Feb 25 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.6.0
 - Initial release.
-
 

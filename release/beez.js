@@ -1,4 +1,3 @@
-
 /**
  * @name suns.js
  * @author Kazuma MISHIMAGI <mishimagi_kazuma@cyberagent.co.jp>
@@ -1568,6 +1567,7 @@
 })(this);
 
 
+
 /* Zepto v1.0-1-ga3cab6c - polyfill zepto detect event ajax form fx - zeptojs.com/license */
 /**
  * @name index.js<beez-ua>
@@ -1937,7 +1937,6 @@
     }
 
 })(this);
-
 
 /**
  * @name browser.js<utils>
@@ -4111,7 +4110,7 @@
                         options.url = options.urlRoot + options.url;
                     }
 
-                    if (options.data && options.contentType &&  options.contentType.indexOf('application/json') === 0 && _.isObject(options.data)) {
+                    if (options.data && options.contentType &&  options.contentType.indexOf('application/json') === 0 && _.isObject(options.data) && options.type.toUpperCase() !== 'GET') {
                         options.data = JSON.stringify(options.data);
                     }
 
@@ -8149,6 +8148,7 @@ v                 *
     });
 })(this);
 
+
 /** @license MIT License (c) 2012-2013 Cyberagent Inc. */
 /**
  * @name index.js<beez>
@@ -8156,7 +8156,7 @@ v                 *
  * @overview beez entrypoint
  */
 
-var VERSION = '1.0.25';
+var VERSION = '1.0.26';
 
 if (typeof module !== 'undefined' && module.exports) { // node.js: main
     exports.VERSION = VERSION;
