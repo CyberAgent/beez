@@ -491,7 +491,7 @@
                         options.url = options.urlRoot + options.url;
                     }
 
-                    if (options.data && options.contentType &&  options.contentType.indexOf('application/json') === 0 && _.isObject(options.data)) {
+                    if (options.data && options.contentType &&  options.contentType.indexOf('application/json') === 0 && _.isObject(options.data) && options.type.toUpperCase() !== 'GET') {
                         options.data = JSON.stringify(options.data);
                     }
 

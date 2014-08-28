@@ -21,6 +21,10 @@ define(['model', 'backbone.localStorage'], function (model, LocalStorage) {
                         expect(xhr.readyState === 0).be.ok;
                         expect(settings.type).eq('GET');
                     },
+                    data: {
+                        query1: 'query1',
+                        query2: 'query2'
+                    },
                     success: function (data, status, xhr) {
                         expect(data.success === true).be.ok;
                     },
