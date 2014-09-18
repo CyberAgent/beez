@@ -54,21 +54,21 @@
     },
     "dependencies": {
         "bucks": "~0.8.3",
-        "beezlib": "~0.9.4",
-        "requirejs": "~2.1.0",
-        "underscore": "~1.5.0",
-        "colors": "~0.6.0",
-        "commander": "~2.0.0",
-        "handlebars": "~1.1.0",
+        "beezlib": "~0.9.19",
+        "requirejs": "~2.1.15",
+        "underscore": "~1.7.0",
+        "colors": "~0.6.2",
+        "commander": "~2.3.0",
+        "handlebars": "~2.0.0",
         "jsdoc": "~3.2.2",
-        "hbs": "~2.4.0",
-        "jsonminify": "~0.2.1"
+        "hbs": "~2.7.0",
+        "jsonminify": "~0.2.3"
     },
     "devDependencies": {
-        "plato": "~0.6.1",
-        "jshint": "~2.3.0",
-        "mocha": "~1.14.0",
-        "chai": "~1.8.0"
+        "plato": "~1.2.0",
+        "jshint": "~2.5.5",
+        "mocha": "~1.21.4",
+        "chai": "~1.9.1"
     },
     "engines": {
         "node": "~0.10.1",
