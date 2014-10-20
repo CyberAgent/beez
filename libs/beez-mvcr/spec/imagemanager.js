@@ -42,7 +42,7 @@ define(['imagemanager'], function (imagemanager) {
                     .then(function (res, next) {
                         expect(res.src).eq(imgUrl);
                         loadImg = res;
-                        expect(loadImg.crossOrigin).eq('Anonymous').be.ok;
+                        expect(loadImg.crossOrigin).eq('anonymous').be.ok;
                         done();
                     }).error(function (err, next) {
                         throw new Error(err);

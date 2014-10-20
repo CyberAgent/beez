@@ -1584,7 +1584,7 @@
      * @name ua
      * @namespace ua
      */
-    var ua = {VERSION: '1.0.3'};
+    var ua = {VERSION: '1.0.5'};
 
     /**
      * UserAgent decision
@@ -1768,7 +1768,21 @@
          * @memberof ua
          * @return {Array}
          */
-        this.safari = useragent.match(/(Version)\/([0-9\.]+).*Safari\/([0-9\.]+)/)
+        this.safari = useragent.match(/(Version)\/([0-9\.]+).*Safari\/([0-9\.]+)/),
+        /**
+         * Decision: trident
+         * @name trident
+         * @memberof ua
+         * @return {Array}
+         */
+        this.trident = useragent.match(/Trident\/([\d\.]+)/),
+        /**
+         * Decision: xbox
+         * @name xbox
+         * @memberof ua
+         * @return {Array}
+         */
+        this.xbox = useragent.match(/Xbox/)
 
         ;
 
@@ -1814,6 +1828,11 @@
         if (this.webkit) {
             this.browser.webkit = true;
             this.browser.version = this.webkit[1];
+        }
+
+        if (this.trident) {
+            this.browser.trident = true;
+            this.browser.version = this.trident[1];
         }
 
         if (this.android) {
@@ -8156,7 +8175,7 @@ v                 *
  * @overview beez entrypoint
  */
 
-var VERSION = '1.0.26';
+var VERSION = '1.0.27';
 
 if (typeof module !== 'undefined' && module.exports) { // node.js: main
     exports.VERSION = VERSION;

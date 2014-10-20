@@ -40,11 +40,11 @@ define(['model', 'backbone.localStorage'], function(model, LocalStorage){
         dispose:function () { disposeFlag[this.midx] = true; TestModel3.__super__.dispose.apply(this);}
     });
     var TestCollection = Collection.extend('TestCollection', {
-        midx:'tests', model:TestModel, localStorage:new LocalStorage('beez-spec-Collection'), flag:false,
+        midx:'tests', model:TestModel, localStorage:new LocalStorage('beez-spec_Collection'), flag:false,
         dispose:function(){ disposeFlag[this.midx] = true; TestCollection.__super__.dispose.apply(this); }
     });
     var TestCModel = Model.extend('TestCModel', {
-        midx:'ctest', defaults:{title:'',completed:false}, localStorage:new LocalStorage('beez-spec-Collection'), flag:false,
+        midx:'ctest', defaults:{title:'',completed:false}, localStorage:new LocalStorage('beez-spec_Collection'), flag:false,
         dispose:function(){ disposeFlag[this.midx] = true; }
     });
 
@@ -57,7 +57,7 @@ define(['model', 'backbone.localStorage'], function(model, LocalStorage){
             before(function () {
                 window.localStorage.clear();
                 window.localStorage.removeItem("beez-spec");
-                window.localStorage.removeItem("beez-spec-Collection");
+                window.localStorage.removeItem("beez-spec_Collection");
             });
 
             it('set/fetch/save/destroy sync', function () {
@@ -166,21 +166,21 @@ define(['model', 'backbone.localStorage'], function(model, LocalStorage){
             });
 
             it('create async', function (done) {
-                var cmodel1 = {title: 'test1'};
-                var cmodel2 = {title: 'test2'};
+                var cmodel1 = new TestCModel({title: 'test1'});
+                var cmodel2 = new TestCModel({title: 'test2'});
 
                 c.async()
                 .create(cmodel1)
                 .create(cmodel2)
                 .then(function() {
                     expect(c.models.length).eq(2);
-                    expect(localStorage.getItem('beez-spec-Collection').split(",").length).eq(2);
+                    expect(localStorage.getItem('beez-spec_Collection').split(",").length).eq(2);
                     cmodel1.destroy();
                     cmodel2.destroy();
 
                     //c.fetch();
                     expect(c.models.length).eq(0);
-                    expect(localStorage.getItem('beez-spec-Collection').split(",").length).eq(1); // empty
+                    expect(localStorage.getItem('beez-spec_Collection').split(",").length).eq(1); // empty
                     done();
                 }).error(function(err, next) {
                     throw new Error("create error. async");
