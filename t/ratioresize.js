@@ -47,7 +47,8 @@ bootstrap.ratioResize(function (err, result) {
                     {
                         srcPath: src,
                         dstPath: dir,
-                        separator: options.separator
+                        separator: options.separator,
+                        quality: options.quality
                     },
                     options.baseRatio,
                     options.ratios,
@@ -76,7 +77,8 @@ bootstrap.ratioResize(function (err, result) {
                 {
                     srcPath: src,
                     dstPath: dir,
-                    separator: options.separator
+                    separator: options.separator,
+                    quality: options.quality
                 },
                 options.baseRatio,
                 options.ratios,
