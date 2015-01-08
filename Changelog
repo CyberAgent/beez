@@ -3,6 +3,12 @@ Changelog
 Key
 [A] - Added, [C] - Changed, [F] - Fixed, [R] - Removed
 
+Tue Jan 8 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.28
+- [A] enable to set the quality option with beez-ratioresize
+
+Tue Oct 20 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.27
+- [C] update deps library
+
 Tue Aug 28 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.26
 - [F] fixed bug query is not parsed with get
 
@@ -321,4 +327,3 @@ from Backbone.js
 
 * Mon Feb 25 2013 Kei FUNAGAYAMA <funagayama_kei@cyberagent.co.jp> - 0.6.0
 - Initial release.
-
