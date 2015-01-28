@@ -340,6 +340,14 @@ Bootstrap.prototype.ratioResize = function ratioResize(callback) {
         this.config.walkPath = path.normalize(commander.walk);
     }
 
+    if (commander.output) {
+        if (!beezlib.fsys.isDirectorySync(commander.output)) {
+            beezlib.logger.error('"-o --output" is not a directory. param:', commander.output);
+            process.exit(2);
+        }
+        this.config.dstPath = path.normalize(commander.output);
+    }
+
     // option: debug
     beezlib.logger.level = beezlib.logger.LEVELS.INFO;
     if (commander.debug) {

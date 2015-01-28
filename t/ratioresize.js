@@ -27,6 +27,7 @@ bootstrap.ratioResize(function (err, result) {
     beezlib.logger.message('png/{ratio}.png Resize'.green);
     beezlib.logger.message('');
     beezlib.logger.message('  Base Directory:'.green, config.walkPath || path.dirname(config.sourcePath));
+    beezlib.logger.message('  Output Directory:'.green, config.dstPath || path.dirname(config.sourcePath) || path.dirname(config.walkPath));
 
     var bucks = new Bucks();
     bucks.empty();
@@ -42,11 +43,12 @@ bootstrap.ratioResize(function (err, result) {
                 return;
             }
 
+            var dstPath = config.dstPath || dir;
             bucks.add(function task(err, res, next) {
                 beezlib.image.imagemagick.ratioResize(
                     {
                         srcPath: src,
-                        dstPath: dir,
+                        dstPath: dstPath,
                         separator: options.separator,
                         quality: options.quality
                     },
@@ -70,7 +72,7 @@ bootstrap.ratioResize(function (err, result) {
         });
     } else {
         var src = config.sourcePath;
-        var dir = path.dirname(src);
+        var dir = config.dstPath || path.dirname(src);
         var file = path.basename(src);
         bucks.add(function task(err, res, next) {
             beezlib.image.imagemagick.ratioResize(
