@@ -3,7 +3,10 @@ Changelog
 Key
 [A] - Added, [C] - Changed, [F] - Fixed, [R] - Removed
 
-Tue Jan 8 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.28
+Tue Jan 28 2015 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.29
+- [A] enable to work output option with beez-ratioresize
+
+Tue Jan 8 2015 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.28
 - [A] enable to set the quality option with beez-ratioresize
 
 Tue Oct 20 2014 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.27
