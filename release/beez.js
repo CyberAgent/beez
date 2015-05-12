@@ -6,7 +6,7 @@
  */
 
 (function (global) {
-    
+    'use strict';
 
     // no-op function
     var none = function none() {};
@@ -375,7 +375,7 @@
 (function (global) {
 
     define('beez-core/error',['require','exports','module','beez-core/suns'],function __BeezError__(require, exports, module) {
-        
+        'use strict';
 
         var suns = require('beez-core/suns');
 
@@ -416,7 +416,7 @@
  */
 
 (function (global) {
-    
+    'use strict';
 
     // no-op function
     var none = function none() {};
@@ -472,6 +472,7 @@
         this.callback = none;
         this.failure  = none;
         this._alive = true;
+        this._interrupt = false;
         this.__id = uid();
         Bucks.living[this.__id] = this;
         this.initialize(params);
@@ -482,7 +483,7 @@
      * @memberof Bucks
      * @static
      */
-    Bucks.VERSION = '0.8.3';
+    Bucks.VERSION = '0.8.4';
 
     /**
      * if set `true`, uncaught errors are logged
@@ -698,6 +699,10 @@
          */
         _iterator: function _iterator(err, res) {
 
+            if (this._interrupt) {
+                return this;
+            }
+
             if (!this._alive) {
                 throw new Error('this bucks object already destroyed.');
             }
@@ -881,6 +886,13 @@
          */
         dispose: none,
 
+        interrupt: function interrupt() {
+            this._interrupt = true;
+            this.destroy();
+
+            return this;
+        },
+
 
         /**
          * このオブジェクトを破棄して
@@ -957,6 +969,8 @@
                     }
                 }
 
+                // @TODO: excluded from the deleted
+                // delete this._interrupt;
 
                 delete this._alive;
                 delete Bucks.running[this.__id];
@@ -1081,7 +1095,7 @@
  */
 
 (function (global) {
-    
+    'use strict';
 
     /**
      * Empty function
@@ -1361,7 +1375,7 @@
      * @namespace beez
      */
     define('beez.core',['require','exports','module','beez-core/suns','beez-core/error','beez-core/bucks','beez-core/logcafe','backbone','handlebars'],function (require, exports, module) {
-        
+        'use strict';
 
         var root = global;
         if (root.beez) {
@@ -1966,7 +1980,7 @@
 (function (global) {
 
     define('beez-utils/browser',['require','exports','module','beez.core','backbone','beez.ua'],function (require, exports, module) {
-        
+        'use strict';
 
         var beez = require('beez.core');
         var global = beez.global || global;
@@ -2180,7 +2194,7 @@
 
 (function (global) {
     define('beez-utils/uid',['require','exports','module'],function (require, exports, module) {
-        
+        'use strict';
         var uid; // singleton
 
         /**
@@ -2217,7 +2231,7 @@
 
 (function (global) {
     define('beez-utils/timer',['require','exports','module','beez.core','beez-utils/uid'],function (require, exports, module) {
-        
+        'use strict';
 
         var beez = require('beez.core');
         var _ = beez.vendor._;
@@ -2422,7 +2436,7 @@
      * @namespace beez.utils
      */
     define('beez.utils',['require','exports','module','beez.core','beez-utils/browser','beez-utils/timer'],function (require, module, exports) {
-        
+        'use strict';
 
         var beez = require('beez.core');
         var _ = beez.vendor._;
@@ -2559,7 +2573,7 @@
      * @namespace I18n
      */
     define('beez.i18n',['require','exports','module','beez.core','beez.utils','handlebars'],function (require, exports, module) {
-        
+        'use strict';
 
         var beez = require('beez.core');
         require('beez.utils');
@@ -2905,7 +2919,7 @@
 (function (global) {
 
     define('beez-mvcr/jsonpath',['require','exports','module','beez.core'],function (require, exports, module) {
-        
+        'use strict';
 
         var beez = require('beez.core');
         var _ = beez.vendor._;
@@ -3114,7 +3128,7 @@
 (function (global) {
 
     define('beez-mvcr/base',['require','exports','module','beez.core','beez-mvcr/jsonpath'],function (require, exports, module) {
-        
+        'use strict';
 
         var beez = require('beez.core');
         var _ = beez.vendor._;
@@ -3650,7 +3664,7 @@
      * @exports beez-mvcr/model
      */
     define('beez-mvcr/model',['require','exports','module','beez.core','backbone','beez-mvcr/base'],function (require, exports, module) {
-        
+        'use strict';
 
         var beez = require('beez.core');
         var _ = beez.vendor._;
@@ -4879,7 +4893,7 @@ v                 *
      * @exports beez-mvcr/modic
      */
     define('beez-mvcr/modic',['require','exports','module','beez.core','backbone','beez-mvcr/model'],function (require, exports, module) {
-        
+        'use strict';
 
         var beez = require('beez.core');
         var _ = beez.vendor._;
@@ -4979,7 +4993,7 @@ v                 *
 
 (function (global) {
     define('beez-mvcr/view',['require','exports','module','beez.core','beez.utils','backbone','beez-mvcr/base'],function __View__(require, exports, module) {
-        
+        'use strict';
 
         var beez = require('beez.core');
         require('beez.utils');
@@ -5990,7 +6004,7 @@ v                 *
 (function (global) {
 
     define('beez-mvcr/controller',['require','exports','module','beez.core','beez.mvcr','beez.i18n'],function __Controller__(require, exports, module) {
-        
+        'use strict';
 
         var beez = require('beez.core');
         require('beez.mvcr');
@@ -6494,7 +6508,7 @@ v                 *
 
 (function (global) {
     define('beez-mvcr/router',['require','exports','module','beez.core','beez.mvcr','backbone'],function (require, exports, module) {
-        
+        'use strict';
 
         var beez = require('beez.core');
         require('beez.mvcr');
@@ -6884,7 +6898,7 @@ v                 *
 (function (global) {
 
     define('beez-mvcr/cssmanager',['require','exports','module','beez.core'],function (require, exports, module) {
-        
+        'use strict';
 
         var beez = require('beez.core');
         var logger = beez.getLogger('beez.mvcr.cssmanager');
@@ -7198,7 +7212,7 @@ v                 *
 (function (global) {
 
     define('beez-mvcr/imagemanager',['require','exports','module','beez.core','beez.utils'],function (require, exports, module) {
-        
+        'use strict';
 
         var beez = require('beez.core');
         var utils = require('beez.utils');
@@ -7755,7 +7769,7 @@ v                 *
      * @namespace beez.mvcr
      */
     define('beez.mvcr',['require','exports','module','beez.core','handlebars','beez-mvcr/model','beez-mvcr/modic','beez-mvcr/view','beez-mvcr/controller','beez-mvcr/router','beez-mvcr/cssmanager','beez-mvcr/imagemanager','beez-mvcr/base','backbone','beez-mvcr/model','beez-mvcr/view','beez-mvcr/controller','beez-mvcr/router','beez-mvcr/cssmanager','beez-mvcr/imagemanager'],function __MVCR__(require, exports, module) {
-        
+        'use strict';
 
         var beez = require('beez.core');
         var logger = beez.getLogger('beez.mvcr');
@@ -8175,7 +8189,7 @@ v                 *
  * @overview beez entrypoint
  */
 
-var VERSION = '1.0.29';
+var VERSION = '1.0.30';
 
 if (typeof module !== 'undefined' && module.exports) { // node.js: main
     exports.VERSION = VERSION;
@@ -8190,7 +8204,7 @@ if (typeof module !== 'undefined' && module.exports) { // node.js: main
          * @exports beez
          */
         define('beez',['require','exports','module','beez.core','beez.mvcr','beez.utils','beez.i18n','beez.ua'],function (require, exports, module) {
-            
+            'use strict';
 
             var beez = require('beez.core');
             var mvcr = require('beez.mvcr');

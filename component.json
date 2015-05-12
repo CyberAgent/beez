@@ -1,27 +1,27 @@
 {
-  "name": "beez",
-  "repo": "CyberAgent/beez",
-  "description": "The framework for mobile browser faster development.",
-  "version": "1.0.17",
-  "keywords": [
-    "beez",
-    "browser",
-    "mobile",
-    "backbone",
-    "require.js",
-    "development"
-  ],
-  "dependencies": {
-    "jashkenas/backbone": "*"
-  },
-  "development": {},
-  "license": "MIT",
-  "main": [
-    "release/beez.js",
-    "release/beez.min.js"
-  ],
-  "scripts": [
-    "release/beez.js",
-    "release/beez.min.js"
-  ]
+    "name": "beez",
+    "repo": "CyberAgent/beez",
+    "description": "The framework for mobile browser faster development.",
+    "version": "1.0.30",
+    "keywords": [
+        "beez",
+        "browser",
+        "mobile",
+        "backbone",
+        "require.js",
+        "development"
+    ],
+    "dependencies": {
+        "jashkenas/backbone": "*"
+    },
+    "development": {},
+    "license": "MIT",
+    "main": [
+        "release/beez.js",
+        "release/beez.min.js"
+    ],
+    "scripts": [
+        "release/beez.js",
+        "release/beez.min.js"
+    ]
 }

@@ -11,7 +11,7 @@
      * @namespace I18n
      */
     define('beez.i18n',['require','exports','module','beez.core','beez.utils','handlebars'],function (require, exports, module) {
-        
+        'use strict';
 
         var beez = require('beez.core');
         require('beez.utils');

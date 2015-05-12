@@ -6,7 +6,7 @@
  */
 
 (function (global) {
-    
+    'use strict';
 
     // no-op function
     var none = function none() {};
@@ -375,7 +375,7 @@
 (function (global) {
 
     define('beez-core/error',['require','exports','module','beez-core/suns'],function __BeezError__(require, exports, module) {
-        
+        'use strict';
 
         var suns = require('beez-core/suns');
 
@@ -416,7 +416,7 @@
  */
 
 (function (global) {
-    
+    'use strict';
 
     // no-op function
     var none = function none() {};
@@ -472,6 +472,7 @@
         this.callback = none;
         this.failure  = none;
         this._alive = true;
+        this._interrupt = false;
         this.__id = uid();
         Bucks.living[this.__id] = this;
         this.initialize(params);
@@ -482,7 +483,7 @@
      * @memberof Bucks
      * @static
      */
-    Bucks.VERSION = '0.8.3';
+    Bucks.VERSION = '0.8.4';
 
     /**
      * if set `true`, uncaught errors are logged
@@ -698,6 +699,10 @@
          */
         _iterator: function _iterator(err, res) {
 
+            if (this._interrupt) {
+                return this;
+            }
+
             if (!this._alive) {
                 throw new Error('this bucks object already destroyed.');
             }
@@ -881,6 +886,13 @@
          */
         dispose: none,
 
+        interrupt: function interrupt() {
+            this._interrupt = true;
+            this.destroy();
+
+            return this;
+        },
+
 
         /**
          * このオブジェクトを破棄して
@@ -957,6 +969,8 @@
                     }
                 }
 
+                // @TODO: excluded from the deleted
+                // delete this._interrupt;
 
                 delete this._alive;
                 delete Bucks.running[this.__id];
@@ -1081,7 +1095,7 @@
  */
 
 (function (global) {
-    
+    'use strict';
 
     /**
      * Empty function
@@ -1361,7 +1375,7 @@
      * @namespace beez
      */
     define('beez.core',['require','exports','module','beez-core/suns','beez-core/error','beez-core/bucks','beez-core/logcafe','backbone','handlebars'],function (require, exports, module) {
-        
+        'use strict';
 
         var root = global;
         if (root.beez) {

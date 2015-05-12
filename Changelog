@@ -3,6 +3,9 @@ Changelog
 Key
 [A] - Added, [C] - Changed, [F] - Fixed, [R] - Removed
 
+Tue May 12 2015 HIRAKI Satoru <hiraki_satoru@cyberagent.co.jp> - 1.0.30
+- [C] update deps library
+
 Tue Jan 28 2015 Masaki Sueda <sueda_masaki@cyberagent.co.jp> - 1.0.29
 - [A] enable to work output option with beez-ratioresize
 

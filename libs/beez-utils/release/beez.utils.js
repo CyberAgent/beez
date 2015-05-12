@@ -7,7 +7,7 @@
 (function (global) {
 
     define('beez-utils/browser',['require','exports','module','beez.core','backbone','beez.ua'],function (require, exports, module) {
-        
+        'use strict';
 
         var beez = require('beez.core');
         var global = beez.global || global;
@@ -221,7 +221,7 @@
 
 (function (global) {
     define('beez-utils/uid',['require','exports','module'],function (require, exports, module) {
-        
+        'use strict';
         var uid; // singleton
 
         /**
@@ -258,7 +258,7 @@
 
 (function (global) {
     define('beez-utils/timer',['require','exports','module','beez.core','beez-utils/uid'],function (require, exports, module) {
-        
+        'use strict';
 
         var beez = require('beez.core');
         var _ = beez.vendor._;
@@ -463,7 +463,7 @@
      * @namespace beez.utils
      */
     define('beez.utils',['require','exports','module','beez.core','beez-utils/browser','beez-utils/timer'],function (require, module, exports) {
-        
+        'use strict';
 
         var beez = require('beez.core');
         var _ = beez.vendor._;
