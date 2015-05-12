@@ -53,7 +53,7 @@
         "url": "https://github.com/CyberAgent/beez.git"
     },
     "dependencies": {
-        "bucks": "~0.8.3",
+        "bucks": "~0.8.4",
         "beezlib": "~0.9.19",
         "requirejs": "~2.1.15",
         "underscore": "~1.7.0",
