@@ -62,6 +62,7 @@
         this.callback = none;
         this.failure  = none;
         this._alive = true;
+        this._interrupt = false;
         this.__id = uid();
         Bucks.living[this.__id] = this;
         this.initialize(params);
@@ -72,7 +73,7 @@
      * @memberof Bucks
      * @static
      */
-    Bucks.VERSION = '0.8.3';
+    Bucks.VERSION = '0.8.4';
 
     /**
      * if set `true`, uncaught errors are logged
@@ -288,6 +289,10 @@
          */
         _iterator: function _iterator(err, res) {
 
+            if (this._interrupt) {
+                return this;
+            }
+
             if (!this._alive) {
                 throw new Error('this bucks object already destroyed.');
             }
@@ -471,6 +476,13 @@
          */
         dispose: none,
 
+        interrupt: function interrupt() {
+            this._interrupt = true;
+            this.destroy();
+
+            return this;
+        },
+
 
         /**
          * このオブジェクトを破棄して
@@ -547,6 +559,8 @@
                     }
                 }
 
+                // @TODO: excluded from the deleted
+                // delete this._interrupt;
 
                 delete this._alive;
                 delete Bucks.running[this.__id];
