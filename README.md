@@ -113,7 +113,7 @@ beezが依存しているライブラリは以下になります。
 - [nib](https://github.com/visionmedia/nib)
 - [node.js](http://nodejs.org/)
 - [jsdoc3](https://github.com/jsdoc3/jsdoc)
-- [mocha](http://visionmedia.github.com/mocha/)
+- [mocha](http://mochajs.org/)
 - [Chai](http://chaijs.com/)
 - [beezlib](https://github.com/CyberAgent/beezlib)
 - [JSHint](http://www.jshint.com/)
